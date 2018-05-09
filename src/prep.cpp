@@ -10,6 +10,7 @@ void preprocess(std::ifstream& file, source& output, bool macros){
         // If token (MACRO or DEFMACRO or ENDMACRO)
             // If macro == true: Expand
     // source test;
+    
     // return test;source
 }
 
