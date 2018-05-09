@@ -1,7 +1,8 @@
 #include <iostream>
 #include <cstdlib>
 
-#include <vector>
+// Program
+#include "../include/prep.hpp"
 
 
 
@@ -19,8 +20,11 @@
  *
  */
 
+// MODULE: program.hpp
 int run(std::string, std::string, std::string);
+bool to_file(source, std::string, std::string);
 
+// MAIN
 int main(int argc, char *argv[]){
     // int returncode;
     
@@ -36,6 +40,7 @@ int main(int argc, char *argv[]){
 }
 
 
+// MODULE: program.cpp
 
 /* Runs program with parsed argument
   returns 0 when ok
@@ -48,23 +53,9 @@ int run(std::string flag, std::string input, std::string output){
       exit(-3);
 
     switch(f){
-        case 'o':
-          std::cout << "assemble!"      << std::endl;
-          
-          break;
-
-        case 'm':
-          std::cout << "expand macros!" << std::endl;
-          
-          break;
-
-        case 'p':
-          std::cout << "preprocess!"    << std::endl;
-          
-          break;
-
-
-            break;
+        case 'o': std::cout << "assemble!"      << std::endl; break;
+        case 'm': std::cout << "expand macros!" << std::endl; break;
+        case 'p': std::cout << "preprocess!"    << std::endl; break;
         default:
             std::cout << "unknown operation: " << flag << std::endl;
             exit(-2);
@@ -73,10 +64,54 @@ int run(std::string flag, std::string input, std::string output){
 
     std::cout << "[" << input << " -> " << output << "]" << std::endl;
     
+    // Run Compiler
+
+    // Read File
+    std::ifstream inputfile((input + ".asm").c_str());
+
+
+    // Run Preprocessor (ifstream -> stringstream)
+    source processed;
+    preprocess(inputfile, processed, f == 'm');
+    if (f == 'p') {
+        to_file(processed, output, ".pre");
+        return 0;
+    }
+
+    // Run 
+    if (f == 'm'){
+        to_file(processed, output, ".mcr");
+        return 0;
+    }
+
+    // Run 
+    // (-o is implied)
+        
+    // to_file(linked, output, ".o");
     return 0;
 }
 
-// Module error.cpp (Colocar macros (error codes) em error.hpp)break;
+bool to_file(source data, std::string filename, std::string extension){
+        // Write to File
+        std::ofstream output;
+        output.open ((filename + extension).c_str());
+
+        if (!output) return false;
+
+        for (uint i = 0; i < data.size(); i++)
+            output << data[i];
+        
+        // Debug Printings
+        #ifdef DEBUG_PRINTFILEDATA
+            while(output)
+                std::cout << "" << std::endl;
+        #endif
+        
+        output.close();
+        return true;
+    }
+
+// MODULE error.cpp (Colocar macros (error codes) em error.hpp);
 void logerror(int);
 void logerror(int code){
   switch(code){
@@ -86,3 +121,4 @@ void logerror(int code){
       std::cout << "[error] unknown error code: " << code << std::endl;
   }
 }
+

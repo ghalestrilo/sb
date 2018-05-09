@@ -1,11 +1,8 @@
 #include <iostream>
 #include <map>
+#include "../include/typedefs.hpp"
 
-// General Typedef
-
-typedef std::string         token;  //
-typedef std::stringstream   source; //
-
+#include <fstream>
 
 /* MNT
  * maps macro name to param count.
@@ -14,10 +11,13 @@ typedef std::stringstream   source; //
 typedef std::map<token, int> MNT;
 
 /* MDT
- * maps macro name to definition (stringstream)
+ * maps macro name to definition (string array)
  */
 typedef std::map<token, source> MDT;
 
+/* Pre-Process
+ */
+void preprocess(std::ifstream&, source&, bool);
 
 /* Expand Macro
  * 1. Search MNT for macro params
@@ -25,6 +25,7 @@ typedef std::map<token, source> MDT;
  * 3. Substitute params for provided tokens
  * 4. Return source segment to be inserted in place on original file
  */
+
 source expand_macro(token macroname);
 
 
