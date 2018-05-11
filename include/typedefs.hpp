@@ -1,5 +1,7 @@
 #include <fstream>
 #include <vector>
 
-typedef std::string              token;
-typedef std::vector<std::string> source;
+#define vector_of_strings std::vector<std::string>
+
+typedef std::string       token;
+typedef vector_of_strings source;

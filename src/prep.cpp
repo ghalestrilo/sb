@@ -1,7 +1,7 @@
 #include <iostream>
 #include "../include/prep.hpp"
 
-void preprocess(std::ifstream& file, source& output, bool macros){
+void preprocess(source& file, source& output, bool macros){
 
     //if macro == true: Load Tables
 

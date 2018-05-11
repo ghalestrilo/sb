@@ -1,8 +1,8 @@
 #include <iostream>
 #include <map>
+
 #include "../include/typedefs.hpp"
 
-#include <fstream>
 
 /* MNT
  * maps macro name to param count.
@@ -17,7 +17,7 @@ typedef std::map<token, source> MDT;
 
 /* Pre-Process
  */
-void preprocess(std::ifstream&, source&, bool);
+void preprocess(source&, source&, bool);
 
 /* Expand Macro
  * 1. Search MNT for macro params
