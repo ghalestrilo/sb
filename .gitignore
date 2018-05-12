@@ -1,3 +1,4 @@
-res/test.zip
-res/moodle/
+res/moodle/test.zip
+res/moodle/*
+res/moodle
 .vscode
