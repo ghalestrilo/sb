@@ -1,0 +1,96 @@
+#include <iostream>
+#include <map>
+#include "typedefs.hpp"
+
+    enum COMMAND { 
+                // Op Code Size Desc.
+        ADD,    // 1    1    2  ACC <- ACC + MEM[OP]
+        SUB,    // 1    2    2  ACC <- ACC - MEM[OP]
+        MULT,   // 1    3    2  ACC <- ACC * MEM[OP]
+        DIV,    // 1    4    2  ACC <- ACC / MEM[OP]
+        JMP,    // 1    5    2  PC <- OP
+        JMPN,   // 1    6    2  SeACC < 0, PC <- OP
+        JMPP,   // 1    7    2  SeACC > 0, PC <- OP
+        JMPZ,   // 1    8    2  SeACC = 0, PC <- OP
+        COPY,   // 2    9    3  MEM[OP2] <- MEM[OP1]
+        LOAD,   // 1    10   2  ACC <- MEM[OP]
+        STORE,  // 1    11   2  MEM[OP] <- ACC
+        INPUT,  // 1    12   2  MEM[OP] <- STDIN
+        OUTPUT, // 1    13   2  STDOUT <- MEM[OP]
+        STOP    // 0    14   1  STOPS   
+    };
+
+    enum DIRECTIVE { 
+                 // Params  Size  Desc
+        SECTION, //   1      0    Marcar in ́ıcio de se ̧c ̃ao de c ́odigo (TEXT)ou dados (DATA).
+        SPACE,   //   1      v    Reservar   1   ou   mais   endere ̧cos   demem ́oria n ̃ao-inicializada para armaze-namento de uma palavra.
+        CONST,   //   1      1    Reservar    mem ́oria    para    armazena-mento de uma constante inteira de 16bitsem base decimal ou hexadecimal.
+        EQU,     //   1      0    Cria  um  sinˆonimo  textual  para  ums ́ımbolo
+        IF,      //   1      0    Instrue  o  montador  a  incluir  alinhaseguintedo c ́odigo somente se o valordo operando for 1
+        MACRO,   //   0      0    Marcar in ́ıcio de suma MACRO. Sem-pre dentro da se ̧c ̃ao TEXT e antes doc ́odigo principal
+        ENDMACRO //   0      0    Marcar o fim de uma MACRO.
+    };
+
+
+namespace dictionary {
+    // Auxiliary Methods: DO NOT USE
+    const std::map<token, COMMAND>   generate_global_commands_table();
+    const std::map<token, DIRECTIVE> generate_global_directives_table();
+
+    // 
+    static const std::map<token, COMMAND>   commands   = generate_global_commands_table();
+    static const std::map<token, DIRECTIVE> directives = generate_global_directives_table();
+
+
+    // Useful Methods
+    bool reserved(std::string word){
+        return (commands   . find(word) != commands   . end())
+            && (directives . find(word) != directives . end());
+    };
+
+    bool illegal(char c){
+        return (c < 'A' || c > 'Z') // Non-Alphabetic
+            && (c < '0' || c > '9') // Non-Numeric
+            && (c != ':')           // Non-Colon
+            && (c != '_');          // Non-Underscore
+    };
+
+
+
+
+
+    
+
+
+    const std::map<token, COMMAND> generate_global_commands_table(){
+        std::map<token, COMMAND> m;
+        m["ADD"]    = ADD;
+        m["SUB"]    = SUB;
+        m["MULT"]   = MULT;
+        m["DIV"]    = DIV;
+        m["JMP"]    = JMP;
+        m["JMPN"]   = JMPN;
+        m["JMPP"]   = JMPP;
+        m["JMPZ"]   = JMPZ;
+        m["COPY"]   = COPY;
+        m["LOAD"]   = LOAD;
+        m["STORE"]  = STORE;
+        m["INPUT"]  = INPUT;
+        m["OUTPUT"] = OUTPUT;
+        return m;
+    };
+
+    const std::map<token, DIRECTIVE> generate_global_directives_table(){
+        std::map<token, DIRECTIVE> m;
+        m["SECTION"]    = SECTION;
+        m["SPACE"]      = SPACE;
+        m["CONST"]      = CONST;
+        m["EQU"]        = EQU;
+        m["IF"]         = IF;
+        m["MACRO"]      = MACRO;
+        m["ENDMACRO"]   = ENDMACRO;
+        return m;
+    };
+}
+
+

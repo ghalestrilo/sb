@@ -11,8 +11,8 @@ LFLAGS = -Wall -ansi
 
 
 PROG_OP     = -o
-PROG_INPUT  = ./res/test1
-PROG_OUTPUT = ./res/test1_res
+PROG_INPUT  = ./res/bin
+PROG_OUTPUT = ./res/bin_res
 PROG_ARGS   = $(PROG_OP) $(PROG_INPUT) $(PROG_OUTPUT)
 
 all: clean build run

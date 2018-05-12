@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include "../include/debug.h"
 
 #include "../include/program.hpp"
 #include "../include/prep.hpp"
@@ -13,9 +14,8 @@
   */
 int run(std::string flag, std::string input, std::string output){
     
-    char f = (flag.length() > 1) ? flag[1] : '\0';
-    if (f == '\0')
-      exit(-3);
+    if (flag.length() < 2) exit(-3);
+    char f = flag[1];
 
     switch(f){
         case 'o': std::cout << "assemble!"      << std::endl; break;
@@ -48,7 +48,7 @@ int run(std::string flag, std::string input, std::string output){
     }
 
     // 2. Macros Expanded 
-    if (f == 'm'){
+    if (f == 'm') {
         to_file(processed, output, ".mcr");
         return 0;
     }
@@ -58,10 +58,8 @@ int run(std::string flag, std::string input, std::string output){
     std::vector<std::string> modules;        // modules: Keeps track of the output files generated, so we can link them easily.
     ast* parsed = parse(processed, modules);
  
-    link(modules);
-
-
-    // to_file(linked, output, ".o");
+    to_file(link(modules), output, ".o");
+ 
     return 0;
 }
 
@@ -75,16 +73,24 @@ bool to_file(source data, std::string filename, std::string extension){
 
     if (!output) return false;
 
-    for (uint i = 0; i < data.size(); i++)
-        output << data[i];
+    for (std::string line : data)
+        output << line;
     
-    // Debug Printings
-    #ifdef DEBUG_PRINTFILEDATA
-        while(output)
-            std::cout << "" << std::endl;
-    #endif
-    
+    // for (uint i = 0; i < data.size(); i++)
+        // output << data[i];
+
     output.close();
+
+
+    // Debug Printings
+    #ifdef DEBUG_FILE_PRINTDATA
+        std::cout << "[file]: " << filename << extension << std::endl;
+
+        source readback = from_file(filename);
+        for (std::string line : readback)
+            std::cout << line << std::endl;
+    #endif
+
     return true;
 }
 
@@ -102,7 +108,7 @@ source from_file(std::string filename){
         std::getline(input, temp);
 
         // Debug Printings
-        #ifdef DEBUG_PRINTFILEDATA
+        #ifdef DEBUG_FILE_PRINTDATA
             std::cout << temp << std::endl;
         #endif
 
@@ -111,16 +117,3 @@ source from_file(std::string filename){
     
     return res;
 }
-
-
-// MODULE error.cpp (Colocar macros (error codes) em error.hpp);
-void logerror(int);
-void logerror(int code){
-  switch(code){
-    case 0: break; // Caso ideal
-  
-    default:
-      std::cout << "[error] unknown error code: " << code << std::endl;
-  }
-}
-
