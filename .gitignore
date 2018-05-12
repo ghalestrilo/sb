@@ -1,4 +1,8 @@
-res/moodle/test.zip
-res/moodle/*
+res/moodle/*.o
 res/moodle
-.vscode
+res/out/*.o
+res/out
+res/*.o
+
+obj/*
+obj

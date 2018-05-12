@@ -53,6 +53,7 @@ int run(std::string flag, std::string input, std::string output){
         return 0;
     }
 
+    // 3. Run parser -> assembler -> linker
     // (-o is implied)
 
     std::vector<std::string> modules;        // modules: Keeps track of the output files generated, so we can link them easily.
