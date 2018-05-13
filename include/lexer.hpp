@@ -7,17 +7,7 @@
 /* Token Type:
     - Contains either a command or a Literal
  */
-struct token {
-    union {
-        COMMAND command;
-        int value; // if literal
-    };
+typedef std::string token;
 
-    bool isliteral;
-    bool islabel;
-    bool isrelative;
-    int  position;
-};
-
-bool readline(std::string, std::vector<token>&);
-bool lex_error(std::string);
+bool readline  (std::string, std::vector<token>*);
+bool lex_error (std::string);

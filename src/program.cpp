@@ -76,14 +76,13 @@ bool to_file(source data, std::string filename, std::string extension){
 
     if (!output) return false;
 
-    for (std::string line : data)
-        output << line;
-    
-    // for (uint i = 0; i < data.size(); i++)
-        // output << data[i];
+    // for (std::string line : data)
+    //     output << line;
+
+    for (unsigned int i = 0; i < data.size() ; i++)
+        output << data[i];
 
     output.close();
-
 
     // Debug Printings
     #ifdef DEBUG_FILE_PRINTDATA

@@ -7,22 +7,21 @@
 #include "../include/lexer.hpp"
 
 
-bool readline(std::string line, std::vector<token>& tokens){
+bool readline(std::string line, std::vector<token>* tokens){
     if (line.empty())   return false;
+    tokens->clear();
     
-    while(line[0] == ' ') // Trim Spaces
-        line.erase(0);
-    
-    if (line[0] == ';') return false; // Ignore Comments
+    while (line[0] == ' ') line.erase(0); // Trim Spaces
+    if    (line[0] == ';') return false;  // Ignore Comments
 
-    std::string buf; // Have a buffer std::string
+    std::string buf;            // Have a buffer std::string
     std::stringstream ss(line); // Insert the std::string into a stream
 
     while (ss >> buf){
         // CHECAR ERROS LEXICOS
-        if (lex_error(buf)) exit(-4);
+        if (lex_error(buf)) return false; //exit(-4);
         
-        tokens.push_back(token()); // @TODO Construct token
+        tokens->push_back(token(buf)); // @TODO Construct token
     }
 
 
@@ -32,7 +31,7 @@ bool readline(std::string line, std::vector<token>& tokens){
         
         std::cout << "[lexer]: ";
         
-        while (debug >> buf) std::cout << buf;
+        while (debug >> buf) std::cout << buf << " ";
         
         std::cout << std::endl;
     #endif
@@ -49,8 +48,9 @@ bool lex_error(std::string t){ // , token previous)
     using namespace dictionary;
 
     // 3. Token contains illegal characters
-    for(char c : t)
-        if(illegal(c))
+    // for(char c : t)
+    for(unsigned int i=0; i<t.size(); i++)
+        if(illegal(t[i]))
             return true;
 
     // 1. Token is label and reserved word.
