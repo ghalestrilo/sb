@@ -18,9 +18,9 @@ int run(std::string flag, std::string input, std::string output){
     char f = flag[1];
 
     switch(f){
-        case 'o': std::cout << "assemble!"      << std::endl; break;
-        case 'm': std::cout << "expand macros!" << std::endl; break;
-        case 'p': std::cout << "preprocess!"    << std::endl; break;
+        case 'o': std::cout << "assemble! -- "      break;
+        case 'm': std::cout << "expand macros! -- " break;
+        case 'p': std::cout << "preprocess! -- "    break;
         default:
             std::cout << "unknown operation: " << flag << std::endl;
             exit(-2);
