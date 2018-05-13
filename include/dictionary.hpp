@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <map>
 #include "typedefs.hpp"
@@ -34,12 +35,12 @@
 
 namespace dictionary {
     // Auxiliary Methods: DO NOT USE
-    const std::map<token, COMMAND>   generate_global_commands_table();
-    const std::map<token, DIRECTIVE> generate_global_directives_table();
+    const std::map<symbol, COMMAND>   generate_global_commands_table();
+    const std::map<symbol, DIRECTIVE> generate_global_directives_table();
 
     // 
-    static const std::map<token, COMMAND>   commands   = generate_global_commands_table();
-    static const std::map<token, DIRECTIVE> directives = generate_global_directives_table();
+    static const std::map<symbol, COMMAND>   commands   = generate_global_commands_table();
+    static const std::map<symbol, DIRECTIVE> directives = generate_global_directives_table();
 
 
     // Useful Methods

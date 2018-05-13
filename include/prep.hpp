@@ -8,16 +8,16 @@
  * maps macro name to param count.
  * if MNT[<name>] returns null, macro does not exist
  */
-typedef std::map<token, int> MNT;
+typedef std::map<symbol, int> MNT;
 
 /* MDT
  * maps macro name to definition (string array)
  */
-typedef std::map<token, source> MDT;
+typedef std::map<symbol, source> MDT;
 
 /* Pre-Process
  */
-void preprocess(source&, source&, bool);
+void preprocess(source&, source*, bool);
 
 /* Expand Macro
  * 1. Search MNT for macro params
@@ -26,6 +26,4 @@ void preprocess(source&, source&, bool);
  * 4. Return source segment to be inserted in place on original file
  */
 
-source expand_macro(token macroname);
-
-
+source expand_macro(symbol macroname); // + args (std::vector<symbol>)

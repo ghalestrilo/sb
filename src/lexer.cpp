@@ -5,10 +5,15 @@
 #include <sstream>
 
 #include "../include/lexer.hpp"
-#include "../include/dictionary.hpp"
+
 
 bool readline(std::string line, std::vector<token>& tokens){
-    if (line.empty()) return false;
+    if (line.empty())   return false;
+    
+    while(line[0] == ' ') // Trim Spaces
+        line.erase(0);
+    
+    if (line[0] == ';') return false; // Ignore Comments
 
     std::string buf; // Have a buffer std::string
     std::stringstream ss(line); // Insert the std::string into a stream
@@ -16,7 +21,8 @@ bool readline(std::string line, std::vector<token>& tokens){
     while (ss >> buf){
         // CHECAR ERROS LEXICOS
         if (lex_error(buf)) exit(-4);
-        tokens.push_back(buf);
+        
+        tokens.push_back(token()); // @TODO Construct token
     }
 
 

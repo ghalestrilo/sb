@@ -13,8 +13,8 @@ namespace dictionary {
             && (c != '_');          // Non-Underscore
     };
 
-    const std::map<token, COMMAND> generate_global_commands_table(){
-        std::map<token, COMMAND> m;
+    const std::map<symbol, COMMAND> generate_global_commands_table(){
+        std::map<symbol, COMMAND> m;
         m["ADD"]    = ADD;
         m["SUB"]    = SUB;
         m["MULT"]   = MULT;
@@ -31,8 +31,8 @@ namespace dictionary {
         return m;
     };
 
-    const std::map<token, DIRECTIVE> generate_global_directives_table(){
-        std::map<token, DIRECTIVE> m;
+    const std::map<symbol, DIRECTIVE> generate_global_directives_table(){
+        std::map<symbol, DIRECTIVE> m;
         m["SECTION"]    = SECTION;
         m["SPACE"]      = SPACE;
         m["CONST"]      = CONST;
