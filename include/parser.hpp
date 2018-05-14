@@ -13,9 +13,9 @@ struct expression {
     int value;          // if literal
 
     union {
-        COMMAND   command;
-        DIRECTIVE directive;
-    };
+        COMMANDCODE   command;
+        DIRECTIVECODE directive;
+    } data;
 
     bool isliteral;
     bool islabel;
@@ -25,26 +25,26 @@ struct expression {
 
 
 struct ast_node {
-    ast_node(expression exp) : exp(exp){
-        
-    };
+    ast_node(expression exp) : exp(exp){};
     expression exp;
     std::vector<ast_node> params;
 };
 
 struct ast { 
     void operator<<(ast_node s){ statements.push_back(s); }
+    ast_node operator[](int i){ return statements[i]; }; // Bug
     std::vector<ast_node> statements;
 };
 
 
-// Symbol Table
-typedef std::map<std::string, int> stable;
+// Symbol Table: rename to symbol_table
+typedef std::map<std::string, int> symbol_table;
 
 
 // 1st pass
-bool make_symbol_table(source, stable*);
+bool make_symbol_table(source, symbol_table*);
 
 // 2nd pass
-ast      parse(source, vector_of_strings&);
-ast_node parseline(std::string);
+ast        parse     (source);
+ast_node   parseline (std::string, symbol_table*, unsigned int*);
+expression parseexp  (std::string, symbol_table* st);

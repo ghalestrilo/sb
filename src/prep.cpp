@@ -13,11 +13,12 @@ void preprocess(source& file, source* output, bool macros){
             // If macro == true: Expand
     // source test;
 
-    // for(int i = 0; i < file.size(); i++){
+
     foreach(i, file){
-        std::cout << file[i] << std::endl;
+        #ifdef DEBUG_PREP_OUTPUT
+            std::cout << file[i] << std::endl;
+        #endif // DEBUG_PREP_OUTPUT
         output->push_back(file[i]);
-    
     } 
 }
 

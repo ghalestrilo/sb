@@ -18,5 +18,5 @@ typedef struct ast {
 
 
 // Symbol Table
-typedef std::map<std::string, int> stable;
+typedef std::map<std::string, int> symbol_table;
 

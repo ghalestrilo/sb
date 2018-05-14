@@ -58,8 +58,8 @@ int run(std::string flag, std::string input, std::string output){
     // 3. Run parser -> assembler -> linker
     // (-o is implied)
 
-    std::vector<std::string> modules;        // modules: Keeps track of the output files generated, so we can link them easily.
-    parse(processed, modules);
+    // std::vector<std::string> modules;        // modules: Keeps track of the output files generated, so we can link them easily.
+    ast prog = parse(processed);
 
     //to_file(link(modules), output, ".o");
  

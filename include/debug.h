@@ -7,6 +7,17 @@
 // #define DEBUG_FILE_PRINTDATA
 
 
+/* DEBUG_PREP_INPUT
+    Prints pre-processor input 
+ */
+// #define DEBUG_PREP_INPUT
+
+
+/* DEBUG_PREP_OUTPUT
+    Prints pre-processor output
+ */
+// #define DEBUG_PREP_OUTPUT
+
 // PARSER
 
 /* DEBUG_PARSER_SYMBOL_TABLE

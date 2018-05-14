@@ -6,5 +6,7 @@ res/*.o
 
 obj/*
 obj
+bin/*
+bin
 
 Especificacoes.pdf

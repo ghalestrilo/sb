@@ -16,6 +16,21 @@ typedef std::map<symbol, int> MNT;
 typedef std::map<symbol, source> MDT;
 
 /* Pre-Process
+ * 1. Lex-scan line
+ * 2. If its defined in EQU table, substitute
+ * 3. Check for directve:
+ *  - Macro:
+ *   - Check no other Macro directive inside definition
+ *   - Push lines until Endmacro
+ *   - New entry into MDT and MNT
+ *  - Endmacro:
+ *   - Check within Macro
+ *   - Otherwise, error.
+ *  - If:
+ *  - Equ:
+ *   - Check not keyword
+ *   - New entry into EQU table
+ * 
  */
 void preprocess(source&, source*, bool);
 
