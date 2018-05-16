@@ -1,28 +1,61 @@
 #include "../include/parser.hpp"
 #include "../include/lexer.hpp"
+#include "../include/debug.h"
 #include <cstdlib>
+
+void log(std::string msg){ std::cout << "[parser] " << msg << std::endl; };
 
 #ifdef DEBUG_PARSER_SYMBOL_TABLE
     typedef symbol_table::iterator map_it;
     void print_symbol_table(symbol_table st){
-        if (st.empty()) return;
+        if (st.empty()){
+            std::cout << "[parser] : No Symbol Table Loaded" << std::endl;
+            return;
+        }
 
         std::cout << "[parser]: Loaded Symbol Table" << std::endl;
 
         for (map_it it = st.begin(); it != st.end(); it++)
-            std::cout << "[parser]:  " << it->first << ": " << it->second << std::endl;
+            std::cout << "[parser]:  "
+                      << it->first 
+                      << ": " 
+                      << it->second 
+                      << std::endl;
     }
 #endif
 
 // Make symbol_table
 bool make_symbol_table(source code, symbol_table* st){
+    if (st == NULL) st = new symbol_table;
 
+    uint pc = 0;
 
+    std::vector<token> tokens;
+    token label;
 
-    // lex line
-    // if is label (':')
-        // push label-position pair into table
-        // relative
+    foreach(i, code){
+        // lex line
+        if (!readline(code[i], &tokens)) break;
+        label = tokens[0];
+        
+        // if (label.end()->value == ':'){
+
+        
+        // if is label (':')
+        if (label[label.size()-1] == ':'){
+            // push label-position pair into table
+            label.erase(label.size()-1);
+            (*st)[label] = pc;
+            // relative
+
+        }
+
+        // we could search global command table for the command's length 
+        foreach(t, tokens){
+            pc++;
+        }
+    }
+
 
     #ifdef DEBUG_PARSER_SYMBOL_TABLE
         print_symbol_table(*st);
@@ -42,15 +75,26 @@ ast parse(source code){
 
     // 2nd pass: Build AST
     ast parsed;
-    // for(unsigned int i = 0; i < code.size(); i++){
-    foreach(i,code){
-        parsed << parseline(code[i], &st, &pc);
 
-        #ifdef DEBUG_PARSER_READ_LINE
-            std::cout << "[parser] line (" << i << ", " << code.size() << "): " << code[i] << "\t\t-> ";
-            std::cout << std::endl;
-        #endif // DEBUG_PARSER_READ_LINE
+    foreach(i,code){
+        if(i+1 > code.size()) break;
+        parsed << parseline(code[i], &st, &pc);
     }
+
+
+    #ifdef DEBUG_PARSER_AST
+        std::vector<ast_node> statements = parsed.statements;
+        foreach(i, statements){
+            std::cout << "[parser] "
+                      << statements[i].exp.position
+                      << ": "
+                      << statements[i].exp.text
+                      << ' ';
+
+            foreach(j, statements[i].params) std::cout << statements[i].params[j].exp.text;
+            std::cout << std::endl;
+        }
+    #endif // DEBUG_PARSER_AST
 
     return parsed;
 };
@@ -58,20 +102,20 @@ ast parse(source code){
 // Returns a statement to be pushed ino the statement sequence (AST)
 ast_node parseline(std::string line, symbol_table* st, unsigned int* pc){
     std::vector<token> tokens;
-    if (!readline(line, &tokens)) exit(-6);
+    if (!readline(line, &tokens)) ;
 
     
     // Parse Main Expression
     ast_node res(parseexp(tokens[0], st));
-
-    // Parse Expression Parameters
+    res.exp.position = (*pc);
+    
+    // Parse Expresssion Parameters
     foreach(i, tokens){
         if(i==0) continue;
+        (*pc)++;
         res.params.push_back(parseexp(tokens[i], st));
     }
-
-    (*pc) += tokens.size();
-    return ast_node(expression("TESST"));
+    return res;
 }
 
 expression parseexp(std::string text, symbol_table* st) {

@@ -26,7 +26,11 @@
         "tuple": "cpp",
         "type_traits": "cpp",
         "typeinfo": "cpp",
-        "utility": "cpp",
+ s       "utility": "cpp",
         "sstream": "cpp"
+    },
+
+    "[clojure]": {
+        "extensions.enabled": ["bracketPairColorizer"]
     }
 }

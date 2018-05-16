@@ -13,36 +13,38 @@
   otherwise returns errorcode (for logerror)
   */
 int run(std::string flag, std::string input, std::string output){
-    
+    // Read Flags
     if (flag.length() < 2) exit(-3);
     char f = flag[1];
 
+// Disposable ---------------------------------------------------------
+    std::cout << "[" << input << " -> " << output << "]";
     switch(f){
-        case 'o': std::cout << "assemble! -- ";      break;
-        case 'm': std::cout << "expand macros! -- "; break;
-        case 'p': std::cout << "preprocess! -- ";    break;
+        case 'o': std::cout << " assemble!"      << std::endl; break;
+        case 'm': std::cout << " expand macros!" << std::endl; break;
+        case 'p': std::cout << " preprocess!"    << std::endl; break;
         default:
             std::cout << "unknown operation: " << flag << std::endl;
             exit(-2);
             break;
     }
 
-    std::cout << "[" << input << " -> " << output << "]" << std::endl;
-    
-    // Run Compiler
+// --------------------------------------------------------------------
+
 
     // Read File
     std::ifstream inputfile((input + ".asm").c_str());
-
     if (!inputfile) exit(-4);
-
-
     source incode;
     if (!from_file(input, &incode)) exit(-5);
-    // source* processed = new source;
+
+
+
+    // Run Preprocessor    
     source processed;
-    preprocess(incode, &processed, f == 'm');
+    preprocess(incode, &processed, f != 'p'); // (f!='p') <==> (f == 'm') or (f == 'o') 
     
+    // Flag-controlled Outputs
     // 1. If, Equ Expanded
     if (f == 'p') {
         to_file(processed, output, ".pre");
@@ -55,13 +57,13 @@ int run(std::string flag, std::string input, std::string output){
         return 0;
     }
 
-    // 3. Run parser -> assembler -> linker
     // (-o is implied)
+    // 3. Run parser -> assembler
 
-    // std::vector<std::string> modules;        // modules: Keeps track of the output files generated, so we can link them easily.
     ast prog = parse(processed);
 
-    //to_file(link(modules), output, ".o");
+    // source binary = assemble(prog);
+    // if (!to_file(binary, output, ".o")) exit(-10);
  
     return 0;
 }
