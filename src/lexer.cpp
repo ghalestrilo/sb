@@ -19,12 +19,10 @@ bool readline(std::string line, std::vector<token>* tokens){
 
     while (ss >> buf){ 
         // CHECAR ERROS LEXICOS
-        if (lex_error(buf)) return false; //exit(-4);
+        if (lex_error(buf)) return false;
         
-        tokens->push_back(token(buf)); // @TODO Construct token
+        tokens->push_back(token(buf));
     }
-
-
 
     #ifdef DEBUG_LEXER_PRINT_TOKENS
         std::stringstream debug(line); // Insert the std::string into a stream

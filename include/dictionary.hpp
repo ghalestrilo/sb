@@ -55,10 +55,10 @@ namespace dictionary {
     // Auxiliary Methods: DO NOT USE
     const std::map<symbol, command>   generate_global_commands_table();
     const std::map<symbol, directive> generate_global_directives_table();
-    const std::map<symbol, command>   generate_global_commands_definition_table();
-    const std::map<symbol, directive> generate_global_directives_definition_table();
+    // const std::map<symbol, command>   generate_global_commands_definition_table();
+    // const std::map<symbol, directive> generate_global_directives_definition_table();
 
-    // 
+    // Tables: USE
     static std::map<symbol, command>   commands   = generate_global_commands_table();
     static std::map<symbol, directive> directives = generate_global_directives_table();
 

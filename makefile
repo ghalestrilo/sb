@@ -5,9 +5,11 @@ SRCF = $(wildcard src/*.cpp)
 OBJF = $(patsubst src/%.cpp, obj/%.o, $(SRCF))
 
 # CFLAGS = -std=c++11 -Wall -ansi
-LFLAGS = -std=c++11 -Wall -ansi
-CFLAGS = -Wall -ansi
-LFLAGS = -Wall -ansi
+GLOBALFLAGS = -std=c++11 
+
+LFLAGS = -Wall $(GLOBALFLAGS)
+CFLAGS = -Wall $(GLOBALFLAGS)
+LFLAGS = -Wall $(GLOBALFLAGS)
 
 
 PROG_OP     = -o

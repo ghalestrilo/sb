@@ -5,7 +5,7 @@
 #include "dictionary.hpp"
 
 /* Token Type:
-    - Contains either a command or a Literal
+
  */
 typedef std::string token;
 

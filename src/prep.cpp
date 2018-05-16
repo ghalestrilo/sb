@@ -9,7 +9,7 @@ void preprocess(source& file, source* output, bool macros){
 
     // Iterate through lines
         // If token (IF or EQU): Expand
-        // If token (MACRO or DEFMACRO or ENDMACRO)
+        // If token (MACRO or ENDMACRO)
             // If macro == true: Expand
     // source test;
 

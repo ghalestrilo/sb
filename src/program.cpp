@@ -4,7 +4,7 @@
 #include "../include/program.hpp"
 #include "../include/prep.hpp"
 #include "../include/parser.hpp"
-#include "../include/linker.hpp"
+// #include "../include/linker.hpp"
 
 // MODULE: program.cpp
 
@@ -33,8 +33,8 @@ int run(std::string flag, std::string input, std::string output){
 
 
     // Read File
-    std::ifstream inputfile((input + ".asm").c_str());
-    if (!inputfile) exit(-4);
+    // std::ifstream inputfile((input + ".asm").c_str());
+    // if (!inputfile) exit(-4);
     source incode;
     if (!from_file(input, &incode)) exit(-5);
 

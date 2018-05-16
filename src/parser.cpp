@@ -76,10 +76,12 @@ ast parse(source code){
     // 2nd pass: Build AST
     ast parsed;
 
-    foreach(i,code){
-        if(i+1 > code.size()) break;
-        parsed << parseline(code[i], &st, &pc);
-    }
+    for(auto& line : code) parsed << parseline(line, &st, &pc);
+
+    // foreach(i,code){
+    //     if(i+1 > code.size()) break;
+    //     parsed << parseline(code[i], &st, &pc);
+    // }
 
 
     #ifdef DEBUG_PARSER_AST
@@ -106,7 +108,7 @@ ast_node parseline(std::string line, symbol_table* st, unsigned int* pc){
 
     
     // Parse Main Expression
-    ast_node res(parseexp(tokens[0], st));
+    ast_node res(parseexp(tokens[0], st)); // is it a label???
     res.exp.position = (*pc);
     
     // Parse Expresssion Parameters
