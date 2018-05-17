@@ -6,6 +6,7 @@
 #define foreach(x,y) for (unsigned int x = 0; x < y.size(); x++)
 
 #define vector_of_strings std::vector<std::string>
+typedef vector_of_strings source;
 
 typedef struct Token_struct {
   std::string token_string;
@@ -17,4 +18,6 @@ typedef struct Token_struct {
 
 typedef std::string       symbol;
 typedef vector_of_strings source;
+
 typedef vector_of_tokens Tokens;
+

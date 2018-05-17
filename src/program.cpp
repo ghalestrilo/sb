@@ -4,6 +4,7 @@
 #include "../include/program.hpp"
 #include "../include/prep.hpp"
 #include "../include/parser.hpp"
+#include "../include/assembler.hpp"
 // #include "../include/linker.hpp"
 
 // MODULE: program.cpp
@@ -63,15 +64,47 @@ int run(std::string flag, std::string input, std::string output){
 
     ast prog = parse(processed);
 
-    // source binary = assemble(prog);
-    // if (!to_file(binary, output, ".o")) exit(-10);
+    std::vector<int> assembled = assemble(prog);
+
+    if (!to_file(assembled, output, ".o")) exit(-10);
  
     return 0;
 }
 
 
 
+// Single-string overload
 
+// Single-string overload
+bool to_file(std::string data, std::string filename, std::string extension){
+    std::ofstream output;
+    output.open ((filename + extension).c_str());
+    if (!output) return false;
+
+    output << data;
+
+    output.close();
+    // Debug Printings
+    #ifdef DEBUG_FILE_PRINTDATA
+        std::cout << "[file]: " << filename << extension << std::endl;
+        source readback;
+        if (from_file(filename, &readback));
+            for (std::string line : readback)
+                std::cout << line << std::endl;
+        else std::cout << "[file] Error opening readback file: filename" << std::endl;
+    #endif
+    return true;
+}
+
+bool to_file(std::vector<int> data, std::string filename, std::string extension){
+    source bin;
+    for (auto number : data) bin.push_back(std::to_string(number) + " ");
+
+    return to_file(bin, filename, extension);
+}
+
+
+// Source code overload
 bool to_file(source data, std::string filename, std::string extension){
     // Write to File
     std::ofstream output;
@@ -79,11 +112,7 @@ bool to_file(source data, std::string filename, std::string extension){
 
     if (!output) return false;
 
-    // for (std::string line : data)
-    //     output << line;
-
-    for (unsigned int i = 0; i < data.size() ; i++)
-        output << data[i];
+    for (auto& line : data) output << line;
 
     output.close();
 
