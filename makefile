@@ -1,5 +1,10 @@
 
-EXEC = ./bin/compiler.exe
+EXECNAME = bin/compiler.exe
+ifeq ($(OS), Windows_NT)
+	EXEC = $(EXECNAME)
+else
+	EXEC = ./$(EXECNAME)
+endif
 
 SRCF = $(wildcard src/*.cpp)
 OBJF = $(patsubst src/%.cpp, obj/%.o, $(SRCF))
@@ -28,7 +33,12 @@ build: $(OBJF)
 obj/%.o: 
 	g++ $(patsubst obj/%.o, src/%.cpp, $@) $(CFLAGS) -c -o $@ 
 
+ifeq ($(OS), Windows_NT)
+clean:
+	rd /s /q "obj"
+	mkdir "obj"
+else
 clean:
 	rm -f obj/*.o
-
+endif
 run:

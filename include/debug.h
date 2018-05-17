@@ -44,3 +44,10 @@
     Prints Tokens during lexing
  */
 // #define DEBUG_LEXER_PRINT_TOKENS
+
+// ASSEMBLER
+
+/* DEBUG_ASSEMBLER_PRINT_OUTPUT
+    Prints output values 
+ */
+#define DEBUG_ASSEMBLER_PRINT_OUTPUT

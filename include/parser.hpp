@@ -1,16 +1,15 @@
+#pragma once
 #include <iostream>
 #include <map>
 
 #include "typedefs.hpp"
 #include "dictionary.hpp"
 
-typedef vector_of_strings source;
-
 struct expression {
     expression(std::string t) : text(t){}
 
+    int value = 0;
     std::string text;
-    int value;          // if literal
     int position;
 
     union {

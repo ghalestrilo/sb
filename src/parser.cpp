@@ -28,7 +28,7 @@ void log(std::string msg){ std::cout << "[parser] " << msg << std::endl; };
 bool make_symbol_table(source code, symbol_table* st){
     if (st == NULL) st = new symbol_table;
 
-    uint pc = 0;
+    int pc = 0;
 
     std::vector<token> tokens;
     token label;
