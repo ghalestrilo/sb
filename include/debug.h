@@ -6,6 +6,7 @@
  */
 // #define DEBUG_FILE_PRINTDATA
 
+// ------------------------------------------------------ PRE-PROCESSOR
 
 /* DEBUG_PREP_INPUT
     Prints pre-processor input 
@@ -17,6 +18,12 @@
     Prints pre-processor output
  */
 // #define DEBUG_PREP_OUTPUT
+
+
+/* DEBUG_PREP_PRINT_TOKENS
+    Prints Tokens during lexing
+ */
+// #define DEBUG_PREP_PRINT_TOKENS
 
 // ------------------------------------------------------ PARSER
 

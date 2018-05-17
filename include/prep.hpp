@@ -33,7 +33,9 @@ typedef std::map<symbol, source> MDT;
  *   - New entry into EQU table
  * 
  */
-void preprocess(source&, source*, bool);
+bool read_source_line(std::string, vector_of_tokens*);
+
+void preprocess(source&, source*, bool,vector_of_tokens*);
 
 /* Expand Macro
  * 1. Search MNT for macro params
