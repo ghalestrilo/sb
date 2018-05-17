@@ -1,4 +1,4 @@
-// MAIN
+// ------------------------------------------------------ MAIN
 
 /* DEBUG_FILE_PRINTDATA
     Prints input and output file
@@ -18,7 +18,7 @@
  */
 // #define DEBUG_PREP_OUTPUT
 
-// PARSER
+// ------------------------------------------------------ PARSER
 
 /* DEBUG_PARSER_SYMBOL_TABLE
     Prints constructed symbol table during parsing
@@ -38,16 +38,16 @@
 // #define DEBUG_PARSER_AST
 
 
-// LEXER
+// ------------------------------------------------------ LEXER
 
 /* DEBUG_LEXER_PRINT_TOKENS
     Prints Tokens during lexing
  */
 // #define DEBUG_LEXER_PRINT_TOKENS
 
-// ASSEMBLER
+// ------------------------------------------------------ ASSEMBLER
 
 /* DEBUG_ASSEMBLER_PRINT_OUTPUT
     Prints output values 
  */
-#define DEBUG_ASSEMBLER_PRINT_OUTPUT
+// #define DEBUG_ASSEMBLER_PRINT_OUTPUT

@@ -9,8 +9,9 @@ endif
 SRCF = $(wildcard src/*.cpp)
 OBJF = $(patsubst src/%.cpp, obj/%.o, $(SRCF))
 
+# GDB = -g -ggdb
 # CFLAGS = -std=c++11 -Wall -ansi
-GLOBALFLAGS = -std=c++11 
+GLOBALFLAGS = -std=c++11 $(GDB)
 
 LFLAGS = -Wall $(GLOBALFLAGS)
 CFLAGS = -Wall $(GLOBALFLAGS)
@@ -35,6 +36,7 @@ obj/%.o:
 
 ifeq ($(OS), Windows_NT)
 clean:
+	cls
 	rd /s /q "obj"
 	mkdir "obj"
 else

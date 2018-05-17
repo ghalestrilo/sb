@@ -3,24 +3,24 @@
 #include "../include/debug.h"
 #include <cstdlib>
 
-void log(std::string msg){ std::cout << "[parser] " << msg << std::endl; };
 
 #ifdef DEBUG_PARSER_SYMBOL_TABLE
-    typedef symbol_table::iterator map_it;
     void print_symbol_table(symbol_table st){
-        if (st.empty()){
-            std::cout << "[parser] : No Symbol Table Loaded" << std::endl;
-            return;
-        }
-
-        std::cout << "[parser]: Loaded Symbol Table" << std::endl;
-
-        for (map_it it = st.begin(); it != st.end(); it++)
-            std::cout << "[parser]:  "
-                      << it->first 
-                      << ": " 
-                      << it->second 
+        if (st.empty()) 
+            std::cout << "[parser] : No Symbol Table Loaded"
                       << std::endl;
+
+        else {          
+            std::cout << "[parser]: Loaded Symbol Table"
+                      << std::endl;
+
+            for (auto& entry : st)
+                std::cout << "  "
+                          << entry.first 
+                          << ": " 
+                          << entry.second 
+                          << std::endl;
+        }
     }
 #endif
 
@@ -33,27 +33,19 @@ bool make_symbol_table(source code, symbol_table* st){
     std::vector<token> tokens;
     token label;
 
-    foreach(i, code){
-        // lex line
-        if (!readline(code[i], &tokens)) break;
+    for(auto& line : code){
+        
+        if (!readline(line, &tokens)) break;
         label = tokens[0];
-        
-        // if (label.end()->value == ':'){
-
-        
-        // if is label (':')
+                
         if (label[label.size()-1] == ':'){
-            // push label-position pair into table
+
             label.erase(label.size()-1);
             (*st)[label] = pc;
-            // relative
 
         }
 
-        // we could search global command table for the command's length 
-        foreach(t, tokens){
-            pc++;
-        }
+        for(auto t : tokens) pc++; // TODO: Sanitize - only 'good' tokens (text)
     }
 
 
@@ -66,34 +58,29 @@ bool make_symbol_table(source code, symbol_table* st){
 ast parse(source code){
     if (code.empty()) return ast();
 
-    unsigned int pc = 0; // position counter
-
     // 1st pass: Symbol Table
     symbol_table st;
     if (!make_symbol_table(code, &st)) exit(-5);
-    
 
     // 2nd pass: Build AST
     ast parsed;
+    unsigned int pc = 0;
 
-    for(auto& line : code) parsed << parseline(line, &st, &pc);
-
-    // foreach(i,code){
-    //     if(i+1 > code.size()) break;
-    //     parsed << parseline(code[i], &st, &pc);
-    // }
-
+    for(auto& line : code)
+        parsed << parseline(line, &st, &pc); // TODO: Check if isn't SECTION
 
     #ifdef DEBUG_PARSER_AST
         std::vector<ast_node> statements = parsed.statements;
-        foreach(i, statements){
+        for(auto& s : statements){
             std::cout << "[parser] "
-                      << statements[i].exp.position
+                      << s.exp.position
                       << ": "
-                      << statements[i].exp.text
-                      << ' ';
+                      << s.exp.text;
 
-            foreach(j, statements[i].params) std::cout << statements[i].params[j].exp.text;
+            for(auto& p : s.params)
+                std::cout << ' '
+                          << p.exp.text;
+
             std::cout << std::endl;
         }
     #endif // DEBUG_PARSER_AST
@@ -104,18 +91,31 @@ ast parse(source code){
 // Returns a statement to be pushed ino the statement sequence (AST)
 ast_node parseline(std::string line, symbol_table* st, unsigned int* pc){
     std::vector<token> tokens;
-    if (!readline(line, &tokens)) ;
+    if (!readline(line, &tokens)) return ast_node();
+    
+    bool first = true;
+    ast_node res;
+    expression e;
 
-    
-    // Parse Main Expression
-    ast_node res(parseexp(tokens[0], st)); // is it a label???
-    res.exp.position = (*pc);
-    
-    // Parse Expresssion Parameters
-    foreach(i, tokens){
-        if(i==0) continue;
+    for(auto token : skip_label(tokens)){
+        e = parseexp(token, st);
+        e.position = (*pc);
+
+        
+        // Set position
         (*pc)++;
-        res.params.push_back(parseexp(tokens[i], st));
+
+        // Process Directives
+        switch(res.exp.data.directive){
+            case CONST:
+            case SPACE:
+
+            default: break;
+        }
+
+        if (first) res.exp = e; // Parse Primary Expression
+        else       res.params.push_back(e); // Parse Expression Parameters
+        first = false;
     }
     return res;
 }
@@ -133,14 +133,15 @@ expression parseexp(std::string text, symbol_table* st) {
     
     // Command
     if (commands.find(text) != commands.end()){
-        command c = commands.find(text)->second;
+        command c      = commands.find(text)->second;
         e.data.command = c.name;
+        e.value        = c.opcode;
         return e;
     }
 
     // Directive @CATCH: Technically, directives should not be parsed into expressions, right?
     if (directives.find(text) != directives.end()){
-        directive d = directives.find(text)->second;
+        directive d      = directives.find(text)->second;
         e.data.directive = d.name;
         return e;
     }

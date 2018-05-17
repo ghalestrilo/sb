@@ -6,6 +6,32 @@
 
 #include "../include/lexer.hpp"
 
+token extract_label(std::string line){
+    return "";
+}
+
+std::vector<token> skip_label(std::vector<token> line){
+    bool ok = false;
+    std::string first_token;
+
+    while(!ok){
+        ok = true;
+
+        first_token = line[0];
+
+        if (first_token == ":" || first_token.back() == ':'){
+            ok = false;
+            line.erase(line.begin());
+        };
+
+        if (line.size() > 1 && line[1] == ":"){
+            ok = false;
+            line.erase(line.begin() + 1);
+        };
+    }
+
+    return line;
+}
 
 bool readline(std::string line, std::vector<token>* tokens){
     if (line.empty())   return false;

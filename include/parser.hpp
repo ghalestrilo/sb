@@ -6,6 +6,7 @@
 #include "dictionary.hpp"
 
 struct expression {
+    expression(){};
     expression(std::string t) : text(t){}
 
     int value = 0;
@@ -24,6 +25,7 @@ struct expression {
 
 
 struct ast_node {
+    ast_node(){};
     ast_node(expression exp) : exp(exp){};
     expression            exp;
     std::vector<ast_node> params;

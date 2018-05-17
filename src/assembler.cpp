@@ -7,10 +7,8 @@ std::vector<int> assemble(ast& program) {
     for(auto& cmd : program.statements) {
         output.push_back(cmd.exp.value);
 
-
         for(auto& p : cmd.params)
             output.push_back(p.exp.value);
-
 
         #ifdef DEBUG_ASSEMBLER_PRINT_OUTPUT
             std::cout << "[assembler] "
