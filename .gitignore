@@ -5,8 +5,13 @@ res/out
 res/*.o
 
 obj/*
-obj
+obj/
 bin/*
-bin
+
+bin/
+./bin/
+./bin
+
+./bin/compiler.exe
 
 Especificacoes.pdf
