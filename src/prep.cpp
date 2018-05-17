@@ -13,7 +13,8 @@ bool read_source_line(std::string line, vector_of_tokens* Tokens, int* linha){
     std::string buf;            // Have a buffer std::string
     std::stringstream ss(line); // Insert the std::string into a stream
     
-    while (ss  >> buf){ 
+    while (ss  >> buf){
+        std::cout<<buf;
         Token.token_string = buf;
         Token.token_line = *linha;
         Token.token_value = 0;

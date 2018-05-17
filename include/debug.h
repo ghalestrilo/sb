@@ -4,7 +4,7 @@
     Prints input and output file
      during read/write process
  */
-#define DEBUG_FILE_PRINTDATA
+// #define DEBUG_FILE_PRINTDATA
 
 
 // PREP

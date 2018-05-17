@@ -40,9 +40,6 @@ clean:
 else
 clean:
 	rm -f obj/*.o
-<<<<<<< HEAD
-
-=======
 endif
 run:
->>>>>>> c2392735afb4df681fbd1da0465534fb5d2ba127
+
