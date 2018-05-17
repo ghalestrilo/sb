@@ -2,11 +2,6 @@
 //#include <cstdlib>
 
 std::vector<int> assemble(ast& program) {
-    #ifdef DEBUG_ASSEMBLER_PRINT_OUTPUT
-        int i = 0;
-    #endif // DEBUG_ASSEMBLER_PRINT_OUTPUT
-
-
     std::vector<int> output;
 
     for(auto& cmd : program.statements) {
@@ -18,9 +13,9 @@ std::vector<int> assemble(ast& program) {
 
 
         #ifdef DEBUG_ASSEMBLER_PRINT_OUTPUT
-            std::cout << "[assembler] line "
+            std::cout << "[assembler] "
                       << cmd.exp.position
-                      << ": "
+                      << "\t: "
                       << cmd.exp.value;
 
             for(auto& p : cmd.params)
