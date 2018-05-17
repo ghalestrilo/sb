@@ -14,7 +14,7 @@ Caso o comando 'make' seja chamado sem parametro, rodamos os tres comandos acima
 ### Flags
 
 Utilizamos as seguintes versoes do gcc:
- - gcc 5.4 - gcc (Ubuntu 7.2.0-8ubuntu3.2) 7.2.0
+ - gcc 5.4 - gcc (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0
  - gcc 7.2 - gcc (Ubuntu 7.2.0-8ubuntu3.2) 7.2.0
 
 Com as seguintes flags: -std=c++11
