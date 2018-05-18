@@ -88,7 +88,7 @@ bool to_file(std::string data, std::string filename, std::string extension){
     #ifdef DEBUG_FILE_PRINTDATA
         std::cout << "[file]: " << filename << extension << std::endl;
         source readback;
-        if (from_file(filename, &readback));
+        if (from_file(filename, &readback))
             for (std::string line : readback)
                 std::cout << line << std::endl;
         else std::cout << "[file] Error opening readback file: filename" << std::endl;

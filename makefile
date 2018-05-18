@@ -18,10 +18,10 @@ CFLAGS = -Wall $(GLOBALFLAGS)
 LFLAGS = -Wall $(GLOBALFLAGS)
 
 
-PROG_OP     = -p
+OP     = p
 PROG_INPUT  = ./res/bin
-PROG_OUTPUT = ./res/bin_res
-PROG_ARGS   = $(PROG_OP) $(PROG_INPUT) $(PROG_OUTPUT)
+PROG_OUTPUT = ./res/out/bin_res
+PROG_ARGS   = -$(OP) $(PROG_INPUT) $(PROG_OUTPUT)
 
 all: clean build run
 

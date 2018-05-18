@@ -34,11 +34,10 @@ bool make_symbol_table(source code, symbol_table* st = NULL ){
     token label;
 
     for(auto& line : code){
-        if (!readline(line, &tokens))              continue;
-
-        if ((label = extract_label(tokens)) == "") continue;
+        if (!readline(line, &tokens))                continue;
+        pc += skip_label(tokens).size();        
+        if ((label = extract_label(tokens)).empty()) continue;
         // for (auto& token : skip_label(tokens)) pc++;
-        pc += skip_label(tokens).size();
         
         (*st)[label] = pc;
 

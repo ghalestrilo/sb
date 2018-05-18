@@ -11,12 +11,15 @@ token extract_label(std::vector<token> line){
     if (line.empty()) return token("");
     
     token first_token = line.front();
-    if (first_token.back() == ':')
-        return token(first_token.substr(0, first_token.size()-1).c_str());
+    if (first_token.back() == ':'){
+        return token(first_token.substr(0, first_token.size()-1));
+    }
 
     if (line.size() > 1)
         if (line[1] == ":")
             return first_token;
+
+    std::cout << std::endl;
 
     return token(""); // what do
 }
@@ -26,18 +29,21 @@ std::vector<token> skip_label(std::vector<token> line){
     token first_token;
 
     while(!ok){
+        if (line.empty()) break;
         ok = true;
 
         first_token = line[0];
 
-        if (first_token == ":" || first_token.back() == ':'){ // DO NOT ACCEPT
+        if (line.empty()) return line;
+        if (first_token.back() == ':'){ // DO NOT ACCEPT
             ok = false;
             line.erase(line.begin());
         };
 
-        if (line.size() > 1 && line[1] == ":"){
-            ok = false;
-            line.erase(line.begin() + 1);
+        if (line.size() > 1)
+            if (line[1] == ":"){
+                ok = false;
+                line.erase(line.begin());
         };
     }
 
@@ -48,7 +54,7 @@ bool readline(std::string line, std::vector<token>* tokens){
     if (line.empty())   return false;
     tokens->clear();
     
-    while (line[0] == ' ') line.erase(0); // Trim Spaces
+    while (line[0] == ' ') line.erase(1); // Trim Spaces
     if    (line[0] == ';') return false;  // Ignore Comments
 
     std::string buf;            // Have a buffer std::string
