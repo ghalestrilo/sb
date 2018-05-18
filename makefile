@@ -18,7 +18,7 @@ CFLAGS = -Wall $(GLOBALFLAGS)
 LFLAGS = -Wall $(GLOBALFLAGS)
 
 
-PROG_OP     = -o
+PROG_OP     = -p
 PROG_INPUT  = ./res/bin
 PROG_OUTPUT = ./res/bin_res
 PROG_ARGS   = $(PROG_OP) $(PROG_INPUT) $(PROG_OUTPUT)
