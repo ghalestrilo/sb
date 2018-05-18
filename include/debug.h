@@ -23,7 +23,7 @@
 /* DEBUG_PREP_PRINT_TOKENS
     Prints Tokens during lexing
  */
-// #define DEBUG_PREP_PRINT_TOKENS
+#define DEBUG_PREP_PRINT_TOKENS
 
 // ------------------------------------------------------ PARSER
 
