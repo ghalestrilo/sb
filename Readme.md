@@ -42,5 +42,10 @@ Thales Grilo
 - Lexer:
   - Tokens tem que virar uma struct para levar em consideracao a linha e posicao encontradas no arquivo original - podemos usar isso para printar erros em tela.
 
-- Assembler:
-  - Iterar ast -> iterar ast_node -> sair dando push do value
+- @ghalestrilo:
+  - Migrar `token` -> `tokenstruct`, deletando token original no processo
+  - Utilizando novo tipo de token, resolver parser::parseline, para interpretar diretivas utilizando `res.exp.token.position` para comparacoes posicionais na linha (tipo section vir no comeco da linha etc). O processo envolve:
+    - Ignorar posicionalmente token section, caso corretamente formatada.
+    - Const determinar o valor imediato da expressao, sendo tambem ignorada posicionalmente
+    - Space como acima, porem seta valor para 0.
+  - Fazer parser ignorar tokens vazias ("") para remover os '0's do assembler

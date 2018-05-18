@@ -37,10 +37,8 @@ bool make_symbol_table(source code, symbol_table* st = NULL ){
         if (!readline(line, &tokens))                continue;
         pc += skip_label(tokens).size();        
         if ((label = extract_label(tokens)).empty()) continue;
-        // for (auto& token : skip_label(tokens)) pc++;
         
         (*st)[label] = pc;
-
     }
 
 
@@ -92,21 +90,25 @@ ast_node parseline(std::string line, symbol_table* st, unsigned int* pc){
     ast_node res;
     expression e;
 
-    for(auto token : skip_label(tokens)){
+    if ((tokens = skip_label(tokens)).empty()) return res;
+
+    for(auto token : tokens){
         e = parseexp(token, st);
+        
+        // Process Directives
+        switch(res.exp.data.directive){ // may crash
+            case CONST:
+            case SPACE:
+            case SECTION:
+                // if line.size();
+
+            default: break;
+        }
 
         // Set position
         e.position = (*pc);
         (*pc)++;
 
-        // Process Directives
-        switch(res.exp.data.directive){
-            case CONST:
-            case SPACE:
-            // case SECTION:
-
-            default: break;
-        }
 
         if (first) res.exp = e; // Parse Primary Expression
         else       res.params.push_back(e); // Parse Expression Parameters
