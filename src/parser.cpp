@@ -36,8 +36,6 @@ bool make_symbol_table(source code, symbol_table* st = NULL ){
     for(auto& line : code){
         if (!readline(line, &tokens))              continue;
 
-
-
         if ((label = extract_label(tokens)) == "") continue;
         // for (auto& token : skip_label(tokens)) pc++;
         pc += skip_label(tokens).size();

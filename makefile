@@ -9,7 +9,7 @@ endif
 SRCF = $(wildcard src/*.cpp)
 OBJF = $(patsubst src/%.cpp, obj/%.o, $(SRCF))
 
-# GDB = -g -ggdb
+GDB = -g -ggdb
 # CFLAGS = -std=c++11 -Wall -ansi
 GLOBALFLAGS = -std=c++11 $(GDB)
 

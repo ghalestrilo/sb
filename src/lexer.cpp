@@ -7,15 +7,18 @@
 #include "../include/lexer.hpp"
 
 token extract_label(std::vector<token> line){
-    token first_token = line.front();
+
+    if (line.empty()) return token("");
     
+    token first_token = line.front();
     if (first_token.back() == ':')
-        return first_token.erase(first_token.size() - 1);
+        return token(first_token.substr(0, first_token.size()-1).c_str());
 
-    if (line.size() > 1 && (line[1] == ":"))
-        return first_token;
+    if (line.size() > 1)
+        if (line[1] == ":")
+            return first_token;
 
-    return token(); // what do
+    return token(""); // what do
 }
 
 std::vector<token> skip_label(std::vector<token> line){
