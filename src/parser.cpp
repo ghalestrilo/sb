@@ -25,7 +25,7 @@
 #endif
 
 // Make symbol_table
-bool make_symbol_table(source code, symbol_table* st){
+bool make_symbol_table(source code, symbol_table* st = NULL ){
     if (st == NULL) st = new symbol_table;
 
     int pc = 0;
@@ -34,18 +34,16 @@ bool make_symbol_table(source code, symbol_table* st){
     token label;
 
     for(auto& line : code){
+        if (!readline(line, &tokens))              continue;
+
+
+
+        if ((label = extract_label(tokens)) == "") continue;
+        // for (auto& token : skip_label(tokens)) pc++;
+        pc += skip_label(tokens).size();
         
-        if (!readline(line, &tokens)) break;
-        label = tokens[0];
-                
-        if (label[label.size()-1] == ':'){
+        (*st)[label] = pc;
 
-            label.erase(label.size()-1);
-            (*st)[label] = pc;
-
-        }
-
-        for(auto t : tokens) pc++; // TODO: Sanitize - only 'good' tokens (text)
     }
 
 
@@ -99,16 +97,16 @@ ast_node parseline(std::string line, symbol_table* st, unsigned int* pc){
 
     for(auto token : skip_label(tokens)){
         e = parseexp(token, st);
-        e.position = (*pc);
 
-        
         // Set position
+        e.position = (*pc);
         (*pc)++;
 
         // Process Directives
         switch(res.exp.data.directive){
             case CONST:
             case SPACE:
+            // case SECTION:
 
             default: break;
         }

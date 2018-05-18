@@ -30,7 +30,7 @@
 /* DEBUG_PARSER_SYMBOL_TABLE
     Prints constructed symbol table during parsing
  */
-// #define DEBUG_PARSER_SYMBOL_TABLE
+#define DEBUG_PARSER_SYMBOL_TABLE
 
 
 /* DEBUG_PARSER_READ_LINE

@@ -6,20 +6,28 @@
 
 #include "../include/lexer.hpp"
 
-token extract_label(std::string line){
-    return "";
+token extract_label(std::vector<token> line){
+    token first_token = line.front();
+    
+    if (first_token.back() == ':')
+        return first_token.erase(first_token.size() - 1);
+
+    if (line.size() > 1 && (line[1] == ":"))
+        return first_token;
+
+    return token(); // what do
 }
 
 std::vector<token> skip_label(std::vector<token> line){
     bool ok = false;
-    std::string first_token;
+    token first_token;
 
     while(!ok){
         ok = true;
 
         first_token = line[0];
 
-        if (first_token == ":" || first_token.back() == ':'){
+        if (first_token == ":" || first_token.back() == ':'){ // DO NOT ACCEPT
             ok = false;
             line.erase(line.begin());
         };
