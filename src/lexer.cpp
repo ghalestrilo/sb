@@ -6,65 +6,61 @@
 
 #include "../include/lexer.hpp"
 
-token extract_label(std::vector<token> line){
-
-    if (line.empty()) return token("");
-    
-    token first_token = line.front();
-    if (first_token.back() == ':'){
-        return token(first_token.substr(0, first_token.size()-1));
-    }
-
-    if (line.size() > 1)
-        if (line[1] == ":")
+Token extract_label(std::vector<Token> line){
+    if (!line.empty()){
+        Token first_token = line.front();
+        
+        if (first_token.text.back() == ':'){
+            first_token.text.erase(first_token.text.size() - 1);
             return first_token;
+        }
 
-    std::cout << std::endl;
-
-    return token(""); // what do
+        if (line.size() > 1 && (line[1].text == ":"))
+            return first_token;
+    }
+    return Token();
 }
 
-std::vector<token> skip_label(std::vector<token> line){
+std::vector<Token> skip_label(std::vector<Token> line){
     bool ok = false;
-    token first_token;
+    Token first_token;
 
     while(!ok){
-        if (line.empty()) break;
         ok = true;
+
+        if (line.empty()) return line;
 
         first_token = line[0];
 
-        if (line.empty()) return line;
-        if (first_token.back() == ':'){ // DO NOT ACCEPT
+        if (first_token == ":" || first_token.text.back() == ':'){ // DO NOT ACCEPT
             ok = false;
             line.erase(line.begin());
         };
 
-        if (line.size() > 1)
-            if (line[1] == ":"){
-                ok = false;
-                line.erase(line.begin());
+        if (line.size() > 1 && line[1] == ":"){
+            ok = false;
+            line.erase(line.begin() + 1);
         };
     }
 
     return line;
 }
 
-bool readline(std::string line, std::vector<token>* tokens){
+bool readline(std::string line, std::vector<Token>* tokens, unsigned int lineindex){
     if (line.empty())   return false;
     tokens->clear();
     
-    while (line[0] == ' ') line.erase(1); // Trim Spaces
+    while (line[0] == ' ') line.erase(0); // Trim Spaces
     if    (line[0] == ';') return false;  // Ignore Comments
 
     std::string buf;            // Have a buffer std::string
     std::stringstream ss(line); // Insert the std::string into a stream
 
-    while (ss >> buf){ 
+    while (ss >> buf){
         // CHECAR ERROS LEXICOS
         if (lex_error(buf)) return false;
         
-        tokens->push_back(token(buf));
+        tokens->push_back(Token(buf, lineindex));
     }
 
     #ifdef DEBUG_LEXER_PRINT_TOKENS
@@ -85,7 +81,7 @@ bool readline(std::string line, std::vector<token>* tokens){
     2. Non-const token starts with number;
 */
 // TODO: pass last token as param
-bool lex_error(std::string t){ // , token previous)
+bool lex_error(std::string t){ // , std::string prev = "")
     using namespace dictionary;
 
     // 3. Token contains illegal characters
@@ -101,7 +97,7 @@ bool lex_error(std::string t){ // , token previous)
 
     // 2. Non-param (CONST, SPACE) token starts with number;
     if (t[0] > '0' && t[0] < '9')
-    // if (lasttoken != "SPACE" && lasttoken != "CONST")
+    // if (prev != "SPACE" && prev != "CONST")
         return true;
     
     return false;

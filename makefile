@@ -36,12 +36,17 @@ obj/%.o:
 
 ifeq ($(OS), Windows_NT)
 clean:
-	cls
 	rd /s /q "obj"
 	mkdir "obj"
+
+clearscreen:
+	cls
 else
 clean:
 	rm -f obj/*.o
+
+clearscreen:
+	clear
 endif
 run:
 

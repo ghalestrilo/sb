@@ -52,16 +52,32 @@
     };
 
 namespace dictionary {
-    // Auxiliary Methods: DO NOT USE
-    const std::map<symbol, command>   generate_global_commands_table();
-    const std::map<symbol, directive> generate_global_directives_table();
-    // const std::map<symbol, command>   generate_global_commands_definition_table();
-    // const std::map<symbol, directive> generate_global_directives_definition_table();
+    static std::map<std::string, command> commands = {
+        { "ADD",   command(ADD,    1, 1,  2)},
+        { "SUB",   command(SUB,    1, 2,  2)},
+        { "MULT",  command(MULT,   1, 3,  2)},
+        { "DIV",   command(DIV,    1, 4,  2)},
+        { "JMP",   command(JMP,    1, 5,  2)},
+        { "JMPN",  command(JMPN,   1, 6,  2)},
+        { "JMPP",  command(JMPP,   1, 7,  2)},
+        { "JMPZ",  command(JMPZ,   1, 8,  2)},
+        { "COPY",  command(COPY,   2, 9,  3)},
+        { "LOAD",  command(LOAD,   1, 10, 2)},
+        { "STORE", command(STORE,  1, 11, 2)},
+        { "INPUT", command(INPUT,  1, 12, 2)},
+        { "OUTPUT",command(OUTPUT, 1, 13, 2)},
+        { "STOP",  command(STOP,   0, 14, 1)}
+    };
 
-    // Tables: USE
-    static std::map<symbol, command>   commands   = generate_global_commands_table();
-    static std::map<symbol, directive> directives = generate_global_directives_table();
-
+    static std::map<std::string, directive> directives = {
+        {"SECTION", directive(SECTION,  1, 0)},
+        {"SPACE",   directive(SPACE,    1, -1)},
+        {"CONST",   directive(CONST,    1, 1)},
+        {"EQU",     directive(EQU,      1, 0)},
+        {"IF",      directive(IF,       1, 0)},
+        {"MACRO",   directive(MACRO,    0, 0)},
+        {"ENDMACRO",directive(ENDMACRO, 0, 0)}
+    };
 
     // Useful Methods
     bool reserved(std::string);

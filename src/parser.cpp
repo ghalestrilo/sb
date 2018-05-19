@@ -25,20 +25,20 @@
 #endif
 
 // Make symbol_table
-bool make_symbol_table(source code, symbol_table* st = NULL ){
+bool make_symbol_table(vector_of_strings code, symbol_table* st = NULL ){
     if (st == NULL) st = new symbol_table;
 
     int pc = 0;
 
-    std::vector<token> tokens;
-    token label;
+    std::vector<Token> tokens;
+    Token label;
 
     for(auto& line : code){
-        if (!readline(line, &tokens))                continue;
+        if (!readline(line, &tokens))                     continue;
         pc += skip_label(tokens).size();        
-        if ((label = extract_label(tokens)).empty()) continue;
+        if ((label = extract_label(tokens)).text.empty()) continue;
         
-        (*st)[label] = pc;
+        (*st)[label.text] = pc;
     }
 
 
@@ -48,7 +48,7 @@ bool make_symbol_table(source code, symbol_table* st = NULL ){
     return true;
 };
 
-ast parse(source code){
+ast parse(vector_of_strings code){
     if (code.empty()) return ast();
 
     // 1st pass: Symbol Table
@@ -68,11 +68,11 @@ ast parse(source code){
             std::cout << "[parser] "
                       << s.exp.position
                       << ": "
-                      << s.exp.text;
+                      << s.exp.token.text;
 
             for(auto& p : s.params)
                 std::cout << ' '
-                          << p.exp.text;
+                          << p.exp.token.text;
 
             std::cout << std::endl;
         }
@@ -83,7 +83,7 @@ ast parse(source code){
 
 // Returns a statement to be pushed ino the statement sequence (AST)
 ast_node parseline(std::string line, symbol_table* st, unsigned int* pc){
-    std::vector<token> tokens;
+    std::vector<Token> tokens;
     if (!readline(line, &tokens)) return ast_node();
     
     bool first = true;
@@ -110,35 +110,35 @@ ast_node parseline(std::string line, symbol_table* st, unsigned int* pc){
         (*pc)++;
 
 
-        if (first) res.exp = e; // Parse Primary Expression
+        if (first) res.exp = e;             // Parse Primary Expression
         else       res.params.push_back(e); // Parse Expression Parameters
         first = false;
     }
     return res;
 }
 
-expression parseexp(std::string text, symbol_table* st) {
+expression parseexp(Token tok, symbol_table* st) {
     using namespace dictionary;
-    expression e(text);
+    expression e(tok);
 
     // Literal
-    if (st->find(text) != st->end()){
-        e.value = st->find(text)->second;
-        e.isliteral = true;
+    if (st->find(tok.text) != st->end()){
+        e.value = st->find(tok.text)->second;
+        // e.isliteral = true;
         return e;
     }
     
     // Command
-    if (commands.find(text) != commands.end()){
-        command c      = commands.find(text)->second;
+    if (commands.find(tok.text) != commands.end()){
+        command c      = commands.find(tok.text)->second;
         e.data.command = c.name;
         e.value        = c.opcode;
         return e;
     }
 
     // Directive @CATCH: Technically, directives should not be parsed into expressions, right?
-    if (directives.find(text) != directives.end()){
-        directive d      = directives.find(text)->second;
+    if (directives.find(tok.text) != directives.end()){
+        directive d      = directives.find(tok.text)->second;
         e.data.directive = d.name;
         return e;
     }

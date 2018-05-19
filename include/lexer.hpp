@@ -7,10 +7,10 @@
 /* Token Type:
 
  */
-typedef std::string token;
+// typedef std::string token;
 
-bool readline  (std::string, std::vector<token>*);
+bool readline  (std::string, std::vector<Token>*,  unsigned int = 0);
 bool lex_error (std::string);
 
-std::vector<token> skip_label   (std::vector<token>);
-token              extract_label(std::vector<token>);
+std::vector<Token> skip_label   (std::vector<Token>);
+Token              extract_label(std::vector<Token>);

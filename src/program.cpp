@@ -37,13 +37,13 @@ int run(std::string flag, std::string input, std::string output){
     // Read File
     // std::ifstream inputfile((input + ".asm").c_str());
     // if (!inputfile) exit(-4);
-    source incode;
+    vector_of_strings incode;
     if (!from_file(input, &incode)) exit(-5);
 
 
 
     // Run Preprocessor    
-    source processed;
+    vector_of_strings processed;
     preprocess(incode, &processed, f != 'p', &Token); // (f!='p') <==> (f == 'm') or (f == 'o') 
     
     // Flag-controlled Outputs
@@ -71,9 +71,7 @@ int run(std::string flag, std::string input, std::string output){
     return 0;
 }
 
-
-
-// Single-string overload
+// --------------------------------------------------------------------------- FILE MODULE
 
 // Single-string overload
 bool to_file(std::string data, std::string filename, std::string extension){
@@ -87,7 +85,7 @@ bool to_file(std::string data, std::string filename, std::string extension){
     // Debug Printings
     #ifdef DEBUG_FILE_PRINTDATA
         std::cout << "[file]: " << filename << extension << std::endl;
-        source readback;
+        vector_of_strings readback;
         if (from_file(filename, &readback))
             for (std::string line : readback)
                 std::cout << line << std::endl;
@@ -97,7 +95,7 @@ bool to_file(std::string data, std::string filename, std::string extension){
 }
 
 bool to_file(std::vector<int> data, std::string filename, std::string extension){
-    source bin;
+    vector_of_strings bin;
     for (auto number : data) bin.push_back(std::to_string(number) + " ");
 
     return to_file(bin, filename, extension);
@@ -105,7 +103,7 @@ bool to_file(std::vector<int> data, std::string filename, std::string extension)
 
 
 // Source code overload
-bool to_file(source data, std::string filename, std::string extension){
+bool to_file(vector_of_strings data, std::string filename, std::string extension){
     // Write to File
     std::ofstream output;
     output.open ((filename + extension).c_str());
@@ -120,7 +118,7 @@ bool to_file(source data, std::string filename, std::string extension){
     #ifdef DEBUG_FILE_PRINTDATA
         std::cout << "[file]: " << filename << extension << std::endl;
 
-        source readback;
+        vector_of_strings readback;
         if (from_file(filename, &readback));
             for (std::string line : readback)
                 std::cout << line << std::endl;
@@ -130,7 +128,7 @@ bool to_file(source data, std::string filename, std::string extension){
 }
 
 
-bool from_file(std::string filename, source* res){
+bool from_file(std::string filename, vector_of_strings* res){
     std::string   ext(".asm");
     std::ifstream input((filename + ext).c_str());
 

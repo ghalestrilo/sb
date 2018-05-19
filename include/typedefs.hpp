@@ -2,22 +2,32 @@
 #include <fstream>
 #include <vector>
 
-// #define foreach(index, arr) for(unsigned int (index) = 0; (index) < arr.size(); v=arr[i], i++)
-#define foreach(x,y) for (unsigned int x = 0; x < y.size(); x++)
-
 #define vector_of_strings std::vector<std::string>
-typedef vector_of_strings source;
+#define vector_of_tokens  std::vector<Token>
 
-typedef struct Token_struct {
-  std::string token_string;
-  unsigned int token_line;
+
+// Token a = {"1", 2, 3};
+struct Token {
+  Token(std::string text = "", int line = 0)
+    : text(text), line(line) {};
+
+  std::string text;
+  unsigned int line;
+
+  bool operator== (std::string rhs){ return text == rhs; }
+
+
+  bool error = false; // Might be useless
+
+  // ----------------------- DELETE
   unsigned int token_value;
-} Token_str;
+  // ------------------------------
+};
 
-#define vector_of_tokens std::vector<Token_str>
 
-typedef std::string       symbol;
-typedef vector_of_strings source;
-
-typedef vector_of_tokens Tokens;
-
+// ------------------------------- DELETE
+// typedef vector_of_strings source;
+// typedef std::string       symbol;
+// typedef vector_of_strings source;
+// typedef vector_of_tokens Tokens;
+// --------------------------------------

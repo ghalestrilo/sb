@@ -4,9 +4,16 @@
 #include "../include/prep.hpp"
 // #include "../include/lexer.hpp"
 
-bool read_source_line(std::string line, vector_of_tokens* Tokens, int* linha,source* output){
+
+// Provavelmente você quer chamar lexer::readline()
+bool read_source_line(std::string        line,
+                      vector_of_tokens*  Tokens,
+                      int*               linha,
+                      vector_of_strings* output){
+
+
     if (line.empty())   return false;
-    Token_str Token,Token_1,Token_2;
+    Token Token,Token_1,Token_2;
     
     while (line[0] == ' ') line.erase(0); // Trim Spaces
     if    (line[0] == ';') return false;  // Ignore Comments
@@ -19,14 +26,14 @@ bool read_source_line(std::string line, vector_of_tokens* Tokens, int* linha,sou
         if (buf.compare(0,1,";")==0){
             break;
         }
-        Token.token_string = buf;
-        Token.token_line = *linha;
+        Token.text = buf;
+        Token.line = *linha;
         Token.token_value = 0;
         Tokens->push_back(Token);
         #ifdef DEBUG_PREP_PRINT_TOKENS
-            std::cout<<Tokens->at(Tokens->size() -1).token_string<<"|";
+            std::cout<<Tokens->at(Tokens->size() -1).Tokening<<"|";
         #endif
-            output->push_back(Tokens->at(Tokens->size() -1).token_string + " ");
+            output->push_back(Tokens->at(Tokens->size() -1).text + " ");
         #ifdef DEBUG_PREP_OUTPUT
             std::cout << output->at(output->size()-1);
         #endif // DEBUG_PREP_OUTPUT
@@ -38,11 +45,15 @@ bool read_source_line(std::string line, vector_of_tokens* Tokens, int* linha,sou
     #ifdef DEBUG_PREP_OUTPUT
         std::cout << output->at(output->size()-1);
     #endif // DEBUG_PREP_OUTPUT
-    *linha=*linha+1;
+    (*linha)++;
     return true;
-}
+};
 
-void preprocess(source& file, source* output, bool macros,vector_of_tokens* Tokens){
+void preprocess(vector_of_strings& file,
+                vector_of_strings* output,
+                bool               macros,
+                vector_of_tokens*  Tokens){
+
     if(file.empty()) return;
     int linha = 1;
     // Iterate through lines
@@ -53,11 +64,10 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
 
 
     //if macro == true: Load Tables
-    foreach(i, file){
-        read_source_line(file[i],Tokens,&linha,output);
+    for (auto line : file){
+        read_source_line(line,Tokens,&linha,output);
         #ifdef DEBUG_PREP_INPUT
-            std::cout << file[i] << std::endl;
-        #endif // DEBUG_PREP_OUTPUT
-    } 
+            std::cout << line << std::endl;
+        #endif // DEBUG_PREP_INPUT
+    }
 }
-

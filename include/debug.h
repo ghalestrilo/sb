@@ -30,19 +30,19 @@
 /* DEBUG_PARSER_SYMBOL_TABLE
     Prints constructed symbol table during parsing
  */
-// #define DEBUG_PARSER_SYMBOL_TABLE
+#define DEBUG_PARSER_SYMBOL_TABLE
 
 
 /* DEBUG_PARSER_READ_LINE
     Prints each line during parsing
  */
-// #define DEBUG_PARSER_READ_LINE
+#define DEBUG_PARSER_READ_LINE
 
 
 /* DEBUG_PARSER_AST
     Prints constructed symbol table during parsing
  */
-// #define DEBUG_PARSER_AST
+#define DEBUG_PARSER_AST
 
 
 // ------------------------------------------------------ LEXER
@@ -50,11 +50,11 @@
 /* DEBUG_LEXER_PRINT_TOKENS
     Prints Tokens during lexing
  */
-// #define DEBUG_LEXER_PRINT_TOKENS
+#define DEBUG_LEXER_PRINT_TOKENS
 
 // ------------------------------------------------------ ASSEMBLER
 
 /* DEBUG_ASSEMBLER_PRINT_OUTPUT
     Prints output values 
  */
-// #define DEBUG_ASSEMBLER_PRINT_OUTPUT
+#define DEBUG_ASSEMBLER_PRINT_OUTPUT

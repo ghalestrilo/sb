@@ -26,11 +26,17 @@
         "tuple": "cpp",
         "type_traits": "cpp",
         "typeinfo": "cpp",
- s       "utility": "cpp",
-        "sstream": "cpp"
+        "utility": "cpp",
+        "sstream": "cpp",
+        "cmath": "cpp",
+        "deque": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "functional": "cpp",
+        "numeric": "cpp"
     },
 
     "[clojure]": {
-        "extensions.enabled": ["bracketPairColorizer"]
+        // "extensions.enabled": ["bracketPairColorizer"]
     }
 }
