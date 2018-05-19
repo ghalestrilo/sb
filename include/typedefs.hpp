@@ -10,8 +10,11 @@ typedef vector_of_strings source;
 
 typedef struct Token_struct {
   std::string token_string;
-  unsigned int token_line;
-  unsigned int token_value;
+  int token_line;
+  int token_value;
+  bool label_equ;
+  bool label_macro;
+  bool label;
 } Token_str;
 
 #define vector_of_tokens std::vector<Token_str>

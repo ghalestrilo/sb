@@ -1,8 +1,11 @@
+
 OI: Equ 1
+
 vqv : equ 0
 section TEXT ;asdcasdcasdcasdc
-L1: Macro &par_1,&par_2,&par_3,&par_4
+mmmmmm: Macro &par_1,&par_2,&par_3,&par_4
 load &par1
+sub &par_2
 Endmacro
 INPUT OLD_DATA ;ASDASDASD
 If oi
@@ -11,6 +14,7 @@ if vqv
 Esta_linha_tira
 LOAD OLD_DATA
 L1: DIV DoIS
+mmmmmm a,b,c,d
 store  NeW_DaTa
 MULT DOIS
 STORE TMP_DATA

@@ -4,7 +4,7 @@
     Prints input and output file
      during read/write process
  */
-#define DEBUG_FILE_PRINTDATA
+// #define DEBUG_FILE_PRINTDATA
 
 // ------------------------------------------------------ PRE-PROCESSOR
 
@@ -23,7 +23,7 @@
 /* DEBUG_PREP_PRINT_TOKENS
     Prints Tokens during lexing
  */
-// #define DEBUG_PREP_PRINT_TOKENS
+#define DEBUG_PREP_PRINT_TOKENS
 
 // ------------------------------------------------------ PARSER
 
