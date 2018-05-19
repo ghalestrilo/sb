@@ -45,3 +45,6 @@ void preprocess(source&, source*, bool,vector_of_tokens*);
  */
 
 source expand_macro(symbol macroname); // + args (std::vector<symbol>)
+
+bool treating_if();
+bool treating_macro();

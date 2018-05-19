@@ -4,13 +4,13 @@
     Prints input and output file
      during read/write process
  */
-// #define DEBUG_FILE_PRINTDATA
+#define DEBUG_FILE_PRINTDATA
 
 // ------------------------------------------------------ PRE-PROCESSOR
 
 /* DEBUG_PREP_INPUT
     Prints pre-processor input 
- */
+ // */
 // #define DEBUG_PREP_INPUT
 
 
@@ -31,7 +31,7 @@
     Prints constructed symbol table during parsing
  */
 // #define DEBUG_PARSER_SYMBOL_TABLE
-
+// 
 
 /* DEBUG_PARSER_READ_LINE
     Prints each line during parsing
