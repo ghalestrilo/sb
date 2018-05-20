@@ -105,6 +105,19 @@ ast parse(vector_of_tokens code_safe){
 
     // 2nd pass: Build AST
     ast parsed;
+    
+    // -------------------------------------- TESTING FUNCTION
+    vector_of_tokens scope;
+    for (auto origtoken : code){
+        if (!readline(origtoken.text, &scope)) continue;
+
+        std::cout << "[parser] testing grab_token:";
+        for (auto t : scope)
+            std::cout << ' ' << t.text;
+        std::cout << std::endl;
+    }
+    // -------------------------------------------------------
+
     // unsigned int pc = 0;
 
     // for(auto& line : code)
