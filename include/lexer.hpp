@@ -9,8 +9,8 @@
  */
 // typedef std::string token;
 
-bool readline  (std::string, std::vector<Token>*,  unsigned int = 0);
+bool readline  (std::string, vector_of_tokens*,  unsigned int = 0);
 bool lex_error (std::string);
 
-std::vector<Token> skip_label   (std::vector<Token>);
-Token              extract_label(std::vector<Token>);
+vector_of_tokens skip_label   (vector_of_tokens);
+Token            extract_label(vector_of_tokens);

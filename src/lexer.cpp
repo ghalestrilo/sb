@@ -102,3 +102,17 @@ bool lex_error(std::string t){ // , std::string prev = "")
     
     return false;
 }
+
+
+// lang.h
+const static std::string symbols = ":;, ";
+
+bool alphabetic (char c){
+    return (c < 'A' || c > 'Z');
+}
+bool numeric    (char c){
+    return (c < '0' || c > '9');
+}
+bool symbolic   (char c){
+    return symbols.find(c);
+}
