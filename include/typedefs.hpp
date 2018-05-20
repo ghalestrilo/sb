@@ -16,9 +16,11 @@ struct Token {
   int line;
 
     // Operators for sanity
-  bool operator== (std::string rhs){ return text == rhs; }
   template<typename T> void operator+= (T rhs){ text += rhs; }
   template<typename T> void operator=  (T rhs){ text = rhs;  }
+  bool operator== (std::string rhs){ return text == rhs; }
+  bool operator!= (std::string rhs){ return text != rhs; }
+  bool empty (){ return text.empty() || text == ""; }
 
     // Are these necessary?
   bool label_equ   = false;

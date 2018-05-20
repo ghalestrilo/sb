@@ -17,8 +17,9 @@ int run(std::string flag, std::string input, std::string output){
     // Read Flags
     if (flag.length() < 2) exit(-3);
     char f = flag[1];
-    vector_of_tokens Token;
-    Token.clear();
+    vector_of_tokens tokens;
+    tokens.clear();
+
 // Disposable ---------------------------------------------------------
     std::cout << "[" << input << " -> " << output << "]";
     switch(f){
@@ -44,7 +45,7 @@ int run(std::string flag, std::string input, std::string output){
 
     // Run Preprocessor    
     vector_of_strings processed;
-    preprocess(incode, &processed, f != 'p', &Token); // (f!='p') <==> (f == 'm') or (f == 'o') 
+    preprocess(incode, &processed, f != 'p', &tokens); // (f!='p') <==> (f == 'm') or (f == 'o') 
     
     // Flag-controlled Outputs
     // 1. If, Equ Expanded
@@ -59,7 +60,7 @@ int run(std::string flag, std::string input, std::string output){
         return 0;
     }
 
-    // (-o is implied)
+    // (-o is implied)Token
     // 3. Run parser -> assembler
 
     ast prog = parse(processed);
