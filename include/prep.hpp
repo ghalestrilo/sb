@@ -45,3 +45,5 @@ void preprocess(vector_of_strings&, vector_of_strings*, bool,vector_of_tokens*);
  */
 
 vector_of_strings expand_macro(std::string macroname); // + args (std::vector<std::string>)
+bool treating_if(vector_of_tokens*);
+bool treating_macro(vector_of_tokens*);
