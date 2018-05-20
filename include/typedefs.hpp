@@ -15,6 +15,7 @@ typedef struct Token_struct {
   bool label_equ;
   bool label_macro;
   bool label;
+  int qnt_mac_param;
 } Token_str;
 
 #define vector_of_tokens std::vector<Token_str>

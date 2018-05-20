@@ -9,9 +9,9 @@ sub &par_2
 Endmacro
 INPUT OLD_DATA ;ASDASDASD
 If oi
-Esta_linha_mantem
+Esta linha mantem
 if vqv
-Esta_linha_tira
+Esta linha tira
 LOAD OLD_DATA
 L1: DIV DoIS
 mmmmmm a,b,c,d

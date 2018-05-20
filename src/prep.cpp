@@ -35,6 +35,7 @@ bool read_source_line(std::string line, vector_of_tokens* Tokens, int *linha){
             Token.label_equ = false;
             Token.label_macro = false;
             Token.label = false;
+            Token.qnt_mac_param = 0;
             Tokens->push_back(Token);
             }
             Flag_copy = false;
@@ -44,7 +45,7 @@ bool read_source_line(std::string line, vector_of_tokens* Tokens, int *linha){
             Token.token_line = *linha;
             Token.token_value = 0;
             Tokens->push_back(Token);
-            if (Token.token_string.compare("COPY") == 0 ||Token.token_string.compare("MACRO") == 0){
+            if (Token.token_string.compare("COPY") == 0 || Token.token_string.compare("MACRO") == 0){
                 Flag_copy = true;//set flag to true to separe tokens with commas
             }
         }
@@ -53,14 +54,60 @@ bool read_source_line(std::string line, vector_of_tokens* Tokens, int *linha){
     return true;
 }
 
-bool treating_if(vector_of_tokens* Tokens){
+bool treating_if(vector_of_tokens* Tokens,source* output){
     int linha = Tokens->begin()->token_line;
+    std::string label;
+    int ifzero = 0;
+    for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
+        if (it->label_equ == true){
+            for (vector_of_tokens::iterator it_2 = it ; it_2 != Tokens->end(); ++it_2){
+                label = it->token_string;
+                label.erase(label.size()-1,1);
+                if(it_2->token_string.compare(label) == 0){
+                    it_2->token_string = (it+2)->token_string;
+               } 
+            }
+            Tokens->erase(it);
+            Tokens->erase(it);
+            Tokens->erase(it);
+            it=it-1;
+
+        }
+    }
+
+    for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
+        if (it->token_string.compare("IF") == 0){
+            if ((it+1) != Tokens->end()){
+                if ((it+1)->token_string.compare("1") == 0){
+                  Tokens->erase(it);
+                  Tokens->erase(it);
+                  it = it-1;  
+                }
+                else{
+                    if((it+2) != Tokens->end()){
+                        ifzero = (it+2)->token_line;
+                        while((it+2) != Tokens->end() && ((it+2)->token_line)==ifzero){
+                            Tokens->erase(it+2);   
+                        }
+                    }
+                Tokens->erase(it);
+                Tokens->erase(it);
+                }
+
+            }
+        }
+
+    }
+    linha = Tokens->begin()->token_line;
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
         if (linha != it->token_line){
             std::cout << '\n';
+            output->push_back("\n");
             linha= it->token_line;
         }
+        
         std::cout << it->token_string<<' ';
+        output->push_back(it->token_string + " ");
     }
 
 
@@ -97,7 +144,17 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
 
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
         if((it+1) != Tokens->end()){
-            if 
+            if (it->token_string.compare(((it->token_string.size())-1),1,":") == 0){
+              if((it+1)->token_string.compare("EQU") == 0){
+                it->label_equ = true;
+              }
+              else if((it+1)->token_string.compare("MACRO") == 0){
+                it->label_macro = true;
+              }
+              else{
+                it->label = true;
+              } 
+            }
         }
     }// update label Flags
 
@@ -108,18 +165,18 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
             std::cout << '\n';
             line= it->token_line;
         }
-        std::cout << it->token_string<<'('<<it->token_line<<')'<<' ';
+        std::cout << it->token_string<<'('<<it->token_line<<')'<<' '
+        <<"eq"<<it->label_equ<<"mac"<<it->label_macro<<"label"
+        <<it->label<<" ";
     }
     std::cout << '\n';
     #endif
 
 
-    treating_if(Tokens);
+    treating_if(Tokens,output);
     if(macros){
-        treating_macro(Tokens);
+         treating_macro(Tokens);
     }
-
-
 
 }
 
