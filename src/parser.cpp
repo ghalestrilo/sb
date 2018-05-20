@@ -25,58 +25,106 @@
 #endif
 
 // Make symbol_table
-bool make_symbol_table(vector_of_strings code, symbol_table* st = NULL ){
+bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
     if (st == NULL) st = new symbol_table;
+    int pc = 0; // Parse-Relevant
 
-    int pc = 0;
-
-    std::vector<Token> tokens;
-    Token label;
-
-    for(auto& line : code){
-        if (!readline(line, &tokens))                     continue;
-        pc += skip_label(tokens).size();        
-        if ((label = extract_label(tokens)).text.empty()) continue;
+    auto it = code->begin();
+    while(it != code->end()){
         
-        (*st)[label.text] = pc;
+        // Section Found : TODO: Make Checks
+        if (it->text == "SECTION"){
+            it++;
+
+            if (it->text == "TEXT"){
+                //textfound = true;
+                it = code->erase(it--, it + 2); // Delete Section and following token
+                continue;
+            }
+
+            if (it->text == "DATA"){
+                // if (textfound == true) datafound == true;
+                it = code->erase(it--, it + 2); // Delete Section and following token
+                continue;
+            }
+
+            // ERROR! UNKNOWN SECTION TYPE
+        }
+
+        // Label Found -- IF we're using grab_token
+        if (it->text == ":"){
+            it--;
+            (*st)[it->text] = pc;
+
+            it = code->erase(it, it + 2);
+            continue;
+        }
+
+        // DEPRECATE - Label found
+        if (it->text.back() == ':'){
+            (*st)[it->text.substr(0, it->text.size() - 1)] = pc;
+            it = code->erase(it);
+        }
+
+        #ifdef DEBUG_PARSER_FIRST_PASS
+            std::cout << "[first pass] : ("
+                    << pc
+                    << ", "
+                    << it->text
+                    << ")"
+                    << std::endl; 
+
+        #endif // DEBUG_PARSER_FIRST_PASS
+
+        it++;
+        pc++;
     }
+
 
 
     #ifdef DEBUG_PARSER_SYMBOL_TABLE
         print_symbol_table(*st);
     #endif // DEBUG_PARSER_SYMBOL_TABLE
+
+    // if (!(textfound && datafound)) {} // ERROR!
+
     return true;
 };
 
-ast parse(vector_of_strings code){
+ast parse(vector_of_tokens code_safe){
+    vector_of_tokens code;
+
+    for (auto tok : code_safe)
+        code.push_back(tok);
+    
     if (code.empty()) return ast();
 
-    // 1st pass: Symbol Table
+    // 1st pass: Symbol Table, Sanitize
     symbol_table st;
-    if (!make_symbol_table(code, &st)) exit(-5);
+    if (!first_pass(&code, &st)) exit(-5);
 
     // 2nd pass: Build AST
     ast parsed;
-    unsigned int pc = 0;
+    // unsigned int pc = 0;
 
-    for(auto& line : code)
-        parsed << parseline(line, &st, &pc); // TODO: Check if isn't SECTION
+    // for(auto& line : code)
+    //     parsed << parseline(line, &st, &pc); // TODO: Check if isn't SECTION
 
-    #ifdef DEBUG_PARSER_AST
-        std::vector<ast_node> statements = parsed.statements;
-        for(auto& s : statements){
-            std::cout << "[parser] "
-                      << s.exp.position
-                      << ": "
-                      << s.exp.token.text;
+    // #ifdef DEBUG_PARSER_AST
+    //     std::vector<ast_node> statements = parsed.statements;
+    //     for(auto& s : statements){
+    //         std::cout << "[parser] "
+    //                   << s.exp.position
+    //                   << ": "
+    //                   << s.exp.token.text;
 
-            for(auto& p : s.params)
-                std::cout << ' '
-                          << p.exp.token.text;
+    //         for(auto& p : s.params)
+    //             std::cout << ' '
+    //                       << p.exp.token.text;
 
-            std::cout << std::endl;
-        }
-    #endif // DEBUG_PARSER_AST
+    //         std::cout << std::endl;
+    //     }
+    // #endif // DEBUG_PARSER_AST
 
     return parsed;
 };

@@ -63,7 +63,8 @@ int run(std::string flag, std::string input, std::string output){
     // (-o is implied)Token
     // 3. Run parser -> assembler
 
-    ast prog = parse(processed);
+    std::cout << "I'm here!" << std::endl;
+    ast prog = parse(tokens);
 
     std::vector<int> assembled = assemble(prog);
 

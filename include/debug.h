@@ -33,10 +33,16 @@
 #define DEBUG_PARSER_SYMBOL_TABLE
 
 
+/* DEBUG_PARSER_FIRST_PASS
+    Shows tokens passed to first pass
+ */
+// #define DEBUG_PARSER_FIRST_PASS
+
+
 /* DEBUG_PARSER_READ_LINE
     Prints each line during parsing
  */
-#define DEBUG_PARSER_READ_LINE
+// #define DEBUG_PARSER_READ_LINE
 
 
 /* DEBUG_PARSER_AST
@@ -50,7 +56,7 @@
 /* DEBUG_LEXER_PRINT_TOKENS
     Prints Tokens during lexing
  */
-#define DEBUG_LEXER_PRINT_TOKENS
+// #define DEBUG_LEXER_PRINT_TOKENS
 
 // ------------------------------------------------------ ASSEMBLER
 

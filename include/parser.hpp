@@ -44,10 +44,10 @@ struct ast {
 // Symbol Table: rename to symbol_table
 typedef std::map<std::string, int> symbol_table;
 
-ast parse (vector_of_strings);
+ast parse (vector_of_tokens);
 
 // 1st pass
-bool make_symbol_table(vector_of_strings, symbol_table*);
+bool first_pass(vector_of_tokens*, symbol_table*);
 
 // 2nd pass
 ast_node   parseline (std::string, symbol_table*, unsigned int*);
