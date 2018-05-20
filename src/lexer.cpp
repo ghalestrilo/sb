@@ -50,7 +50,7 @@ Token grab_token(std::string* line){
     unsigned short int length = 0;
     for (auto c : (*line)){
 
-        if (word   and not alphabetic (c)) break;
+        if (word   and not (alphabetic(c) or numeric(c))) break;
         if (number and not numeric    (c)) break;
 
         length++;
@@ -105,10 +105,10 @@ bool lex_error(std::string t){ // , std::string prev = "")
 const static std::string symbols = ":;,";
 
 bool alphabetic (char c){
-    return (c > 'A' && c < 'Z') || (c == '_'); // Special case for the underscore symbol
+    return (c >= 'A' && c <= 'Z') || (c == '_'); // Special case for the underscore symbol
 }
 bool numeric    (char c){
-    return (c > '0' && c < '9');
+    return (c >= '0' && c <= '9');
 }
 
 bool symbolic   (char c){
