@@ -2,11 +2,17 @@
 OI: Equ 1
 
 vqv : equ 0
-section TEXT ;asdcasdcasdcasdc
-mmmmmm: Macro &par_1,&par_2,&par_3,&par_4
-load &par1
-sub &par_2
+m: Macro 
+load A
 Endmacro
+N : Macro &par_1
+sub B
+Endmacro
+O : Macro &par_1,&par_2
+sub &par_1
+add &par_2
+Endmacro
+section TEXT ;asdcasdcasdcasdc
 INPUT OLD_DATA ;ASDASDASD
 If oi
 Esta linha mantem
@@ -23,6 +29,7 @@ SUB TMP_DATA
 STORE TMP_DATA
 OUTPUT TMP_DATA
 COPY NEW_DATA,OLD_DATA
+COPY a,b
 LOAD OLD_DATA
 JMPP L1
 STOP
