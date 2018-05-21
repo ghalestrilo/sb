@@ -34,14 +34,9 @@ int run(std::string flag, std::string input, std::string output){
 
 // --------------------------------------------------------------------
 
-
     // Read File
-    // std::ifstream inputfile((input + ".asm").c_str());
-    // if (!inputfile) exit(-4);
     vector_of_strings incode;
     if (!from_file(input, &incode)) exit(-5);
-
-
 
     // Run Preprocessor    
     vector_of_strings processed;
@@ -60,12 +55,10 @@ int run(std::string flag, std::string input, std::string output){
         return 0;
     }
 
-    // (-o is implied)Token
-    // 3. Run parser -> assembler
+    // 3. Run parser -> assembler (-o is implied)
+    // std::vector<int> assembled = assemble(parse(tokens));
 
-    std::cout << "I'm here!" << std::endl;
     ast prog = parse(tokens);
-
     std::vector<int> assembled = assemble(prog);
 
     if (!to_file(assembled, output, ".o")) exit(-10);

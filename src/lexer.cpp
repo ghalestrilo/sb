@@ -20,7 +20,7 @@ bool readline(std::string line, std::vector<Token>* tokens, unsigned int lineind
         tokens->emplace_back(Token(t.text, lineindex));
 
 
-    #ifdef DEBUG_LEXER_PRINT_TOKENSnn
+    #ifdef DEBUG_LEXER_PRINT_TOKENS
         std::stringstream debug(line);
         std::cout << "[lexer]: ";
         for (auto t : (*tokens))

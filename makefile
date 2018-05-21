@@ -19,8 +19,16 @@ LFLAGS = -Wall $(GLOBALFLAGS)
 
 
 OP = o
-PROG_INPUT  = ./res/bin
-PROG_OUTPUT = ./res/out/bin_res
+
+IF = bin
+IDIR = ./res
+
+OF = bin_res
+ODIR = ./res/
+
+PROG_INPUT  = $(IDIR)/$(IF)
+PROG_OUTPUT = $(ODIR)/$(OF)
+
 PROG_ARGS   = -$(OP) $(PROG_INPUT) $(PROG_OUTPUT)
 
 all: clean build run

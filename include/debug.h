@@ -36,7 +36,7 @@
 /* DEBUG_PARSER_FIRST_PASS
     Shows tokens passed to first pass
  */
-// #define DEBUG_PARSER_FIRST_PASS
+#define DEBUG_PARSER_FIRST_PASS
 
 
 /* DEBUG_PARSER_READ_LINE

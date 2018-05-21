@@ -29,22 +29,26 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
     if (st == NULL) st = new symbol_table;
     int pc = 0; // Parse-Relevant
 
-    auto it = code->begin();
+    auto it   = code->begin();
     while(it != code->end()){
-        
+        auto next = it + 1;
+
+        if (it->text == "CONST") it++; /// Bypass
+
         // Section Found : TODO: Make Checks
         if (it->text == "SECTION"){
-            it++;
+            // it++;
 
-            if (it->text == "TEXT"){
+
+            if (next != code->end() && next->text == "TEXT"){
                 //textfound = true;
-                it = code->erase(it--, it + 2); // Delete Section and following token
+                it = code->erase(it, it + 2); // Delete Section and following token
                 continue;
             }
 
-            if (it->text == "DATA"){
+            if (next != code->end() && next->text == "DATA"){
                 // if (textfound == true) datafound == true;
-                it = code->erase(it--, it + 2); // Delete Section and following token
+                it = code->erase(it, it + 2); // Delete Section and following token
                 continue;
             }
 
@@ -52,27 +56,22 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
         }
 
         // Label Found -- IF we're using grab_token
-        if (it->text == ":"){
-            it--;
+        if (next != code->end() && next->text == ":"){
+
+            // Check if not reserved
             (*st)[it->text] = pc;
 
             it = code->erase(it, it + 2);
             continue;
         }
 
-        // DEPRECATE - Label found
-        if (it->text.back() == ':'){
-            (*st)[it->text.substr(0, it->text.size() - 1)] = pc;
-            it = code->erase(it);
-        }
-
         #ifdef DEBUG_PARSER_FIRST_PASS
-            std::cout << "[first pass] : ("
-                    << pc
-                    << ", "
-                    << it->text
-                    << ")"
-                    << std::endl; 
+            std::cout << "[parser : first pass] "
+                      << pc
+                      << "\t: "
+                      << it->text
+                    //   << ")"
+                      << std::endl; 
 
         #endif // DEBUG_PARSER_FIRST_PASS
 
@@ -92,91 +91,115 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
 };
 
 ast parse(vector_of_tokens code_safe){
+    
     vector_of_tokens code;
 
-    for (auto tok : code_safe)
-        code.push_back(tok);
-    
+    // Creating local, treated copy of code
+    vector_of_tokens buffer;
+    for (auto origtoken : code_safe){
+        if (!readline(origtoken.text, &buffer)) continue;
+        
+        code.insert(code.end(), buffer.begin(), buffer.end());
+    }
+
+    // Can go to beginning, as code_safe
     if (code.empty()) return ast();
 
     // 1st pass: Symbol Table, Sanitize
     symbol_table st;
     if (!first_pass(&code, &st)) exit(-5);
 
+    // for(auto tok : code) std::cout << tok.text << std::endl;
+    
     // 2nd pass: Build AST
     ast parsed;
     
-    // -------------------------------------- TESTING FUNCTION
-    vector_of_tokens scope;
-    for (auto origtoken : code){
-        if (!readline(origtoken.text, &scope)) continue;
+    unsigned short int args = 0;
+    int pos = 0;
 
-        std::cout << "[parser] testing grab_token:";
-        for (auto t : scope)
-            std::cout << ' ' << t.text;
-        std::cout << std::endl;
+    auto it = code.begin();
+    while(it != code.end()){
+        expression e = parseexp(*it, &st);
+        e.position = pos;
+
+        ast_node statement(e);
+        
+        ++it;
+        ++pos;
+
+        args = e.param_count;
+        while (args > 0){
+
+            // std::cout << args << std::endl;
+            if (it == code.end()) break; // ERR unexpected EOF
+
+            expression param = parseexp(*it, &st);
+            // if (reserved(param.token.text)) {} // ERR invalid parameter
+            statement.params.push_back(param);
+            
+            ++it;
+            ++pos;
+            --args;
+        };
+        
+
+        parsed << statement;
     }
-    // -------------------------------------------------------
 
-    // unsigned int pc = 0;
+    #ifdef DEBUG_PARSER_AST
+        std::vector<ast_node> statements = parsed.statements;
+        for(auto& s : statements){
+            std::cout << "[parser : second pass] "
+                      << s.exp.position
+                      << ": "
+                      << s.exp.token.text;
 
-    // for(auto& line : code)
-    //     parsed << parseline(line, &st, &pc); // TODO: Check if isn't SECTION
+            for(auto& p : s.params)
+                std::cout << ' '
+                          << p.exp.token.text;
 
-    // #ifdef DEBUG_PARSER_AST
-    //     std::vector<ast_node> statements = parsed.statements;
-    //     for(auto& s : statements){
-    //         std::cout << "[parser] "
-    //                   << s.exp.position
-    //                   << ": "
-    //                   << s.exp.token.text;
-
-    //         for(auto& p : s.params)
-    //             std::cout << ' '
-    //                       << p.exp.token.text;
-
-    //         std::cout << std::endl;
-    //     }
-    // #endif // DEBUG_PARSER_AST
+            std::cout << std::endl;
+        }
+    #endif // DEBUG_PARSER_AST
 
     return parsed;
 };
 
-// Returns a statement to be pushed ino the statement sequence (AST)
-ast_node parseline(std::string line, symbol_table* st, unsigned int* pc){
-    std::vector<Token> tokens;
-    if (!readline(line, &tokens)) return ast_node();
+// // Returns a statement to be pushed ino the statement sequence (AST)
+// ast_node parseline(std::string line, symbol_table* st, unsigned int* pc){
+//     std::vector<Token> tokens;
+//     if (!readline(line, &tokens)) return ast_node();
     
-    bool first = true;
-    ast_node res;
-    expression e;
+//     bool first = true;
+//     ast_node res;
+//     expression e;
 
-    if ((tokens = skip_label(tokens)).empty()) return res;
+//     if ((tokens = skip_label(tokens)).empty()) return res;
 
-    for(auto token : tokens){
-        e = parseexp(token, st);
+//     for(auto token : tokens){
+//         e = parseexp(token, st);
         
-        // Process Directives
-        switch(res.exp.data.directive){ // may crash
-            case CONST:
-            case SPACE:
-            case SECTION:
-                // if line.size();
+//         // Process Directives
+//         switch(res.exp.data.directive){ // may crash
+//             case CONST:
+//             case SPACE:
+//             // case SECTION:
+//                 // if line.size();
 
-            default: break;
-        }
+//             default: break;
+//         }
 
-        // Set position
-        e.position = (*pc);
-        (*pc)++;
+//         // Set position
+//         e.position = (*pc);
+//         (*pc)++;
 
 
-        if (first) res.exp = e;             // Parse Primary Expression
-        else       res.params.push_back(e); // Parse Expression Parameters
-        first = false;
-    }
-    return res;
-}
+//         if (first) res.exp = e;             // Parse Primary Expression
+//         else       res.params.push_back(e); // Parse Expression Parameters
+//         first = false;
+//     }
+//     return res;
+// }
 
 expression parseexp(Token tok, symbol_table* st) {
     using namespace dictionary;
@@ -194,6 +217,7 @@ expression parseexp(Token tok, symbol_table* st) {
         command c      = commands.find(tok.text)->second;
         e.data.command = c.name;
         e.value        = c.opcode;
+        e.param_count  = c.param_count;
         return e;
     }
 
@@ -201,6 +225,7 @@ expression parseexp(Token tok, symbol_table* st) {
     if (directives.find(tok.text) != directives.end()){
         directive d      = directives.find(tok.text)->second;
         e.data.directive = d.name;
+        e.param_count    = d.param_count;
         return e;
     }
 

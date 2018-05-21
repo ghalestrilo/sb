@@ -11,19 +11,14 @@ struct expression {
     Token token;
     int value = 0;
     int position;
+    
+    int param_count;
 
     // May not be necessary
     union {
         COMMANDCODE   command;
         DIRECTIVECODE directive;
     } data;
-
-
-    // // ------------- DELETE
-    // bool isliteral;
-    // bool islabel;
-    // bool isrelative;
-    // // --------------------
 };
 
 
