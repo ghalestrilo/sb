@@ -20,7 +20,7 @@ NEW_DATA: SPACE
 TMP_DATA: SPACE
 
 ; L1       = 4
-; DOIS     = 29
-; OLD_DATA = 30
-; NEW_DATA = 31
-; TMP_DATA = 32
+; DOIS     = 28
+; OLD_DATA = 29
+; NEW_DATA = 30
+; TMP_DATA = 31

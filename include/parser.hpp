@@ -15,7 +15,7 @@ struct expression {
     int param_count;
 
     // May not be necessary
-    union {
+    struct {
         COMMANDCODE   command;
         DIRECTIVECODE directive;
     } data;
@@ -45,5 +45,7 @@ ast parse (vector_of_tokens);
 bool first_pass(vector_of_tokens*, symbol_table*);
 
 // 2nd pass
-ast_node   parseline (std::string, symbol_table*, unsigned int*);
-expression parseexp  (Token, symbol_table* st);
+bool second_pass(ast*, vector_of_tokens&, symbol_table&);
+
+// ast_node   parseline (std::string, symbol_table*, unsigned int*);
+expression parseexp  (Token, symbol_table& st);

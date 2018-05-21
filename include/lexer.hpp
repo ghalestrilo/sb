@@ -20,4 +20,8 @@ Token            extract_label(vector_of_tokens);
 bool alphabetic (char);
 bool numeric    (char);
 bool symbolic   (char);
+
+// bool alphabetic (std::string);
+bool numeric    (std::string);
+
 void trim(std::string*); // Removes Spaces

@@ -3,6 +3,49 @@
 #include "../include/debug.h"
 #include <cstdlib>
 
+ast parse(vector_of_tokens code_safe){
+    
+    vector_of_tokens code;
+
+    // Creating local, treated copy of code
+    vector_of_tokens buffer;
+    for (auto origtoken : code_safe){
+        if (!readline(origtoken.text, &buffer)) continue;
+        
+        code.insert(code.end(), buffer.begin(), buffer.end());
+    }
+
+    // Can go to beginning, as code_safe
+    if (code.empty()) return ast();
+
+    // 1st pass: Symbol Table, Sanitize
+    symbol_table st;
+    if (!first_pass(&code, &st)) exit(-5);
+
+    // 2nd pass: Build AST
+    ast parsed; // = second_pass(code, st)
+    if (!second_pass(&parsed, code, st)) exit(-5);
+
+    // Function
+    #ifdef DEBUG_PARSER_AST
+        std::vector<ast_node> statements = parsed.statements;
+        for(auto& s : statements){
+            std::cout << "[parser : 2nd pass] "
+                      << s.exp.position
+                      << "\t: "
+                      << s.exp.token.text;
+
+            for(auto& p : s.params)
+                std::cout << ' '
+                          << p.exp.token.text;
+
+            std::cout << std::endl;
+        }
+    #endif // DEBUG_PARSER_AST
+
+    return parsed;
+};
+
 
 #ifdef DEBUG_PARSER_SYMBOL_TABLE
     void print_symbol_table(symbol_table st){
@@ -24,7 +67,6 @@
     }
 #endif
 
-// Make symbol_table
 bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
     if (st == NULL) st = new symbol_table;
     int pc = 0; // Parse-Relevant
@@ -66,7 +108,7 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
         }
 
         #ifdef DEBUG_PARSER_FIRST_PASS
-            std::cout << "[parser : first pass] "
+            std::cout << "[parser : 1st pass] "
                       << pc
                       << "\t: "
                       << it->text
@@ -90,50 +132,64 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
     return true;
 };
 
-ast parse(vector_of_tokens code_safe){
-    
-    vector_of_tokens code;
-
-    // Creating local, treated copy of code
-    vector_of_tokens buffer;
-    for (auto origtoken : code_safe){
-        if (!readline(origtoken.text, &buffer)) continue;
-        
-        code.insert(code.end(), buffer.begin(), buffer.end());
-    }
-
-    // Can go to beginning, as code_safe
-    if (code.empty()) return ast();
-
-    // 1st pass: Symbol Table, Sanitize
-    symbol_table st;
-    if (!first_pass(&code, &st)) exit(-5);
-
-    // for(auto tok : code) std::cout << tok.text << std::endl;
-    
-    // 2nd pass: Build AST
-    ast parsed;
-    
+bool second_pass(ast* parsed, vector_of_tokens& code, symbol_table& st){
     unsigned short int args = 0;
     int pos = 0;
 
+    if (code.empty()) return false;
+
     auto it = code.begin();
     while(it != code.end()){
-        expression e = parseexp(*it, &st);
-        e.position = pos;
+        expression e = parseexp(*it, st);
+        e.position   = pos;
+
+        
+        if (e.token == "CONST"){
+            ++it;
+
+            if (it == code.end()) {
+                // ERROR: UNEXPECTED EOF
+            }
+
+            if (!numeric(it->text)){
+                // ERROR!
+            }
+
+
+            e.value = std::stoi(it->text);
+            *parsed << ast_node(e);
+
+            ++it;
+            continue;
+        }
+
+
+        else if (e.token == "SPACE"){
+            ++it;
+            
+            args = 1;
+            if (it != code.end() && numeric(it->text))
+                args = std::stoi(it->text);
+            
+            while (args --> 0){
+                *parsed << ast_node(expression(e));
+                ++pos;
+            }
+
+            continue;
+        }
 
         ast_node statement(e);
-        
+
+        if (it == code.end()) break;
         ++it;
         ++pos;
 
         args = e.param_count;
         while (args > 0){
-
-            // std::cout << args << std::endl;
             if (it == code.end()) break; // ERR unexpected EOF
 
-            expression param = parseexp(*it, &st);
+            expression param = parseexp(*it, st);
             // if (reserved(param.token.text)) {} // ERR invalid parameter
             statement.params.push_back(param);
             
@@ -143,27 +199,44 @@ ast parse(vector_of_tokens code_safe){
         };
         
 
-        parsed << statement;
+        *parsed << statement;
     }
 
-    #ifdef DEBUG_PARSER_AST
-        std::vector<ast_node> statements = parsed.statements;
-        for(auto& s : statements){
-            std::cout << "[parser : second pass] "
-                      << s.exp.position
-                      << ": "
-                      << s.exp.token.text;
+    return true;
+}
 
-            for(auto& p : s.params)
-                std::cout << ' '
-                          << p.exp.token.text;
+expression parseexp(Token tok, symbol_table& st) {
+    using namespace dictionary;
+    expression e(tok);
 
-            std::cout << std::endl;
-        }
-    #endif // DEBUG_PARSER_AST
+    // Literal
+    if (st.find(tok.text) != st.end()){
+        e.value = st.find(tok.text)->second;
+        // e.isliteral = true;
+        return e;
+    }
+    
+    // Command
+    if (commands.find(tok.text) != commands.end()){
+        command c      = commands.find(tok.text)->second;
+        e.data.command = c.name;
+        e.value        = c.opcode;
+        e.param_count  = c.param_count;
+        return e;
+    }
 
-    return parsed;
-};
+    // Directive @CATCH: Technically, directives should not be parsed into expressions, right?
+    if (directives.find(tok.text) != directives.end()){
+        directive d      = directives.find(tok.text)->second;
+        e.data.directive = d.name;
+        e.param_count    = d.param_count;
+        return e;
+    }
+
+    return e;
+}
+
+
 
 // // Returns a statement to be pushed ino the statement sequence (AST)
 // ast_node parseline(std::string line, symbol_table* st, unsigned int* pc){
@@ -200,34 +273,3 @@ ast parse(vector_of_tokens code_safe){
 //     }
 //     return res;
 // }
-
-expression parseexp(Token tok, symbol_table* st) {
-    using namespace dictionary;
-    expression e(tok);
-
-    // Literal
-    if (st->find(tok.text) != st->end()){
-        e.value = st->find(tok.text)->second;
-        // e.isliteral = true;
-        return e;
-    }
-    
-    // Command
-    if (commands.find(tok.text) != commands.end()){
-        command c      = commands.find(tok.text)->second;
-        e.data.command = c.name;
-        e.value        = c.opcode;
-        e.param_count  = c.param_count;
-        return e;
-    }
-
-    // Directive @CATCH: Technically, directives should not be parsed into expressions, right?
-    if (directives.find(tok.text) != directives.end()){
-        directive d      = directives.find(tok.text)->second;
-        e.data.directive = d.name;
-        e.param_count    = d.param_count;
-        return e;
-    }
-
-    return e;
-}

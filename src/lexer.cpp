@@ -107,15 +107,20 @@ const static std::string symbols = ":;,";
 bool alphabetic (char c){
     return (c >= 'A' && c <= 'Z') || (c == '_'); // Special case for the underscore symbol
 }
-bool numeric    (char c){
-    return (c >= '0' && c <= '9');
-}
-
 bool symbolic   (char c){
     return (c == ':') || (c == ';') || (c == ',');
     // return (symbols.find(c) != symbol.end());
 }
 
+bool numeric    (char c){
+    return (c >= '0' && c <= '9');
+}
+bool numeric    (std::string s){
+    for (auto c : s)
+        if (!numeric(c))
+            return false;
+    return true;
+}
 
 
 
