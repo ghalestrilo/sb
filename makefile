@@ -18,7 +18,7 @@ CFLAGS = -Wall $(GLOBALFLAGS)
 LFLAGS = -Wall $(GLOBALFLAGS)
 
 
-OP     = o
+OP     = p
 
 
 IF = bin

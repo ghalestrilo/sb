@@ -8,18 +8,35 @@
 #define vector_of_strings std::vector<std::string>
 typedef vector_of_strings source;
 
-typedef struct Token_struct {
-  std::string token_string;
-  int token_line;
-  bool label_equ = false;
-  bool label_macro = false;
-  bool label = false;
-} Token_str;
+// Token a = {"1", 2, 3};
+struct Token {
+  Token(std::string text = "", int line = 0)
+    : text(text), line(line) {};
 
-#define vector_of_tokens std::vector<Token_str>
+    // Main structure
+  std::string text;
+  int line;
+
+    // Operators for sanity
+  template<typename T> void operator+= (T rhs){ text += rhs; }
+  template<typename T> void operator=  (T rhs){ text = rhs;  }
+  bool operator== (std::string rhs){ return text == rhs; }
+  bool operator!= (std::string rhs){ return text != rhs; }
+  bool empty (){ return text.empty() || text == ""; }
+
+    // Are these necessary?
+  bool label_equ   = false;
+  bool label_macro = false;
+  bool label       = false;
+
+    // Useful for post-lexing error logging
+  short int error = 0;
+};
+
+#define vector_of_tokens std::vector<Token>
 
 typedef std::string       symbol;
-typedef vector_of_strings source;
+
 
 typedef vector_of_tokens Tokens;
 
