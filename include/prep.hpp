@@ -49,6 +49,6 @@ bool treating_if(vector_of_tokens*);
 bool treating_macro(vector_of_tokens*);
 void update_label_flags(vector_of_tokens*);
 void label_tokens(vector_of_tokens*);
-void if_equ_output(vector_of_tokens*,source*, bool);
+void if_equ_output(vector_of_tokens*,source*);
 void separe_copy_tokens(vector_of_tokens*);
 void separe_macro_tokens(vector_of_tokens*);

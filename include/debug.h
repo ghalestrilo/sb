@@ -40,7 +40,7 @@
 /* DEBUG_MDT_MNT
     Prints Tokens after macros
  */
-// #define DEBUG_MDT_MNT
+#define DEBUG_MDT_MNT
 
 /* DEBUG_MAC_PRINT_TOKENS_OUT
     Prints Tokens after macros
@@ -50,7 +50,7 @@
 /* DEBUG_MAC_OUTPUT
     Prints Tokens after macros
  */
-// #define DEBUG_MAC_OUTPUT
+#define DEBUG_MAC_OUTPUT
 
 // ------------------------------------------------------ PARSER
 

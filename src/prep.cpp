@@ -77,7 +77,6 @@ bool treating_if(vector_of_tokens* Tokens){
     return true;
 }
 
-
 void update_label_flags(vector_of_tokens* Tokens){
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
         if((it+1) != Tokens->end()){
@@ -105,18 +104,14 @@ void label_tokens(vector_of_tokens* Tokens){
     }
 }
 
-void if_equ_output(vector_of_tokens* Tokens,source* output,bool macros){
+void if_equ_output(vector_of_tokens* Tokens,source* output){
     int linha = Tokens->begin()->token_line;
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
         if (linha != it->token_line){
-            if(!macros){
-                output->push_back("\n");
-            }
+            output->push_back("\n");
             linha= it->token_line;
         }
-        if(!macros){
-            output->push_back(it->token_string + " ");
-        }
+        output->push_back(it->token_string + " ");
     }
 }
 
@@ -144,6 +139,7 @@ void separe_copy_tokens(vector_of_tokens *Tokens){
         }
     }
 }
+
 void separe_macro_tokens(vector_of_tokens *Tokens){
    bool Flag_macro = false;
     Token_str Token;
@@ -155,11 +151,11 @@ void separe_macro_tokens(vector_of_tokens *Tokens){
             linha = (it->token_line);
             it = Tokens->erase(it);
             while( temp.good() ){
-            std::getline( temp, temp_str, ',' );
-            Token.token_string = temp_str;
-            Token.token_line = linha;
-            (it) = Tokens->insert(it,Token);
-            it++;
+                std::getline( temp, temp_str, ',' );
+                Token.token_string = temp_str;
+                Token.token_line = linha;
+                (it) = Tokens->insert(it,Token);
+                it++;
             }
             Flag_macro = false;
         }
@@ -170,44 +166,52 @@ void separe_macro_tokens(vector_of_tokens *Tokens){
 }
 
 bool treating_macro(vector_of_tokens* Tokens){
-    vector_of_tokens  DEF;
+    vector_of_tokens  DEF,TEMPORA;
     std::string temp;
+    Token_str Token;
+    int linha = 0;
+    std::string temp_str;
     std::map<std::string,int> MNT;
-    std::map<std::string,vector_of_tokens> M_DEF;
+    std::map<int,vector_of_tokens> M_DEF;
     DEF.clear();
+    //making MNT
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
         if(it->label_macro == true){
             temp = it->token_string;
             temp.pop_back();
-            MNT.insert(std::pair<std::string,int>(temp,1));
+            MNT.insert(std::pair<std::string,int>(temp,MNT.size()+1));
         }
-    }//making MNT
+    }
+    //printing MNT
     #ifdef DEBUG_MDT_MNT
-    std::cout << "MNT contains:\n";
+    std::cout << "\nMNT contains:\n";
     for (std::map<std::string,int>::iterator it = MNT.begin(); it!=MNT.end(); ++it){
         std::cout << it->first << " => " << it->second << '\n';
-    }//printing MNT
+    }
     #endif
+    //making MDT = M_DEF
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
         if(it->label_macro == true){
             temp = it->token_string;
             temp.pop_back();
+            Tokens->erase(it);
             Tokens->erase(it);
             // it++;
             while(it->token_string.compare("ENDMACRO")!=0){
                 DEF.push_back(*it);
                 Tokens->erase(it);    
             }
-            DEF.push_back(*it);
+            
             Tokens->erase(it);
             it--;
-            M_DEF.insert(std::pair<std::string,vector_of_tokens>(temp,DEF));
+            M_DEF.insert(std::pair<int,vector_of_tokens>(M_DEF.size()+1,DEF));
         }
         DEF.clear();
-    }//making MDT = M_DEF
+    }
+    //printing MDT
     #ifdef DEBUG_MDT_MNT
     std::cout<<std::endl << "MDT contains:\n";
-    for (std::map<std::string,vector_of_tokens>::iterator it = M_DEF.begin(); it!=M_DEF.end(); ++it){
+    for (std::map<int,vector_of_tokens>::iterator it = M_DEF.begin(); it!=M_DEF.end(); ++it){
         std::cout << it->first << " => ";
         int line = it->second.begin()->token_line;
         for (vector_of_tokens::iterator it_2 = it->second.begin() ; it_2 != it->second.end(); ++it_2){
@@ -221,8 +225,52 @@ bool treating_macro(vector_of_tokens* Tokens){
     }
     std::cout<<"\nMACROS OF MDT ENDS HERE\n";
     #endif
+    //---------------------------------------------
+    // Here ends first pass of treating macros, now start the second pass
+    vector_of_tokens::iterator token_it_temp;
+    std::map<std::string,int>::iterator MNT_it;
+    std::map<int,vector_of_tokens>::iterator M_DEF_it;
+    for(vector_of_tokens::iterator token_it = Tokens->begin() ; token_it != Tokens->end(); ++token_it){
+        linha = token_it->token_line;
+        MNT_it = MNT.find(token_it->token_string);
+        if((token_it+1) != Tokens->end() && (((token_it+1)->token_line)== token_it->token_line)) {
+        /* if responsable for, if token calls a macro and next token ara parameters, break next token in more
+            parameters where are commas
+            */
+            token_it_temp = token_it;
+            std::stringstream temp((token_it_temp+1)->token_string);
+            linha = ((token_it_temp+1)->token_line);
+            (token_it_temp+1) = Tokens->erase(token_it_temp+1);
+            while( temp.good() ){
+                std::getline( temp, temp_str, ',' );
+                Token.token_string = temp_str;
+                Token.token_line = linha;
+                (token_it_temp+1) = Tokens->insert(token_it_temp+1,Token);
+                token_it_temp++;
+            }
+        }
+        if(MNT_it != MNT.end()){
+            M_DEF_it = M_DEF.find(MNT_it->second);
+            if(M_DEF_it != M_DEF.end()){
+                if((token_it+1) != Tokens->end()){
+                    TEMPORA = M_DEF_it->second; 
+                    if(token_it->token_line == (token_it+1)->token_line){
+                        token_it_temp = token_it;
+                        while(token_it_temp->token_line == token_it->token_line){
 
-
+                            token_it_temp++;
+                        }
+                    }
+                }
+                while(linha == token_it->token_line){
+                    Tokens->erase(token_it);
+                }
+                Tokens->insert(token_it,TEMPORA.begin(),TEMPORA.end());
+                token_it--;
+            } 
+        }
+        TEMPORA.clear();
+    }
     return true;
 }
 
@@ -266,7 +314,7 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
     } 
     #endif
     if(!macros){
-        if_equ_output(Tokens,output,macros);//make the outputfile when -p
+        if_equ_output(Tokens,output);//make the outputfile when -p
         return ; 
     }
            
@@ -288,7 +336,7 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
     #endif
 
     separe_copy_tokens(Tokens);
-    // separe_macro_tokens(Tokens);
+    separe_macro_tokens(Tokens);
     #ifdef DEBUG_MAC_PRINT_TOKENS_IN
     std::cout<<"\033[04;32m"<<"\nPRINTS OUTPUT TOKENS BEFORE MACROS WORKS\n\n"<<"\033[00m";
     linha = Tokens->begin()->token_line;
@@ -312,11 +360,23 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
             std::cout << '\n';
             linha= it->token_line;
         }
-        std::cout << it->token_string<<'('<<it->token_line<<')'<<it->qnt_mac_param<<'|';
+        std::cout << it->token_string<<'('<<it->token_line<<')'<<'|';
     }
     std::cout << '\n';
     #endif
 
+    linha = Tokens->begin()->token_line;
+    for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
+        if (linha != it->token_line){
+            output->push_back("\n");
+            linha= it->token_line;
+        }
+        if((it-1)->token_string.compare("COPY") == 0){
+           output->push_back(it->token_string + ","); 
+        }else{
+            output->push_back(it->token_string + " ");
+        }
+    }
 
 }
 

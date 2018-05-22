@@ -6,9 +6,9 @@ m: Macro
 load A
 Endmacro
 N : Macro &par_1
-sub B
+sub &par_1
 Endmacro
-O : Macro &par_1,&par_2
+O : Macro &par_2,&par_3
 sub &par_1
 add &par_2
 Endmacro
@@ -19,10 +19,12 @@ Esta linha mantem
 if vqv
 Esta linha tira
 LOAD OLD_DATA
-L1: DIV DoIS
-mmmmmm a,b,c,d
-store  NeW_DaTa
-MULT DOIS
+ANTES_MACRO_M
+m
+ANTES_MACRO_N
+n num1
+ANTES_MACRO_O
+o num2,num3
 STORE TMP_DATA
 LOAD OLD_DATA
 SUB TMP_DATA
