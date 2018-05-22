@@ -168,7 +168,7 @@ void separe_macro_tokens(vector_of_tokens *Tokens){
 bool treating_macro(vector_of_tokens* Tokens){
     vector_of_tokens  DEF,TEMPORA;
     std::string temp;
-    Token_str Token;
+    Token_str Token,Token2;
     int linha = 0;
     std::string temp_str;
     std::map<std::string,int> MNT;
@@ -258,11 +258,18 @@ bool treating_macro(vector_of_tokens* Tokens){
                         line the token that calls the macro(it means it's an argument)*/
                     /*TODO iterator TEMPORA e pegar primeiro token se for arg, atualizar ao long de param todo pelo 
                     q eu quero, ir pro seg token (msm linha) e fazer de novo, e deletar esses baguis*/
-                        std::cout<<"      aaa         ASSSSSSSSS";
-                        token_it_temp = token_it;
-                        while(token_it_temp->token_line == token_it->token_line){
-
-                            token_it_temp++;
+                        token_it_temp = token_it+1;
+                        std::string isso;
+                        vector_of_tokens::iterator itera_1 = TEMPORA.begin() ;
+                        for(;token_it_temp != Tokens->end() && (token_it_temp->token_line == token_it->token_line);token_it_temp++){
+                            isso = token_it_temp->token_string;
+                            std::string oi = TEMPORA.begin()->token_string;
+                            for(vector_of_tokens::iterator itera_1 = TEMPORA.begin() ; itera_1 != TEMPORA.end(); ++itera_1){
+                                if(oi == itera_1->token_string){
+                                    itera_1->token_string = isso;
+                                }
+                            }
+                            TEMPORA.erase(TEMPORA.begin());
                         }
                     }
                 }
