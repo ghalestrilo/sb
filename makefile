@@ -1,4 +1,3 @@
-
 EXECNAME = bin/compiler.exe
 ifeq ($(OS), Windows_NT)
 	EXEC = $(EXECNAME)
@@ -18,7 +17,8 @@ CFLAGS = -Wall $(GLOBALFLAGS)
 LFLAGS = -Wall $(GLOBALFLAGS)
 
 
-OP = o
+OP     = m
+
 
 IF = bin
 IDIR = ./res

@@ -10,7 +10,7 @@
 
 /* DEBUG_PREP_INPUT
     Prints pre-processor input 
- */
+ // */
 // #define DEBUG_PREP_INPUT
 
 
@@ -25,19 +25,45 @@
  */
 // #define DEBUG_PREP_PRINT_TOKENS
 
+// ------------------------------------------------------ MACRO
+
+/* DEBUG_MAC_TOKEN_FLAGS
+    Prints Tokens after macros
+ */
+// #define DEBUG_MAC_TOKEN_FLAGS
+
+/* DEBUG_MAC_PRINT_TOKENS_IN
+    Prints Tokens after macros
+ */
+// #define DEBUG_MAC_PRINT_TOKENS_IN
+
+/* DEBUG_MDT_MNT
+    Prints Tokens after macros
+ */
+// #define DEBUG_MDT_MNT
+
+/* DEBUG_MAC_PRINT_TOKENS_OUT
+    Prints Tokens after macros
+//  */
+// #define DEBUG_MAC_PRINT_TOKENS_OUT
+
+/* DEBUG_MAC_OUTPUT
+    Prints Tokens after macros
+ */
+// #define DEBUG_MAC_OUTPUT
+
 // ------------------------------------------------------ PARSER
 
 /* DEBUG_PARSER_SYMBOL_TABLE
     Prints constructed symbol table during parsing
  */
 #define DEBUG_PARSER_SYMBOL_TABLE
-
+// 
 
 /* DEBUG_PARSER_FIRST_PASS
     Shows tokens passed to first pass
  */
 #define DEBUG_PARSER_FIRST_PASS
-
 
 /* DEBUG_PARSER_READ_LINE
     Prints each line during parsing
