@@ -221,6 +221,8 @@ bool treating_macro(vector_of_tokens* Tokens){
     }
     std::cout<<"\nMACROS OF MDT ENDS HERE\n";
     #endif
+
+
     return true;
 }
 
@@ -238,11 +240,11 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
     update_label_flags(Tokens);// update label Flags
 
     #ifdef DEBUG_PREP_PRINT_TOKENS
-    int line = Tokens->begin()->token_line;
+    linha = Tokens->begin()->token_line;
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
-        if (line != it->token_line){
+        if (linha != it->token_line){
             std::cout << '\n';
-            line= it->token_line;
+            linha= it->token_line;
         }
         std::cout << it->token_string<<'('<<it->token_line<<')'<<' '
         <<"eq"<<it->label_equ<<"mac"<<it->label_macro<<"label"
@@ -272,11 +274,11 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
 
 
     #ifdef DEBUG_MAC_TOKENS_FLAGS
-    int line = Tokens->begin()->token_line;
+    linha = Tokens->begin()->token_line;
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
-        if (line != it->token_line){
+        if (linha != it->token_line){
             std::cout << '\n';
-            line= it->token_line;
+            linha= it->token_line;
         }
         std::cout << it->token_string<<'('<<it->token_line<<')'<<' '
         <<"m"<<it->label_macro<<"l"
@@ -289,11 +291,11 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
     // separe_macro_tokens(Tokens);
     #ifdef DEBUG_MAC_PRINT_TOKENS_IN
     std::cout<<"\033[04;32m"<<"\nPRINTS OUTPUT TOKENS BEFORE MACROS WORKS\n\n"<<"\033[00m";
-    int line = Tokens->begin()->token_line;
+    linha = Tokens->begin()->token_line;
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
-        if (line != it->token_line){
+        if (linha != it->token_line){
             std::cout << '\n';
-            line= it->token_line;
+            linha= it->token_line;
         }
         std::cout << it->token_string<<'('<<it->token_line<<')'<<it->qnt_mac_param<<'|';
     }
@@ -304,11 +306,11 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
 
     #ifdef DEBUG_MAC_PRINT_TOKENS_OUT
     std::cout<<"\033[04;32m"<<"\nPRINTS OUTPUT TOKENS AFTER MACROS WORKS\n\n"<<"\033[00m";
-    int line = Tokens->begin()->token_line;
+    linha = Tokens->begin()->token_line;
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
-        if (line != it->token_line){
+        if (linha != it->token_line){
             std::cout << '\n';
-            line= it->token_line;
+            linha= it->token_line;
         }
         std::cout << it->token_string<<'('<<it->token_line<<')'<<it->qnt_mac_param<<'|';
     }
