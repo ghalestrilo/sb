@@ -25,7 +25,7 @@
  */
 // #define DEBUG_PREP_PRINT_TOKENS
 
-// ------------------------------------------------------ PRE-PROCESSOR
+// ------------------------------------------------------ MACRO
 
 /* DEBUG_MAC_TOKEN_FLAGS
     Prints Tokens after macros
@@ -40,25 +40,30 @@
 /* DEBUG_MDT_MNT
     Prints Tokens after macros
  */
-#define DEBUG_MDT_MNT
+// #define DEBUG_MDT_MNT
 
 /* DEBUG_MAC_PRINT_TOKENS_OUT
     Prints Tokens after macros
 //  */
-#define DEBUG_MAC_PRINT_TOKENS_OUT
+// #define DEBUG_MAC_PRINT_TOKENS_OUT
 
 /* DEBUG_MAC_OUTPUT
     Prints Tokens after macros
  */
-#define DEBUG_MAC_OUTPUT
+// #define DEBUG_MAC_OUTPUT
 
 // ------------------------------------------------------ PARSER
 
 /* DEBUG_PARSER_SYMBOL_TABLE
     Prints constructed symbol table during parsing
  */
-// #define DEBUG_PARSER_SYMBOL_TABLE
+#define DEBUG_PARSER_SYMBOL_TABLE
 // 
+
+/* DEBUG_PARSER_FIRST_PASS
+    Shows tokens passed to first pass
+ */
+#define DEBUG_PARSER_FIRST_PASS
 
 /* DEBUG_PARSER_READ_LINE
     Prints each line during parsing
@@ -69,7 +74,7 @@
 /* DEBUG_PARSER_AST
     Prints constructed symbol table during parsing
  */
-// #define DEBUG_PARSER_AST
+#define DEBUG_PARSER_AST
 
 
 // ------------------------------------------------------ LEXER
@@ -84,4 +89,4 @@
 /* DEBUG_ASSEMBLER_PRINT_OUTPUT
     Prints output values 
  */
-// #define DEBUG_ASSEMBLER_PRINT_OUTPUT
+#define DEBUG_ASSEMBLER_PRINT_OUTPUT
