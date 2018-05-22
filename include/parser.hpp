@@ -5,6 +5,9 @@
 #include "typedefs.hpp"
 #include "dictionary.hpp"
 
+
+#include "error.hpp"
+
 struct expression {
     expression(Token t = Token()) : token(t){}
 
@@ -13,12 +16,21 @@ struct expression {
     int position;
     
     int param_count;
+    
 
     // May not be necessary
     struct {
         COMMANDCODE   command;
         DIRECTIVECODE directive;
     } data;
+
+    // Error Logging
+    void flag(ERRCODE c){
+        this->haserror = true;
+        this->errcode  = c;
+    }
+    bool    haserror = false;
+    ERRCODE errcode;
 };
 
 
@@ -46,6 +58,7 @@ bool first_pass(vector_of_tokens*, symbol_table*);
 
 // 2nd pass
 bool second_pass(ast*, vector_of_tokens&, symbol_table&);
+bool astcheck   (ast&, vector_of_strings&);
 
 // ast_node   parseline (std::string, symbol_table*, unsigned int*);
 expression parseexp  (Token, symbol_table& st);

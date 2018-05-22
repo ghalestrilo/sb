@@ -17,7 +17,7 @@ bool readline(std::string line, std::vector<Token>* tokens, unsigned int lineind
 
     Token t;
     while (!(t = grab_token(&consumable)).empty())
-        tokens->emplace_back(Token(t.text, lineindex));
+        tokens->emplace_back(Token(t.text, t.line)); // t.line is 0 here
 
 
     #ifdef DEBUG_LEXER_PRINT_TOKENS

@@ -24,7 +24,7 @@ IF = bin
 IDIR = ./res
 
 OF = bin_res
-ODIR = ./res/
+ODIR = ./res
 
 PROG_INPUT  = $(IDIR)/$(IF)
 PROG_OUTPUT = $(ODIR)/$(OF)

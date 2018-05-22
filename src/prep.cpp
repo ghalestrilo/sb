@@ -117,11 +117,13 @@ void preprocess(vector_of_strings& file,
 bool treating_if(vector_of_tokens* tokens){
     int linha = tokens->begin()->line;
     for (vector_of_tokens::iterator it = tokens->begin() ; it != tokens->end(); ++it){
+        // #ifdef DEBUG_PREP_TREATING_IF
         if (linha != it->line){
             std::cout << '\n';
             linha= it->line;
         }
         std::cout << it->text<<' ';
+        // #endif // DEBUG_PREP_TREATING_IF
     }
 
 

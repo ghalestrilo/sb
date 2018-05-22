@@ -56,15 +56,27 @@ int run(std::string flag, std::string input, std::string output){
     }
 
     // 3. Run parser -> assembler (-o is implied)
-    // std::vector<int> assembled = assemble(parse(tokens));
+    ast prog = parse(tokens); // @ghalestrilo: parser receives tokens with .line = 0...
+    if (!astcheck(prog, incode)) exit(-5);
 
-    ast prog = parse(tokens);
     std::vector<int> assembled = assemble(prog);
 
     if (!to_file(assembled, output, ".o")) exit(-10);
  
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // --------------------------------------------------------------------------- FILE MODULE
 

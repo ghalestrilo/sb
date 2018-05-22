@@ -77,6 +77,8 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
 
         if (it->text == "CONST") it++; /// Bypass
 
+        if (it == code->end()) break;
+
         // Section Found : TODO: Make Checks
         if (it->text == "SECTION"){
             // it++;
@@ -143,16 +145,21 @@ bool second_pass(ast* parsed, vector_of_tokens& code, symbol_table& st){
         expression e = parseexp(*it, st);
         e.position   = pos;
 
-        
+        // -------------------------------------------- <Treating Directives>
         if (e.token == "CONST"){
             ++it;
 
-            if (it == code.end()) {
-                // ERROR: UNEXPECTED EOF
+            if (it == code.end()) { // ERROR: UNEXPECTED EOF
+                e.flag(UNEXPECTED_EOF);
+                *parsed << ast_node(e);
+                continue;
             }
 
             if (!numeric(it->text)){
                 // ERROR!
+                e.flag(ILLEGAL_PARAM);
+                *parsed << ast_node(e);
+                continue;
             }
 
 
@@ -178,6 +185,8 @@ bool second_pass(ast* parsed, vector_of_tokens& code, symbol_table& st){
 
             continue;
         }
+
+        // -------------------------------------------- </Treating Directives>
 
         ast_node statement(e);
 
@@ -237,39 +246,37 @@ expression parseexp(Token tok, symbol_table& st) {
 }
 
 
+bool astcheck   (ast& code, vector_of_strings& orig){
+    unsigned short int errcount = 0;
 
-// // Returns a statement to be pushed ino the statement sequence (AST)
-// ast_node parseline(std::string line, symbol_table* st, unsigned int* pc){
-//     std::vector<Token> tokens;
-//     if (!readline(line, &tokens)) return ast_node();
-    
-//     bool first = true;
-//     ast_node res;
-//     expression e;
+    for (auto s : code.statements) {
+        if (s.exp.haserror == true) {
+            errcount++;
+            error::print(s.exp.errcode, s.exp.token.line);
+            std::cout << "\t - " 
+                      << orig[s.exp.token.line] 
+                      << std::endl 
+                      << std::endl;
+        }
 
-//     if ((tokens = skip_label(tokens)).empty()) return res;
+        for (auto p : s.params)
+            if (p.exp.haserror == true) {
+                errcount++;
+                error::print(p.exp.errcode, p.exp.token.line);
+                std::cout << "\t - " 
+                          << orig[p.exp.token.line] 
+                          << std::endl 
+                          << std::endl;
+            }
+    }
 
-//     for(auto token : tokens){
-//         e = parseexp(token, st);
-        
-//         // Process Directives
-//         switch(res.exp.data.directive){ // may crash
-//             case CONST:
-//             case SPACE:
-//             // case SECTION:
-//                 // if line.size();
+    // @DELETE
+    std::cout << "[parser] Detected "
+              << errcount 
+              << " errors in "
+              << code.statements.size()
+              << " lines."
+              << std::endl;
 
-//             default: break;
-//         }
-
-//         // Set position
-//         e.position = (*pc);
-//         (*pc)++;
-
-
-//         if (first) res.exp = e;             // Parse Primary Expression
-//         else       res.params.push_back(e); // Parse Expression Parameters
-//         first = false;
-//     }
-//     return res;
-// }
+    return (errcount == 0);
+}

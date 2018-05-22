@@ -5,8 +5,6 @@
 #define vector_of_strings std::vector<std::string>
 #define vector_of_tokens  std::vector<Token>
 
-
-// Token a = {"1", 2, 3};
 struct Token {
   Token(std::string text = "", int line = 0)
     : text(text), line(line) {};
