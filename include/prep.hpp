@@ -52,3 +52,4 @@ void label_tokens(vector_of_tokens*);
 void if_equ_output(vector_of_tokens*,vector_of_strings*);
 void separe_copy_tokens(vector_of_tokens*);
 void separe_macro_tokens(vector_of_tokens*);
+

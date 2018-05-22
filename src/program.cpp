@@ -17,8 +17,9 @@ int run(std::string flag, std::string input, std::string output){
     // Read Flags
     if (flag.length() < 2) exit(-3);
     char f = flag[1];
-    vector_of_tokens Token;
-    Token.clear();
+    vector_of_tokens tokens;
+    tokens.clear();
+
 // Disposable ---------------------------------------------------------
     std::cout << "[" << input << " -> " << output << "]";
     switch(f){
@@ -33,18 +34,13 @@ int run(std::string flag, std::string input, std::string output){
 
 // --------------------------------------------------------------------
 
-
     // Read File
-    // std::ifstream inputfile((input + ".asm").c_str());
-    // if (!inputfile) exit(-4);
-    source incode;
+    vector_of_strings incode;
     if (!from_file(input, &incode)) exit(-5);
 
-
-
     // Run Preprocessor    
-    source processed;
-    preprocess(incode, &processed, f != 'p', &Token); // (f!='p') <==> (f == 'm') or (f == 'o') 
+    vector_of_strings processed;
+    preprocess(incode, &processed, f != 'p', &tokens); // (f!='p') <==> (f == 'm') or (f == 'o') 
     
     // Flag-controlled Outputs
     // 1. If, Equ Expanded
@@ -59,11 +55,10 @@ int run(std::string flag, std::string input, std::string output){
         return 0;
     }
 
-    // (-o is implied)
-    // 3. Run parser -> assembler
+    // 3. Run parser -> assembler (-o is implied)
+    // std::vector<int> assembled = assemble(parse(tokens));
 
-    ast prog = parse(processed);
-
+    ast prog = parse(tokens);
     std::vector<int> assembled = assemble(prog);
 
     if (!to_file(assembled, output, ".o")) exit(-10);
@@ -71,9 +66,7 @@ int run(std::string flag, std::string input, std::string output){
     return 0;
 }
 
-
-
-// Single-string overload
+// --------------------------------------------------------------------------- FILE MODULE
 
 // Single-string overload
 bool to_file(std::string data, std::string filename, std::string extension){
@@ -87,7 +80,7 @@ bool to_file(std::string data, std::string filename, std::string extension){
     // Debug Printings
     #ifdef DEBUG_FILE_PRINTDATA
         std::cout << "[file]: " << filename << extension << std::endl;
-        source readback;
+        vector_of_strings readback;
         if (from_file(filename, &readback))
             for (std::string line : readback)
                 std::cout << line << std::endl;
@@ -97,7 +90,7 @@ bool to_file(std::string data, std::string filename, std::string extension){
 }
 
 bool to_file(std::vector<int> data, std::string filename, std::string extension){
-    source bin;
+    vector_of_strings bin;
     for (auto number : data) bin.push_back(std::to_string(number) + " ");
 
     return to_file(bin, filename, extension);
@@ -105,7 +98,7 @@ bool to_file(std::vector<int> data, std::string filename, std::string extension)
 
 
 // Source code overload
-bool to_file(source data, std::string filename, std::string extension){
+bool to_file(vector_of_strings data, std::string filename, std::string extension){
     // Write to File
     std::ofstream output;
     output.open ((filename + extension).c_str());
@@ -120,7 +113,7 @@ bool to_file(source data, std::string filename, std::string extension){
     #ifdef DEBUG_FILE_PRINTDATA
         std::cout << "[file]: " << filename << extension << std::endl;
 
-        source readback;
+        vector_of_strings readback;
         if (from_file(filename, &readback));
             for (std::string line : readback)
                 std::cout << line << std::endl;
@@ -130,7 +123,7 @@ bool to_file(source data, std::string filename, std::string extension){
 }
 
 
-bool from_file(std::string filename, source* res){
+bool from_file(std::string filename, vector_of_strings* res){
     std::string   ext(".asm");
     std::ifstream input((filename + ext).c_str());
 

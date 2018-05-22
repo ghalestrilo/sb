@@ -7,6 +7,8 @@
 
 #define vector_of_strings std::vector<std::string>
 typedef vector_of_strings source;
+typedef std::string       symbol;
+
 
 // Token a = {"1", 2, 3};
 struct Token {
@@ -32,11 +34,5 @@ struct Token {
     // Useful for post-lexing error logging
   short int error = 0;
 };
-
 #define vector_of_tokens std::vector<Token>
-
-typedef std::string       symbol;
-
-
 typedef vector_of_tokens Tokens;
-

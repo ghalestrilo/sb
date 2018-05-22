@@ -1,3 +1,5 @@
+.vscode
+
 res/moodle/*.o
 res/moodle
 res/out/*.o

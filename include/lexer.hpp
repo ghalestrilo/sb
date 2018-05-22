@@ -7,10 +7,21 @@
 /* Token Type:
 
  */
-typedef std::string token;
+// typedef std::string token;
 
-bool readline  (std::string, std::vector<token>*);
-bool lex_error (std::string);
+bool  readline   (std::string, vector_of_tokens*,  unsigned int = 0);
+Token grab_token (std::string*);
+bool  lex_error  (std::string);
 
-std::vector<token> skip_label   (std::vector<token>);
-token              extract_label(std::vector<token>);
+vector_of_tokens skip_label   (vector_of_tokens);
+Token            extract_label(vector_of_tokens);
+
+
+bool alphabetic (char);
+bool numeric    (char);
+bool symbolic   (char);
+
+// bool alphabetic (std::string);
+bool numeric    (std::string);
+
+void trim(std::string*); // Removes Spaces

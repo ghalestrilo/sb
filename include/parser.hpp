@@ -6,27 +6,24 @@
 #include "dictionary.hpp"
 
 struct expression {
-    expression(){};
-    expression(std::string t) : text(t){}
+    expression(Token t = Token()) : token(t){}
 
+    Token token;
     int value = 0;
-    std::string text;
     int position;
+    
+    int param_count;
 
-    union {
+    // May not be necessary
+    struct {
         COMMANDCODE   command;
         DIRECTIVECODE directive;
     } data;
-
-    bool isliteral;
-    bool islabel;
-    bool isrelative;
 };
 
 
 struct ast_node {
-    ast_node(){};
-    ast_node(expression exp) : exp(exp){};
+    ast_node(expression exp = expression()) : exp(exp){};
     expression            exp;
     std::vector<ast_node> params;
 };
@@ -35,18 +32,20 @@ struct ast {
     std::vector<ast_node> statements;
 
     void     operator<< (ast_node s) { statements.push_back(s); };
-    ast_node operator[] (int i)      { return statements[i];    }; // Bug
+    ast_node operator[] (int      i) { return statements[i];    }; // Bug?
 };
 
 
 // Symbol Table: rename to symbol_table
 typedef std::map<std::string, int> symbol_table;
 
-ast parse (source);
+ast parse (vector_of_tokens);
 
 // 1st pass
-bool make_symbol_table(source, symbol_table*);
+bool first_pass(vector_of_tokens*, symbol_table*);
 
 // 2nd pass
-ast_node   parseline (std::string, symbol_table*, unsigned int*);
-expression parseexp  (std::string, symbol_table* st);
+bool second_pass(ast*, vector_of_tokens&, symbol_table&);
+
+// ast_node   parseline (std::string, symbol_table*, unsigned int*);
+expression parseexp  (Token, symbol_table& st);

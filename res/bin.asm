@@ -45,5 +45,5 @@ TMP_DATA: SPACE
 ; L1       = 4
 ; DOIS     = 27
 ; OLD_DATA = 28
-; OLD_DATA = 29
-; OLD_DATA = 30
+; NEW_DATA = 29
+; TMP_DATA = 30

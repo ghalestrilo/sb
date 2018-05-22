@@ -1,7 +1,6 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
-#include <string>
 #include "../include/prep.hpp"
 // #include "../include/lexer.hpp"
 
@@ -68,12 +67,9 @@ bool treating_if(vector_of_tokens* Tokens){
                 Tokens->erase(it);
                 Tokens->erase(it);
                 }
-
             }
         }
-
     }
-
     return true;
 }
 
@@ -292,8 +288,8 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
     foreach(i, file){
         read_source_line(file[i],Tokens,&linha);//make the vector of tokens
         #ifdef DEBUG_PREP_INPUT
-            std::cout << file[i] << std::endl;
-        #endif // DEBUG_PREP_OUTPUT
+            std::cout << line << std::endl;
+        #endif // DEBUG_PREP_INPUT
     }
 
     label_tokens(Tokens);// if there is a token ':', put : in the final of previous token
@@ -312,6 +308,7 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
     }
     std::cout << '\n';
     #endif
+
 
     treating_if(Tokens);//treating IF EQU clauses
 
@@ -391,4 +388,3 @@ void preprocess(source& file, source* output, bool macros,vector_of_tokens* Toke
     }
 
 }
-
