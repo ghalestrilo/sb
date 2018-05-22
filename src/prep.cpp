@@ -249,12 +249,16 @@ bool treating_macro(vector_of_tokens* Tokens){
                 token_it_temp++;
             }
         }
-        if(MNT_it != MNT.end()){
-            M_DEF_it = M_DEF.find(MNT_it->second);
+        if(MNT_it != MNT.end()){//token exist on MNT?
+            M_DEF_it = M_DEF.find(MNT_it->second);//finds token on MDT
             if(M_DEF_it != M_DEF.end()){
-                if((token_it+1) != Tokens->end()){
+                if((token_it+1) != Tokens->end()){//is there a next token after calling the macro?
                     TEMPORA = M_DEF_it->second; 
-                    if(token_it->token_line == (token_it+1)->token_line){
+                    if(token_it->token_line == (token_it+1)->token_line && (TEMPORA[0].token_string.compare(0,1,"&")==0)){/*if the next token is from the same
+                        line the token that calls the macro(it means it's an argument)*/
+                    /*TODO iterator TEMPORA e pegar primeiro token se for arg, atualizar ao long de param todo pelo 
+                    q eu quero, ir pro seg token (msm linha) e fazer de novo, e deletar esses baguis*/
+                        std::cout<<"      aaa         ASSSSSSSSS";
                         token_it_temp = token_it;
                         while(token_it_temp->token_line == token_it->token_line){
 
@@ -263,9 +267,10 @@ bool treating_macro(vector_of_tokens* Tokens){
                     }
                 }
                 while(linha == token_it->token_line){
-                    Tokens->erase(token_it);
+                    Tokens->erase(token_it);//erase the call of the macro and its param
                 }
-                Tokens->insert(token_it,TEMPORA.begin(),TEMPORA.end());
+                Tokens->insert(token_it,TEMPORA.begin(),TEMPORA.end());/*inserts the 
+                temporary worked vector of tokens into Tokens*/
                 token_it--;
             } 
         }
