@@ -18,9 +18,18 @@ CFLAGS = -Wall $(GLOBALFLAGS)
 LFLAGS = -Wall $(GLOBALFLAGS)
 
 
-OP     = m
-PROG_INPUT  = ./res/bin
-PROG_OUTPUT = ./res/out/bin_res
+OP     = o
+
+
+IF = bin
+IDIR = ./res
+
+OF = bin_res
+ODIR = ./res/
+
+PROG_INPUT  = $(IDIR)/$(IF)
+PROG_OUTPUT = $(ODIR)/$(OF)
+
 PROG_ARGS   = -$(OP) $(PROG_INPUT) $(PROG_OUTPUT)
 
 all: clean build run
@@ -36,12 +45,17 @@ obj/%.o:
 
 ifeq ($(OS), Windows_NT)
 clean:
-	cls
 	rd /s /q "obj"
 	mkdir "obj"
+
+clearscreen:
+	cls
 else
 clean:
 	rm -f obj/*.o
+
+clearscreen:
+	clear
 endif
 run:
 
