@@ -254,7 +254,6 @@ bool treating_macro(vector_of_tokens* Tokens){
                         line the token that calls the macro(it means it's an argument)*/
                         token_it_temp = token_it+1;
                         std::string isso;
-                        vector_of_tokens::iterator itera_1 = TEMPORA.begin() ;
                         for(;token_it_temp != Tokens->end() && (token_it_temp->line == token_it->line);token_it_temp++){
                             isso = token_it_temp->text;
                             std::string oi = TEMPORA.begin()->text;
