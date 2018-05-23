@@ -380,10 +380,15 @@ void preprocess(vector_of_strings& file, vector_of_strings* output, bool macros,
             output->push_back("\n");
             linha= it->line;
         }
-        if((it-1)->text.compare("COPY") == 0){
-           output->push_back(it->text + ","); 
+        if(it !=Tokens->begin()){
+            if((it-1)->text.compare("COPY") == 0){
+                std::cout
+               output->push_back(it->text + ","); 
+            }else{
+                output->push_back(it->text + " ");
+            }
         }else{
-            output->push_back(it->text + " ");
+            output->push_back(it->text + ",");
         }
     }
 
