@@ -25,12 +25,10 @@ struct expression {
     } data;
 
     // Error Logging
-    void flag(ERRCODE c){
-        this->haserror = true;
-        this->errcode  = c;
-    }
-    bool    haserror = false;
-    ERRCODE errcode;
+    void flag(ERRCODE c){ this->token.flag(c); }
+
+    bool    haserror() { return this->token.haserror; }
+    ERRCODE errcode()  { return this->token.errcode;  }
 };
 
 

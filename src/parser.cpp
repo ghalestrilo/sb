@@ -6,7 +6,7 @@
 ast parse(vector_of_tokens code_safe){
     
     vector_of_tokens code;
-    
+
     // Creating local, treated copy of code
     vector_of_tokens buffer;
     for (auto origtoken : code_safe){
@@ -135,6 +135,7 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
 };
 
 bool second_pass(ast* parsed, vector_of_tokens& code, symbol_table& st){
+    using namespace dictionary;
     unsigned short int args = 0;
     int pos = 0;
 
@@ -199,7 +200,8 @@ bool second_pass(ast* parsed, vector_of_tokens& code, symbol_table& st){
             if (it == code.end()) break; // ERR unexpected EOF
 
             expression param = parseexp(*it, st);
-            // if (reserved(param.token.text)) {} // ERR invalid parameter
+            if (reserved(param.token.text))
+                e.flag(ILLEGAL_PARAM);
             statement.params.push_back(param);
             
             ++it;
@@ -252,9 +254,9 @@ bool astcheck   (ast& code, vector_of_strings& orig){
     unsigned short int errcount = 0;
 
     for (auto s : code.statements) {
-        if (s.exp.haserror == true) {
+        if (s.exp.haserror() == true) {
             errcount++;
-            error::print(s.exp.errcode, s.exp.token.line);
+            error::print(s.exp.errcode(), s.exp.token.line);
             std::cout << "\t - " 
                       << orig[s.exp.token.line] 
                       << std::endl 
@@ -262,9 +264,9 @@ bool astcheck   (ast& code, vector_of_strings& orig){
         }
 
         for (auto p : s.params)
-            if (p.exp.haserror == true) {
+            if (p.exp.haserror() == true) {
                 errcount++;
-                error::print(p.exp.errcode, p.exp.token.line);
+                error::print(p.exp.errcode(), p.exp.token.line);
                 std::cout << "\t - " 
                           << orig[p.exp.token.line] 
                           << std::endl 

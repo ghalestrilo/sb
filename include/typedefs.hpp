@@ -2,6 +2,9 @@
 #include <fstream>
 #include <vector>
 
+
+#include "error.hpp"
+
 #define vector_of_strings std::vector<std::string>
 #define vector_of_tokens  std::vector<Token>
 
@@ -25,6 +28,10 @@ struct Token {
   bool label_macro = false;
   bool label       = false;
 
-    // Useful for post-lexing error logging
-  short int error = 0;
+  void flag(ERRCODE c){
+      this->haserror = true;
+      this->errcode  = c;
+  }
+  bool    haserror = false;
+  ERRCODE errcode;
 };
