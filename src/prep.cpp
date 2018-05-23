@@ -252,14 +252,15 @@ bool treating_macro(vector_of_tokens* Tokens){
                     TEMPORA = M_DEF_it->second; 
                     if(token_it->line == (token_it+1)->line && (TEMPORA[0].text.compare(0,1,"&")==0)){/*if the next token is from the same
                         line the token that calls the macro(it means it's an argument)*/
-                    /*TODO iterator TEMPORA e pegar primeiro token se for arg, atualizar ao long de param todo pelo 
-                    q eu quero, ir pro seg token (msm linha) e fazer de novo, e deletar esses baguis*/
                         token_it_temp = token_it+1;
                         std::string isso;
                         vector_of_tokens::iterator itera_1 = TEMPORA.begin() ;
                         for(;token_it_temp != Tokens->end() && (token_it_temp->line == token_it->line);token_it_temp++){
                             isso = token_it_temp->text;
                             std::string oi = TEMPORA.begin()->text;
+                            if(oi.compare(0,1,"&")!=0){
+                                break;
+                            }
                             for(vector_of_tokens::iterator itera_1 = TEMPORA.begin() ; itera_1 != TEMPORA.end(); ++itera_1){
                                 if(oi == itera_1->text){
                                     itera_1->text = isso;
