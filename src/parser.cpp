@@ -6,11 +6,11 @@
 ast parse(vector_of_tokens code_safe){
     
     vector_of_tokens code;
-
+    
     // Creating local, treated copy of code
     vector_of_tokens buffer;
     for (auto origtoken : code_safe){
-        if (!readline(origtoken.text, &buffer)) continue;
+        if (!readline(origtoken.text, &buffer, origtoken.line)) continue;
         
         code.insert(code.end(), buffer.begin(), buffer.end());
     }
@@ -217,6 +217,8 @@ bool second_pass(ast* parsed, vector_of_tokens& code, symbol_table& st){
 expression parseexp(Token tok, symbol_table& st) {
     using namespace dictionary;
     expression e(tok);
+
+    e.token.line = tok.line;
 
     // Literal
     if (st.find(tok.text) != st.end()){

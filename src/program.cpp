@@ -38,7 +38,7 @@ int run(std::string flag, std::string input, std::string output){
     vector_of_strings incode;
     if (!from_file(input, &incode)) exit(-5);
 
-    // Run Preprocessor    
+    // Run Preprocessor
     vector_of_strings processed;
     preprocess(incode, &processed, f != 'p', &tokens); // (f!='p') <==> (f == 'm') or (f == 'o') 
     
@@ -55,8 +55,9 @@ int run(std::string flag, std::string input, std::string output){
         return 0;
     }
 
+
     // 3. Run parser -> assembler (-o is implied)
-    ast prog = parse(tokens); // @ghalestrilo: parser receives tokens with .line = 0...
+    ast prog = parse(tokens);
     if (!astcheck(prog, incode)) exit(-5);
 
     std::vector<int> assembled = assemble(prog);
