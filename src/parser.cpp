@@ -68,6 +68,7 @@ ast parse(vector_of_tokens code_safe){
 #endif
 
 bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
+    using namespace dictionary;
     if (st == NULL) st = new symbol_table;
     int pc = 0; // Parse-Relevant
 
@@ -103,7 +104,9 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
         if (next != code->end() && next->text == ":"){
 
             // Check if not reserved
-            (*st)[it->text] = pc;
+            if ((*st).find(it->text) != (*st).end())   it->flag(LABEL_REDECLARED);
+            else if (reserved(it->text))               it->flag(LABEL_RESERVED);
+            else (*st)[it->text] = pc;
 
             it = code->erase(it, it + 2);
             continue;
@@ -219,13 +222,14 @@ bool second_pass(ast* parsed, vector_of_tokens& code, symbol_table& st){
 expression parseexp(Token tok, symbol_table& st) {
     using namespace dictionary;
     expression e(tok);
-
     e.token.line = tok.line;
+
+    // bool found = false;
 
     // Literal
     if (st.find(tok.text) != st.end()){
         e.value = st.find(tok.text)->second;
-        // e.isliteral = true;
+        // found = true;
         return e;
     }
     

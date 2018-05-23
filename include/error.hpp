@@ -6,6 +6,7 @@ enum ERRCODE {
     // Lexical
     ILLEGAL_NAME,
     UNKNOWN_SEP,
+    LABEL_REDECLARED,
 
     // Syntactic
     UNRESOLVED_SYM,
@@ -22,8 +23,9 @@ namespace error {
     void print (ERRCODE, int = -1, std::string = "");
 
     static std::map<ERRCODE, std::string> lex = {
-        { ILLEGAL_NAME,   "Illegal token: "  },
-        { UNKNOWN_SEP,    "Unknown symbol: " }
+        { ILLEGAL_NAME,     "Illegal token: "          },
+        { UNKNOWN_SEP,      "Unknown symbol: "         },
+        { LABEL_REDECLARED, "Redeclaration of label: " }
     };
 
     static std::map<ERRCODE, std::string> syn = {
