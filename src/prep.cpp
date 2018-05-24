@@ -370,11 +370,8 @@ void lexical_error(vector_of_tokens* Tokens){
          for (vector_of_tokens::iterator it = Tokens->begin()+1 ; it != Tokens->end(); ++it){
             tamanho = it->text.size();
             for(int i = 0;i<tamanho;i++){
-                if((it->text[0] > 47) && (it->text[0] < 58) && ((it-1)->text.compare("CONST")!=0)){//começa por num e n vem depois de const
-                    it->flag(ILLEGAL_NAME);  
-                }
-                else if((it->text[i] == '&') && ((it-1)->text.compare("MACRO")!=0)){//tem & e nao vem depois de macro
-                   it->flag(ILLEGAL_NAME); 
+                if((it->text[0] > 47) && (it->text[0] < 58) && ((it-1)->text.compare("CONST")!=0) && ((it-1)->text.compare("EQU")!=0)){//começa por num e n vem depois de const
+                    it->flag(ILLEGAL_NAME);   
                 }else if((it->text[i] == ',') && ((it-1)->text.compare("COPY")!=0)){//tem , e nao vem depois de copy
                    it->flag(ILLEGAL_NAME);
                 } 
