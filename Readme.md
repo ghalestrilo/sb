@@ -31,6 +31,6 @@ Utilizamos as seguintes versoes do gcc:
 
 Com as seguintes flags: -std=c++11
 
-Tomás Rosemberg
+Tomás Rosemberg 14/0087567
 
-Thales Grilo
+Thales Grilo 14/0103603
