@@ -8,6 +8,11 @@ enum ERRCODE {
     UNKNOWN_SEP,
     LABEL_REDECLARED,
 
+    // Semantic
+    DIF_SECTION,
+    DOUBLE_LABEL_LINE,
+    REDECLARATION,
+
     // Syntactic
     UNRESOLVED_SYM,
     UNEXPECTED_EOF,
@@ -26,6 +31,13 @@ namespace error {
         { ILLEGAL_NAME,     "Illegal token: "          },
         { UNKNOWN_SEP,      "Unknown symbol: "         },
         { LABEL_REDECLARED, "Redeclaration of label: " }
+        
+    };
+
+        static std::map<ERRCODE, std::string> sema = {
+        { DIF_SECTION, "Section different than TEXT and DATA: " },
+        { DOUBLE_LABEL_LINE, "Two or more labels in the same line: " },
+        { REDECLARATION, "Redeclaration of the label: " }
     };
 
     static std::map<ERRCODE, std::string> syn = {

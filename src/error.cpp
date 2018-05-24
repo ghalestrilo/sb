@@ -13,7 +13,11 @@ void error::print(ERRCODE code, int line, std::string errinfo){
     std::string msg;
     // Lexical
     if (error::lex.find(code) != error::lex.end())
-        msg = "(lexical error) " + lex[code] + errinfo; 
+        msg = "(lexical error) " + lex[code] + errinfo;
+
+    //Section
+    if (error::sema.find(code) != error::sema.end())
+        msg = "(semantic error) " + sema[code] + errinfo;  
 
     // Syntax
     if (error::syn.find(code) != error::syn.end())

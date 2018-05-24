@@ -93,9 +93,11 @@ void update_label_flags(vector_of_tokens* Tokens){
 
 void label_tokens(vector_of_tokens* Tokens){
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
-        if(it->text.compare(0,1,":") == 0){
-            Tokens->erase(it);
-            (it-1)->text =(it-1)->text +':';
+        if(it != Tokens->begin()){
+            if(it->text.compare(0,1,":") == 0){
+                Tokens->erase(it);
+                (it-1)->text =(it-1)->text +':';
+            }
         }
     }
 }
@@ -282,6 +284,116 @@ bool treating_macro(vector_of_tokens* Tokens){
     return true;
 }
 
+void section_erros(vector_of_tokens* Tokens){
+    bool Flag_section_text = false;
+    bool Flag_section_data = false;
+
+    if(Tokens->size()>=2){
+        vector_of_tokens::iterator it = Tokens->begin()+1;
+        for (; it != Tokens->end(); ++it){
+            if((it-1)->text.compare("SECTION")==0){
+                if(it->text.compare("TEXT")==0){
+                    Flag_section_text = true;
+                }
+                else if(it->text.compare("DATA")==0){
+                    Flag_section_data = true;
+                }
+                else{
+                    it->flag(DIF_SECTION);  
+                }
+            }
+        }
+    }
+    if(!Flag_section_data){
+        std::cout<<"(semantic error) Section DATA missing"<<std::endl;
+    }
+    if(!Flag_section_text){
+        std::cout<<"(semantic error) Section TEXT missing"<<std::endl;
+    }
+}
+
+void double_label_line(vector_of_tokens* Tokens){
+    int linha = Tokens->begin()->line;
+    bool Flag_label = false;
+    for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
+        if (linha != it->line){
+            linha= it->line;
+            Flag_label = false;
+        }
+        if(Flag_label &&(it->label_equ ||it->label_macro || it->label)){
+            it->flag(DOUBLE_LABEL_LINE);
+        }
+        if(it->label_equ ||it->label_macro || it->label){
+           Flag_label = true; 
+        }
+
+    }  
+
+}
+void label_redeclared(vector_of_tokens* Tokens){
+    std::string temp;
+    vector_of_tokens::iterator it_2;
+    for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
+        if(it->label_equ ||it->label_macro || it->label){
+            temp = it->text;
+            it_2 = it+1;
+            for(;it_2 !=Tokens->end();it_2++){
+                if(it_2->text.compare(temp)==0){
+                    it_2->flag(REDECLARATION);
+                }
+            }
+        }
+    } 
+}
+
+void lexical_error(vector_of_tokens* Tokens){
+    int tamanho;
+    for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
+        tamanho = it->text.size();
+        if (tamanho>20){
+            it->flag(ILLEGAL_NAME);
+        }
+        for(int i = 0;i<tamanho;i++){
+            if((it->text[i] > 90) &&(it->text[i] != 95)){//depois dos maiusculos
+              it->flag(ILLEGAL_NAME);  
+            }
+            else if((it->text[i] < 65) &&(it->text[i] > 58)){//entre maiusculo e :
+              it->flag(ILLEGAL_NAME);  
+            }
+            else if((it->text[i] < 48) && (it->text[i] > 32) && (it->text[i] != 38) && (it->text[i] != 44)){//entre 0 e espaço
+              it->flag(ILLEGAL_NAME);  
+            }
+        }
+
+    }
+    if(Tokens->size()>=2){    
+         for (vector_of_tokens::iterator it = Tokens->begin()+1 ; it != Tokens->end(); ++it){
+            tamanho = it->text.size();
+            for(int i = 0;i<tamanho;i++){
+                if((it->text[0] > 47) && (it->text[0] < 58) && ((it-1)->text.compare("CONST")!=0)){//começa por num e n vem depois de const
+                    it->flag(ILLEGAL_NAME);  
+                }
+                else if((it->text[i] == '&') && ((it-1)->text.compare("MACRO")!=0)){//tem & e nao vem depois de macro
+                   it->flag(ILLEGAL_NAME); 
+                }else if((it->text[i] == ',') && ((it-1)->text.compare("COPY")!=0)){//tem , e nao vem depois de copy
+                   it->flag(ILLEGAL_NAME);
+                } 
+            }
+        }
+    }     
+}
+
+void printing_errors(vector_of_tokens* Tokens){
+    for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){
+        if (it->haserror){
+            error::print(it->errcode, it->line,it->text);
+        }
+
+    } 
+
+}
+
+
 void preprocess(vector_of_strings& file, vector_of_strings* output, bool macros,vector_of_tokens* Tokens){
     if(file.empty()) return;
     int linha = 1;
@@ -293,7 +405,12 @@ void preprocess(vector_of_strings& file, vector_of_strings* output, bool macros,
     }
 
     label_tokens(Tokens);// if there is a token ':', put : in the final of previous token
+    section_erros(Tokens);
     update_label_flags(Tokens);// update label Flags
+    double_label_line(Tokens);
+    label_redeclared(Tokens);
+    lexical_error(Tokens);
+
 
     #ifdef DEBUG_PREP_PRINT_TOKENS
     linha = Tokens->begin()->line;
@@ -309,6 +426,7 @@ void preprocess(vector_of_strings& file, vector_of_strings* output, bool macros,
     std::cout << '\n';
     #endif
 
+    printing_errors(Tokens);
 
     treating_if(Tokens);//treating IF EQU clauses
 

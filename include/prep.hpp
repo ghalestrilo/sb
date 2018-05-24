@@ -52,4 +52,8 @@ void label_tokens(vector_of_tokens*);
 void if_equ_output(vector_of_tokens*,vector_of_strings*);
 void separe_copy_tokens(vector_of_tokens*);
 void separe_macro_tokens(vector_of_tokens*);
-
+void section_erros(vector_of_tokens*);
+void printing_errors(vector_of_tokens*);
+void double_label_line(vector_of_tokens*);
+void label_redeclared(vector_of_tokens*);
+void lexical_error(vector_of_tokens*);
