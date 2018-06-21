@@ -39,6 +39,7 @@ _start:	mov ecx,msg1
 		mov ecx,msg3
 		mov edx,tammsg3
 		call output 						;printa msg3 na tela
+
 pmenu:	mov ecx,menu
 		mov edx,tammenu
 		call output 						;printa menu na tela
@@ -57,25 +58,29 @@ pmenu:	mov ecx,menu
 		je Mod 								;se foi escolhido mod
 		cmp byte [esc],36h
 		je Sair 							;se foi escolhido sair
-		jmp pmenu
-Soma:	mov ecx,arg1
-		mov edx,12
-		call argum							;função para recuperar argumento 1
-		push eax							;retorna argumento 1 em eax
-		mov ecx,arg1
-		mov edx,12
+		jmp pmenu							;se nada foi escolhido, printa o menu novamente
+
+Soma:	mov ecx,arg1						;coloca argumento em ecx
+		mov edx,12							;coloca o tamanho do argumento em edx
+		call argum							;função para recuperar argumento 1,retorna o valor de arguemento em eax
+		push eax							;salva o valor de argumento 1 na pilha
+		mov ecx,arg1						;coloca argumento em ecx
+		mov edx,12							;coloca tamanho do argumento em edx
 		call argum 							;função para receber segundo argumento
 		pop ebx								;retira o argumento 1 q tava na pilha para ebx
-		add eax,ebx
-result:	mov ecx,resultado
+		add eax,ebx							;adiciona argumento 2 e argumento 1
+
+result:	mov ecx,resultado					;responsavel por printar na tela a mensagem de resultado
 		mov edx,tamresult
 		call output
-wat:	mov ecx,ent
+
+wat:	mov ecx,ent							;procedimento para, apos o resultado, esperar o input de um enter para voltar ao menu
 		mov edx,1
 		call input
 		cmp byte [ent],0ah
 		jne wat
 		jmp pmenu
+
 Sub:	mov ecx,arg1
 		mov edx,12
 		call argum							;função para recuperar argumento 1
@@ -87,35 +92,43 @@ Sub:	mov ecx,arg1
 		pop eax								;retira o argumento 1 q tava na pilha para eax
 		sub eax,ebx
 		jmp result
+
 Mult:	mov ecx,mult
 		mov edx,3
 		call output
 		jmp result
+
 Div:	mov ecx,divi
 		mov edx,3
 		call output
 		jmp result
+
 Mod:	mov ecx,modo
 		mov edx,3
 		call output
 		jmp result
-Sair:	mov eax,1
+
+Sair:	mov eax,1							;Procedimento responsavel pelo fim da execução do programa
 		mov ebx,0
 		int 80h
-output:	mov eax,4
-		mov ebx,1
+
+output:	mov eax,4							;função responsavel por printar na tela uma string,
+		mov ebx,1							;apos receber os parametros pro registrador ecx e edx
 		int 80h
 		ret
-input:	mov eax,3
-		mov ebx,0
+
+input:	mov eax,3							;função responsavel por receber do usuario um string
+		mov ebx,0							;recebe os parametros pelos registradores ecx e edx
 		int 80h
 		ret
+
 argum:	mov esi,0
 		mov eax,3
 		mov ebx,0
 		int 80h
 		mov eax,0
 		mov ebx,10
+
 loop:	cmp byte [arg1+esi],0ah
 		je fim1
 		cmp byte [arg1+esi],'-'
@@ -125,10 +138,12 @@ loop:	cmp byte [arg1+esi],0ah
 		mov byte cl,[arg1+esi]
 		sub byte cl,30h
 		add eax,ecx
+
 aum:	inc esi
 		cmp esi,edx
 		je fim1
 		jmp loop
+
 fim1:	cmp byte [arg1],'-'
 		jne fim
 		mov ebx,0
