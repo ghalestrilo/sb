@@ -122,31 +122,30 @@ input:	mov eax,3							;função responsavel por receber do usuario um string
 		int 80h
 		ret
 
-argum:	mov esi,0
-		mov eax,3
+;Função argum começa na label argum e termina na label fim, é responsavel por receber,via input, o argumento no formato string e
+;converte-lo para o seu valor numerico equivalente e armazenar esse valor no registrador eax
+argum:	mov esi,0							;começa zerando esi
+		mov eax,3							;recebe via input
 		mov ebx,0
 		int 80h
-		mov eax,0
-		mov ebx,10
-
-loop:	cmp byte [arg1+esi],0ah
-		je fim1
-		cmp byte [arg1+esi],'-'
-		je aum
-		mul ebx
-		mov ecx,0
-		mov byte cl,[arg1+esi]
-		sub byte cl,30h
-		add eax,ecx
-
-aum:	inc esi
-		cmp esi,edx
-		je fim1
-		jmp loop
-
-fim1:	cmp byte [arg1],'-'
-		jne fim
-		mov ebx,0
-		sub ebx,eax
+		mov eax,0							;zera eax
+		mov ebx,10							;move 10 para o ebx
+loop:	cmp byte [arg1+esi],0ah				;checa se o bite é um enter
+		je fim1								;se for enter pula para o fim
+		cmp byte [arg1+esi],'-'				;checa se o byte é um sinal de menos
+		je aum 								;se for, pula para a checagem do proximo byte
+		mul ebx								;multiplica o atual valor de eax por 10
+		mov ecx,0							;zera ecx
+		mov byte cl,[arg1+esi]				;move o byte na posição para cl (ecx low)
+		sub byte cl,30h						;tira o valor em ascii para o numero em ascci virar numero de verdade
+		add eax,ecx 						;adiciona o valor encontrado em eax
+aum:	inc esi 							;incremente meu contador de loop (esi)
+		cmp esi,edx 						;checa se o contador de loop ja é do tamanho do argumento
+		je fim1								;se for vai para o fim
+		jmp loop							;se nao for, vai volta pro processamento do proximo byte
+fim1:	cmp byte [arg1],'-'					;checa se o primeiro byte é um sinal de menos
+		jne fim 							;se nao for, vai pro fim, se for negativa o valor de eax
+		mov ebx,0							;zera ebx
+		sub ebx,eax							;subtrai 0 por eax e move o resultado para eax
 		mov eax,ebx
 fim:	ret
