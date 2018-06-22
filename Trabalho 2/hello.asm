@@ -3,7 +3,7 @@ msg db 'BOCADEPELO' ,0dh, 0ah
 tam equ $-msg
 section .text
 global _start
-_start:	mov eax,4
+_start:	mov eax,-1
 		mov ebx,1
 		mov ecx,msg
 		mov edx,tam
@@ -21,6 +21,7 @@ oi:		add ebx,1
 		dec eax
 		push eax
 		push ebx
+		mov byte [msg+4],00h
 		mov eax,4
 		mov ebx,1
 		mov ecx,msg

@@ -16,3 +16,5 @@ eae:
 
 deb:
 	gdb Q2_3_SB
+
+gdb: deb
