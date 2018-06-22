@@ -10,11 +10,8 @@ menu db 'Escolha uma opcao:',0ah,'1-SOMA',0ah,'2-SUB',0ah,'3-MULT'
 tammenu equ $-menu
 resultado db 0ah,'resultado :',0ah
 tamresult equ $-resultado
-soma db 'som'
-subt db 'sub'
-mult db 'mul'
-divi db 'div'
-modo db 'mod'
+negativo db '-'
+
 
 section .bss
 nome resb 16
@@ -70,12 +67,23 @@ Soma:	mov ecx,arg1						;coloca argumento em ecx
 		call argum 							;função para receber segundo argumento
 		pop ebx								;retira o argumento 1 q tava na pilha para ebx
 		add eax,ebx							;adiciona argumento 2 e argumento 1
-		mov ecx,resultado					;responsavel por printar na tela a mensagem de resultado
+
+res:	mov ecx,resultado					;responsavel por printar na tela a mensagem de resultado
 		mov edx,tamresult
 		push eax
 		call output
 		pop eax
-		call wnum
+		push eax
+		sub eax,0
+		jge maior
+		mov ecx,negativo
+		mov edx,1
+		call output
+		pop eax
+		mov ebx,0							;zera ebx
+		sub ebx,eax							;subtrai 0 por eax e move o resultado para eax
+		mov eax,ebx							;isso negativa o eax
+maior:	call wnum
 		jmp wat
 
 wat:	mov ecx,ent							;procedimento para, apos o resultado, esperar o input de um enter para voltar ao menu
@@ -95,10 +103,7 @@ Sub:	mov ecx,arg1
 		mov ebx,eax							;move o segundo argumento recebido para ebx
 		pop eax								;retira o argumento 1 q tava na pilha para eax
 		sub eax,ebx
-		mov ecx,resultado					;responsavel por printar na tela a mensagem de resultado
-		mov edx,tamresult
-		call output
-		jmp wat
+		jmp res
 
 Mult:	mov ecx,arg1
 		mov edx,12
@@ -125,14 +130,11 @@ Div:	mov ecx,arg1
 		mov ebx,eax							;move o segundo argumento recebido para ebx
 		pop eax								;retira o argumento 1 q tava na pilha para eax
 		mov edx,0
-		cmp eax,0
-		jb posit
+		sub eax,0
+		jge posit
 		mov edx,-1
 posit:	idiv ebx
-		mov ecx,resultado					;responsavel por printar na tela a mensagem de resultado
-		mov edx,tamresult
-		call output
-		jmp wat
+		jmp res
 
 Mod:	mov ecx,arg1
 		mov edx,12
@@ -144,14 +146,12 @@ Mod:	mov ecx,arg1
 		mov ebx,eax							;move o segundo argumento recebido para ebx
 		pop eax								;retira o argumento 1 q tava na pilha para eax
 		mov edx,0
-		cmp eax,0
-		jb pos
+		sub eax,0
+		jge pos
 		mov edx,-1
 pos:	idiv ebx
-		mov ecx,resultado					;responsavel por printar na tela a mensagem de resultado
-		mov edx,tamresult
-		call output
-		jmp wat
+		mov eax,edx
+		jmp res
 
 
 Sair:	mov eax,1							;Procedimento responsavel pelo fim da execução do programa
@@ -193,20 +193,33 @@ fim1:	cmp byte [arg1],'-'					;checa se o primeiro byte é um sinal de menos
 		jne fim 							;se nao for, vai pro fim, se for negativa o valor de eax
 		mov ebx,0							;zera ebx
 		sub ebx,eax							;subtrai 0 por eax e move o resultado para eax
-		mov eax,ebx
+		mov eax,ebx							;isso negativa o eax
 fim:	ret
 
 wnum:	mov esi,0
 		mov ecx,10
 lp:		cmp eax,0
-		je end
+		je inv
 		mov edx,0
 		idiv ecx
-		add byte edx,30h
-		mov byte [arg2+esi],dl
+		add edx,30h
+		mov byte [arg1+esi],dl
 		inc esi
 		jmp lp
-end:	mov eax,4
+inv:	push esi
+		dec esi
+		mov edx,0
+		mov ecx,0
+end:	mov byte cl,[arg1+esi]
+		mov byte [arg2+edx],cl
+		inc edx
+		dec esi
+		sub esi,0
+		jge end
+		mov byte cl,[arg1+esi]
+		mov byte [arg2+edx],cl
+		pop esi
+		mov eax,4
 		mov ebx,1
 		mov ecx,arg2
 		mov edx,esi
