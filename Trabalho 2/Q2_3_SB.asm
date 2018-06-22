@@ -67,6 +67,7 @@ Soma:	mov ecx,arg1						;coloca argumento em ecx
 		call argum 							;função para receber segundo argumento
 		pop ebx								;retira o argumento 1 q tava na pilha para ebx
 		add eax,ebx							;adiciona argumento 2 e argumento 1
+		jmp res
 
 res:	mov ecx,resultado					;responsavel por printar na tela a mensagem de resultado
 		mov edx,tamresult
@@ -105,6 +106,8 @@ Sub:	mov ecx,arg1
 		sub eax,ebx
 		jmp res
 
+;resultado da multiplicação fica em edx.eax, entao se for negativo, eu chamo a função para edx como negativo
+;e transformo eax para negativo e chamo a função, assim so printara o sinal de menos uma vez
 Mult:	mov ecx,arg1
 		mov edx,12
 		call argum							;função para recuperar argumento 1
@@ -115,10 +118,37 @@ Mult:	mov ecx,arg1
 		mov ebx,eax							;move o segundo argumento recebido para ebx
 		pop eax								;retira o argumento 1 q tava na pilha para eax
 		imul ebx
+antes:	push eax
+		push edx
 		mov ecx,resultado					;responsavel por printar na tela a mensagem de resultado
 		mov edx,tamresult
 		call output
+		pop edx
+		pop eax
+depois:	sub edx,0
+		jge great
+		mov ebx,0
+		sub ebx,eax
+		mov eax,ebx
+		push eax
+		push edx
+		mov ecx,negativo
+		mov edx,1
+		call output
+		pop edx
+		pop eax
+		cmp edx,0ffffffffh
+		jne great
+		mov edx,0
+great:	push eax
+		pop eax
+		push eax
+		mov eax,edx
+		call wnum
+		pop eax
+		call wnum
 		jmp wat
+
 
 Div:	mov ecx,arg1
 		mov edx,12
