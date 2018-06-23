@@ -11,7 +11,7 @@ tammenu equ $-menu
 resultado db 0ah,'resultado :',0ah
 tamresult equ $-resultado
 negativo db '-'
-
+zero db '0'
 
 section .bss
 nome resb 16
@@ -58,6 +58,7 @@ pmenu:	mov ecx,menu
 		je Sair 							;se foi escolhido sair
 		jmp pmenu							;se nada foi escolhido, printa o menu novamente
 
+;caso seja escolhido soma
 Soma:	mov ecx,arg1						;coloca argumento em ecx
 		mov edx,12							;coloca o tamanho do argumento em edx
 		call argum							;função para recuperar argumento 1,retorna o valor de arguemento em eax
@@ -67,8 +68,21 @@ Soma:	mov ecx,arg1						;coloca argumento em ecx
 		call argum 							;função para receber segundo argumento
 		pop ebx								;retira o argumento 1 q tava na pilha para ebx
 		add eax,ebx							;adiciona argumento 2 e argumento 1
+		cmp eax,0
+		je zeero
 		jmp res
 
+;procedimento responsavel por printar na tela 'resultado:\n0' caso o resultado seja zero
+zeero:	mov ecx,resultado					;responsavel por printar na tela a mensagem de resultado
+		mov edx,tamresult
+		call output
+		mov ecx,zero
+		mov edx,1
+		call output
+		jmp wat
+
+;procedimento responsavel por printar na tela a mensagem de "resultado:" e caso o numero seja negativo "resultado:\n-"
+;e depois chamar a função que printa na tela o numero
 res:	mov ecx,resultado					;responsavel por printar na tela a mensagem de resultado
 		mov edx,tamresult
 		push eax
@@ -84,6 +98,7 @@ res:	mov ecx,resultado					;responsavel por printar na tela a mensagem de result
 		mov ebx,0							;zera ebx
 		sub ebx,eax							;subtrai 0 por eax e move o resultado para eax
 		mov eax,ebx							;isso negativa o eax
+		cmp eax,0
 maior:	call wnum
 		jmp wat
 
@@ -94,6 +109,7 @@ wat:	mov ecx,ent							;procedimento para, apos o resultado, esperar o input de 
 		jne wat
 		jmp pmenu
 
+;caso seja escolhido subtração
 Sub:	mov ecx,arg1
 		mov edx,12
 		call argum							;função para recuperar argumento 1
@@ -104,6 +120,8 @@ Sub:	mov ecx,arg1
 		mov ebx,eax							;move o segundo argumento recebido para ebx
 		pop eax								;retira o argumento 1 q tava na pilha para eax
 		sub eax,ebx
+		cmp eax,0
+		je zeero
 		jmp res
 
 ;resultado da multiplicação fica em edx.eax, entao se for negativo, eu chamo a função para edx como negativo
@@ -118,6 +136,10 @@ Mult:	mov ecx,arg1
 		mov ebx,eax							;move o segundo argumento recebido para ebx
 		pop eax								;retira o argumento 1 q tava na pilha para eax
 		imul ebx
+		cmp eax,0
+		jne antes
+		cmp edx,0
+		je zeero
 antes:	push eax
 		push edx
 		mov ecx,resultado					;responsavel por printar na tela a mensagem de resultado
@@ -149,7 +171,7 @@ great:	push eax
 		call wnum
 		jmp wat
 
-
+;caso seja escolhido divisão
 Div:	mov ecx,arg1
 		mov edx,12
 		call argum							;função para recuperar argumento 1
@@ -164,8 +186,11 @@ Div:	mov ecx,arg1
 		jge posit
 		mov edx,-1
 posit:	idiv ebx
+		cmp eax,0
+		je zeero
 		jmp res
 
+;caso seja escolhido o resto
 Mod:	mov ecx,arg1
 		mov edx,12
 		call argum							;função para recuperar argumento 1
@@ -181,6 +206,8 @@ Mod:	mov ecx,arg1
 		mov edx,-1
 pos:	idiv ebx
 		mov eax,edx
+		cmp eax,0
+		je zeero
 		jmp res
 
 
@@ -226,6 +253,9 @@ fim1:	cmp byte [arg1],'-'					;checa se o primeiro byte é um sinal de menos
 		mov eax,ebx							;isso negativa o eax
 fim:	ret
 
+;função responsavel pro transformar o numero recebido em eax, em uma string com o numero em ascii,
+;caso o numero seja negativo, ela converte para positivo e printa seu valor positivo.
+;para numeros negativos o programa printa um "-" antes de chamar essa função
 wnum:	mov esi,0
 		mov ecx,10
 lp:		cmp eax,0
