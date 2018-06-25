@@ -4,10 +4,13 @@
 
 int main(int argc, char const *argv[]){
     using namespace std;
-    std::vector<std::string> args(argv);
+    std::vector<std::string> args;
+
+    for (int i = 0; i < argc; i++)
+        args.push_back(argv[i]);
 
     
-    if (false) exit(-1); // arg error
+    if (args.size() < 3) exit(-1); // arg error
 
 
     // Reading headers
