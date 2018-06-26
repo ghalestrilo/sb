@@ -35,3 +35,18 @@ struct Token {
   bool    haserror = false;
   ERRCODE errcode;
 };
+
+// TRAB2
+struct Header {
+    std::string   name;
+    unsigned int  size;
+    std::string   bitmask;
+
+    void print(){
+        std::cout << "Header: \n" 
+                  << name << '\n' 
+                  << size << '\n'
+                  << bitmask
+                  << std::endl;
+    }
+};

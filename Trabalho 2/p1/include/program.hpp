@@ -2,7 +2,9 @@
 #include "typedefs.hpp"
 
 // MODULE: program.hpp
-int   run      (std::string, std::string, std::string);
+int   run      (std::string, vector_of_strings, std::string);
+bool  process  (std::string, bool);
+
 bool  from_file(std::string, vector_of_strings*);
 bool  to_file  (vector_of_strings, std::string, std::string);
 

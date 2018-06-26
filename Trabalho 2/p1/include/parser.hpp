@@ -16,6 +16,7 @@ struct expression {
     int position;
     
     int param_count;
+    bool relative = false;
     
 
     // May not be necessary
@@ -53,6 +54,7 @@ ast parse (vector_of_tokens);
 
 // 1st pass
 bool first_pass(vector_of_tokens*, symbol_table*);
+bool first_pass(vector_of_tokens*, symbol_table*);
 
 // 2nd pass
 bool second_pass(ast*, vector_of_tokens&, symbol_table&);
@@ -60,3 +62,10 @@ bool astcheck   (ast&, vector_of_strings&);
 
 // ast_node   parseline (std::string, symbol_table*, unsigned int*);
 expression parseexp  (Token, symbol_table& st);
+
+// TRAB2
+// I think we need a "getname" here
+// and makeheader should go into the assembler
+
+// Header
+Header makeheader(ast);

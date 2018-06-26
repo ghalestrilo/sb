@@ -19,14 +19,22 @@
 // MAIN
 int main(int argc, char *argv[]){
     // int returncode;
-    
-    if (argc < 4) exit(-1);
+    vector_of_strings args;
+    vector_of_strings files;
 
-    std::string flag   = argv[1];
-    std::string input  = argv[2];
-    std::string output = argv[3];
 
-    // logerror(returncode = run(flag, input, output));
-    // return returncode;
-    return run(flag, input, output);
+    for(int i = 1; i < argc; i++) // skip program name
+        args.push_back(argv[i]);
+
+
+    if (args.size() < 3) exit(-1);
+
+    std::string mode   = args.front();
+    std::string output = args.back();
+
+    // Prettier ways to acheive this
+    for (int i = 1; i < args.size() - 1; i++) // ignore output filename
+        files.push_back(std::string(args[i]));
+
+    return run(mode, files, output);
 }

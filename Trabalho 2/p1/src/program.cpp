@@ -13,56 +13,101 @@
   returns 0 when ok
   otherwise returns errorcode (for logerror)
   */
-int run(std::string flag, std::string input, std::string output){
+int run(std::string flag, vector_of_strings files, std::string output){
     // Read Flags
     if (flag.length() < 2) exit(-3);
-    char f = flag[1];
+    if (files.size()  < 1) exit(-4);
+
+    bool singlefile = (files.size() == 1);
+    char mode       = flag[1];
+
     vector_of_tokens tokens;
     tokens.clear();
 
-// Disposable ---------------------------------------------------------
-    std::cout << "[" << input << " -> " << output << "]";
-    switch(f){
-        case 'o': std::cout << " assemble!"      << std::endl; break;
-        case 'm': std::cout << " expand macros!" << std::endl; break;
-        case 'p': std::cout << " preprocess!"    << std::endl; break;
-        default:
-            std::cout << "unknown operation: " << flag << std::endl;
-            exit(-2);
-            break;
+    // FIXME module_names should be calculated by the preprocessor
+    vector_of_strings module_names = files;
+
+
+
+
+// -------------------------------------------------------------------- Preprocess Files
+    std::vector<vector_of_strings> prepped_modules;
+    std::vector<vector_of_tokens>  tokenized_modules; 
+
+    vector_of_strings temp;
+    vector_of_strings processed;
+
+    vector_of_tokens  temptokens;
+    for (auto f : files){
+        if (from_file(f, &temp)){
+            processed.clear();
+            preprocess(temp, &processed, mode!='p', &temptokens);
+        
+        }
+        else{
+            std::cout << "Problem reading file: "
+                      << f
+                      << ". Aborting Execution"
+                      << std::endl;
+            exit(-5);
+        }
+        
+        prepped_modules.push_back(processed);
+        tokenized_modules.push_back(temptokens);
     }
 
-// --------------------------------------------------------------------
 
-    // Read File
-    vector_of_strings incode;
-    if (!from_file(input, &incode)) exit(-5);
-
-    // Run Preprocessor
-    vector_of_strings processed;
-    preprocess(incode, &processed, f != 'p', &tokens); // (f!='p') <==> (f == 'm') or (f == 'o') 
-    
     // Flag-controlled Outputs
     // 1. If, Equ Expanded
-    if (f == 'p') {
-        to_file(processed, output, ".pre");
+    if (mode == 'p') {
+        for (auto p : prepped_modules) to_file(p, output, ".pre");
         return 0;
     }
 
     // 2. Macros Expanded 
-    if (f == 'm') {
-        to_file(processed, output, ".mcr");
+    if (mode == 'm') {
+        for (auto p : prepped_modules) to_file(p, output, ".mcr");
         return 0;
     }
+    
 
 
-    // 3. Run parser -> assembler (-o is implied)
-    ast prog = parse(tokens);
-    if (!astcheck(prog, incode)) exit(-5);
 
-    std::vector<int> assembled = assemble(prog);
+// -------------------------------------------------------------------- Build GST, GUT
+    // Problema do Parser, nao meu
 
-    if (!to_file(assembled, output, ".o")) exit(-10);
+// -------------------------------------------------------------------- Parse Modules
+    std::vector<ast> parsed_modules;
+    std::vector<Header> headers;
+    bool parse_err = false;
+
+    /** FIXME: 
+     * parser must receive vectors now
+     * parser must mark relative tokens for the assembler
+     * parser must build GST, GUT (that's why it needs the vectors)
+    */
+   
+    parse(prepped_modules, &parsed_modules);
+
+    for(int i = 0; i < prepped_modules.size(); i++){
+        parse_err &= astcheck(parsed_modules[i], prepped_modules[i]);
+    }
+
+    if (parse_err) exit(-5);    
+
+
+// -------------------------------------------------------------------- Assemble Modules
+    vector_of_strings assembled_modules;
+    bool write_err = false;
+
+    // FIXME: Assembler must receive module labels, and construct headers
+    for(int i = 0; i < parsed_modules.size(); i++){
+        assembled_modules.push_back(assemble(parsed_modules[i], std::string(module_names[i]));
+
+        write_err &= to_file(assembled_modules.back(), output, ".o");
+    }
+
+    if (write_err) exit(-10);
  
     return 0;
 }
@@ -156,5 +201,10 @@ bool from_file(std::string filename, vector_of_strings* res){
         res->push_back(std::string(temp.c_str()));
     }
 
+    return true;
+}
+
+bool process(std::string filename, bool singlefile){
+    
     return true;
 }

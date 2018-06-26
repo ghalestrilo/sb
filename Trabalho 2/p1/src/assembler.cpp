@@ -1,14 +1,16 @@
 #include "../include/assembler.hpp"
 //#include <cstdlib>
 
-std::vector<int> assemble(ast& program) {
-    std::vector<int> output;
+std::string assemble(ast program, std::string name) {
+    std::vector<int>    instructions;
+    std::string         formatted;
+    Header              header;
 
     for(auto& cmd : program.statements) {
-        output.push_back(cmd.exp.value);
+        instructions.push_back(cmd.exp.value);
 
         for(auto& p : cmd.params)
-            output.push_back(p.exp.value);
+            instructions.push_back(p.exp.value);
 
         #ifdef DEBUG_ASSEMBLER_PRINT_OUTPUT
             std::cout << "[assembler] "
@@ -23,5 +25,21 @@ std::vector<int> assemble(ast& program) {
         #endif // DEBUG_ASSEMBLER_PRINT_OUTPUT
     }
 
-    return output;
+    for(auto i : instructions){
+        formatted += " ";
+        formatted += i;
+    }
+
+
+    // FIXME: BUILD HEADER!! (from name and ast (for length and bitmask))
+
+    #ifdef DEBUG_ASSEMBLER_PRINT_HEADERS
+        std::cout << "Module: "
+                  << name
+                  << "\nHeader: "
+                  << std::endl;
+        header.print();
+    #endif // DEBUG_ASSEMBLER_PRINT_HEADERS
+
+    return formatted;
 }

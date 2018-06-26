@@ -2,4 +2,4 @@
 #include "parser.hpp"
 #include "debug.h"
 
-std::vector<int> assemble(ast& program);
+std::string assemble(ast, vector_of_strings);

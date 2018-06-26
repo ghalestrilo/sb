@@ -90,3 +90,9 @@
     Prints output values 
  */
 // #define DEBUG_ASSEMBLER_PRINT_OUTPUT
+
+
+/* DEBUG_ASSEMBLER_PRINT_HEADERS
+    Prints module headers
+ */
+#define DEBUG_ASSEMBLER_PRINT_HEADERS

@@ -288,3 +288,15 @@ bool astcheck   (ast& code, vector_of_strings& orig){
 
     return (errcount == 0);
 }
+
+
+Header makeheader(ast prog){
+    // for(auto t : prog.statements)
+    //     t.exp.token.label;
+
+    return Header({
+        "test",
+        123,
+        "110"
+    });
+}
