@@ -39,6 +39,10 @@ run:
 build: $(OBJF)
 	g++ $^ -o $(EXEC)
 
+
+debug:
+	gdb $(EXEC) -- $(PROG_ARGS)
+
 obj/%.o: 
 	g++ $(patsubst obj/%.o, src/%.cpp, $@) $(CFLAGS) -c -o $@ 
 

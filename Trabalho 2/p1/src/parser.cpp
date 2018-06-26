@@ -289,14 +289,11 @@ bool astcheck   (ast& code, vector_of_strings& orig){
     return (errcount == 0);
 }
 
+// WIP
+bool parse (std::vector<vector_of_tokens> sources, std::vector<ast>* outputs){
+    (*outputs) = std::vector<ast>();
+    // First Pass: Global ST, Global UT
 
-Header makeheader(ast prog){
-    // for(auto t : prog.statements)
-    //     t.exp.token.label;
-
-    return Header({
-        "test",
-        123,
-        "110"
-    });
+    // Second Pass: Coisate the bagulhettes    
+    return true;
 }

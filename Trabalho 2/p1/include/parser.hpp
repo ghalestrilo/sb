@@ -50,7 +50,7 @@ struct ast {
 // Symbol Table: rename to symbol_table
 typedef std::map<std::string, int> symbol_table;
 
-ast parse (vector_of_tokens);
+bool parse (std::vector<vector_of_tokens>, std::vector<ast>*);
 
 // 1st pass
 bool first_pass(vector_of_tokens*, symbol_table*);
@@ -62,10 +62,3 @@ bool astcheck   (ast&, vector_of_strings&);
 
 // ast_node   parseline (std::string, symbol_table*, unsigned int*);
 expression parseexp  (Token, symbol_table& st);
-
-// TRAB2
-// I think we need a "getname" here
-// and makeheader should go into the assembler
-
-// Header
-Header makeheader(ast);

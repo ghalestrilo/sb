@@ -43,3 +43,14 @@ std::string assemble(ast program, std::string name) {
 
     return formatted;
 }
+
+Header makeheader(ast prog){
+    // for(auto t : prog.statements)
+    //     t.exp.token.label;
+
+    return Header({
+        "test",
+        123,
+        "110"
+    });
+}

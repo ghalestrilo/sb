@@ -26,6 +26,8 @@ int run(std::string flag, vector_of_strings files, std::string output){
 
     // FIXME module_names should be calculated by the preprocessor
     vector_of_strings module_names = files;
+    // vector_of_strings module_names;
+    // std::copy(files.begin(), files.end(), &module_names);
 
 
 
@@ -77,17 +79,17 @@ int run(std::string flag, vector_of_strings files, std::string output){
     // Problema do Parser, nao meu
 
 // -------------------------------------------------------------------- Parse Modules
-    std::vector<ast> parsed_modules;
+    std::vector<ast>    parsed_modules;
     std::vector<Header> headers;
-    bool parse_err = false;
+    bool parse_err =    false;
 
     /** FIXME: 
      * parser must receive vectors now
      * parser must mark relative tokens for the assembler
      * parser must build GST, GUT (that's why it needs the vectors)
     */
-   
-    parse(prepped_modules, &parsed_modules);
+
+    if (!parse(tokenized_modules, &parsed_modules)) exit(-6);
 
     for(int i = 0; i < prepped_modules.size(); i++){
         parse_err &= astcheck(parsed_modules[i], prepped_modules[i]);
@@ -102,7 +104,7 @@ int run(std::string flag, vector_of_strings files, std::string output){
 
     // FIXME: Assembler must receive module labels, and construct headers
     for(int i = 0; i < parsed_modules.size(); i++){
-        assembled_modules.push_back(assemble(parsed_modules[i], std::string(module_names[i]));
+        assembled_modules.push_back(assemble(parsed_modules[i], module_names[i]));
 
         write_err &= to_file(assembled_modules.back(), output, ".o");
     }
