@@ -78,18 +78,6 @@ int main(int argc, char const *argv[]){
     return 0;
 }
 
-/** Example Code
- * H: PROG1
- * H: 12
- * H: 010010101010
- * T: 12 14 15 02 5 15 12 1 6 9 4 2
- * 
- * @ghalestrilo:
- * T: a  r  a  a  r a  r  a r a r a
- * T: 12 14 15 02 5 15 12 1 6 9 4 2
- * Suponha que não há 
-*/
-
 // FIXME: This does not work with single modules yet
 bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out){
     if (mod1.empty()) return false;

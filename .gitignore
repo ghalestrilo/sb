@@ -1,15 +1,28 @@
 .vscode
 
-res/moodle/*.o
-res/moodle
-res/out/*.o
-res/out
-res/*.o
-
-obj/*.o
-obj/
-bin/*.exe
-bin/
-bin/compiler.exe
-
 Especificacoes.pdf
+Trabalho\ 1/res/moodle/*.o
+Trabalho\ 1/res/moodle
+Trabalho\ 1/res/out/*.o
+Trabalho\ 1/res/out
+Trabalho\ 1/res/*.o
+
+Trabalho\ 1/obj/*.o
+Trabalho\ 1/obj/
+Trabalho\ 1/bin/*.exe
+Trabalho\ 1/bin/
+Trabalho\ 1/bin/compiler.exe
+
+
+Trabalho\ 2/p2/*.o
+
+Trabalho\ 2/p1/res/moodle/*.o
+Trabalho\ 2/p1/res/moodle
+Trabalho\ 2/p1/res/out/*.o
+Trabalho\ 2/p1/res/out
+Trabalho\ 2/p1/res/*.o
+
+Trabalho\ 2/p1/obj/*.o
+Trabalho\ 2/p1/obj/
+Trabalho\ 2/p1/bin/*.exe
+Trabalho\ 2/p1/bin/
