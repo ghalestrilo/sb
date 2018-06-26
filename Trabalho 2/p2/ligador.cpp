@@ -93,7 +93,7 @@ int main(int argc, char const *argv[]){
 // FIXME: This does not work with single modules yet
 bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out){
     if (mod1.empty()) return false;
-    std::cout << "size: " << mod1.size() << std::endl;
+    // std::cout << "size: " << mod1.size() << std::endl;
 
     // Useful
     bool singlemod = mod2.size() < 3 || mod2[3].empty();
@@ -125,6 +125,8 @@ bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out
                   << i.word
                   << " | "
                   << (i.relative ? "relative" : "absolute")
+                  << " | "
+                  << i.word
                   << std::endl;
 
 
@@ -160,6 +162,8 @@ bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out
                         << i.word
                         << " | "
                         << (i.relative ? "relative" : "absolute")
+                        << " | "
+                        << (i.relative ? i.word + text1.size(): i.word)
                         << std::endl;
         }
     }
