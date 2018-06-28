@@ -17,11 +17,14 @@
  */
 
 // MAIN
+// TODO: Receive more than one input file, change how args work
 int main(int argc, char *argv[]){
-    // int returncode;
-    
     if (argc < 4) exit(-1);
 
+    // TODO
+    // bool singlemodule = ...
+    // Pass this variable to program chain
+    
     std::string flag   = argv[1];
     std::string input  = argv[2];
     std::string output = argv[3];
