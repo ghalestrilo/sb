@@ -91,7 +91,7 @@ int run(std::string flag, vector_of_strings files, std::string output){
 
     if (!parse(tokenized_modules, &parsed_modules)) exit(-6);
 
-    for(int i = 0; i < prepped_modules.size(); i++){
+    for(unsigned int i = 0; i < prepped_modules.size(); i++){
         parse_err &= astcheck(parsed_modules[i], prepped_modules[i]);
     }
 
@@ -103,7 +103,7 @@ int run(std::string flag, vector_of_strings files, std::string output){
     bool write_err = false;
 
     // FIXME: Assembler must receive module labels, and construct headers
-    for(int i = 0; i < parsed_modules.size(); i++){
+    for(unsigned int i = 0; i < parsed_modules.size(); i++){
         assembled_modules.push_back(assemble(parsed_modules[i], module_names[i]));
 
         write_err &= to_file(assembled_modules.back(), output, ".o");

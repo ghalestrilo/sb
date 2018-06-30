@@ -23,7 +23,7 @@ int main(int argc, char *argv[]){
     vector_of_strings files;
 
 
-    for(int i = 1; i < argc; i++) // skip program name
+    for(unsigned int i = 1; i < argc; i++) // skip program name
         args.push_back(argv[i]);
 
 
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]){
     std::string output = args.back();
 
     // Prettier ways to acheive this
-    for (int i = 1; i < args.size() - 1; i++) // ignore output filename
+    for (unsigned int i = 1; i < args.size() - 1; i++) // ignore output filename
         files.push_back(std::string(args[i]));
 
     return run(mode, files, output);

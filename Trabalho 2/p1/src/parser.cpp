@@ -3,6 +3,7 @@
 #include "../include/debug.h"
 #include <cstdlib>
 
+/*
 ast parse(vector_of_tokens code_safe){
     
     vector_of_tokens code;
@@ -45,9 +46,9 @@ ast parse(vector_of_tokens code_safe){
 
     return parsed;
 };
+*/
 
-
-#ifdef DEBUG_PARSER_SYMBOL_TABLE
+//#ifdef DEBUG_PARSER_SYMBOL_TABLE
     void print_symbol_table(symbol_table st){
         if (st.empty()) 
             std::cout << "[parser] : No Symbol Table Loaded"
@@ -65,14 +66,30 @@ ast parse(vector_of_tokens code_safe){
                           << std::endl;
         }
     }
-#endif
+//#endif
 
-bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
+// TODO: Change to unsigned int, returning size of code read.
+bool first_pass(vector_of_tokens* code, symbol_table* st, symbol_table* gst = NULL){
     using namespace dictionary;
+    
+    // Startup Checks
+    bool singlefile = (code->size() == 1);
     if (st == NULL) st = new symbol_table;
-    int pc = 0; // Parse-Relevant
+    // symbol_table st; // local symbol table
+    if (gst == NULL) gst = new symbol_table;
+    // It's better to return these things, otherwise we won't be able to free them
 
-    auto it   = code->begin();
+    std::vector<std::string> add_to_gst;
+    std::vector<std::string> external;
+
+
+
+
+    // Loop Setup
+    int  pc = 0; // Parse-Relevant
+    auto it = code->begin();
+
+    // Parsing Loop
     while(it != code->end()){
         auto next = it + 1;
 
@@ -83,7 +100,6 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
         // Section Found : TODO: Make Checks
         if (it->text == "SECTION"){
             // it++;
-
 
             if (next != code->end() && next->text == "TEXT"){
                 //textfound = true;
@@ -97,9 +113,31 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
                 continue;
             }
 
-            // ERROR! UNKNOWN SECTION TYPE
+            // ERROR! UNKNOWN SECTION TYPE OR UNEXPECTED EOF
         }
 
+
+        // EXTERN: inform usage of external symbol (to usage_table)
+        if (it->text == "EXTERN")
+            if (next == code->end()){
+                // ERR: Unexpected EOF
+            }
+            else {
+                external.push_back(next->text);
+                it = code->erase(it, it + 2);
+            }
+
+        // PUBLIC: insert into global symbol table
+        if (it->text == "PUBLIC")
+            if (next == code->end()){
+                // ERR: Unexpected EOF
+            }
+            else {
+                add_to_gst.push_back(next->text);
+                it = code->erase(it, it + 2);
+            }
+
+        
         // Label Found -- IF we're using grab_token
         if (next != code->end() && next->text == ":"){
 
@@ -117,7 +155,6 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
                       << pc
                       << "\t: "
                       << it->text
-                    //   << ")"
                       << std::endl; 
 
         #endif // DEBUG_PARSER_FIRST_PASS
@@ -132,12 +169,26 @@ bool first_pass(vector_of_tokens* code, symbol_table* st = NULL ){
         print_symbol_table(*st);
     #endif // DEBUG_PARSER_SYMBOL_TABLE
 
-    // if (!(textfound && datafound)) {} // ERROR!
+    // TODO: Check if externs are ok - no undefined symbols
+
+    if (singlefile)
+        delete gst;
+    else for (auto entry : add_to_gst)
+            if (gst->find(entry) != gst->end()) // Symbol not previously defined
+                if (st->find(entry) != st->end()) // Symbol not locally undefined
+                    (*gst)[entry] = (*st)[entry]; // + accumulated offset
+                else {
+                    // ERR: Cannot set unknown symbol to public
+                }
+            else{
+                // ERR: Multiple Exports
+            }
+            
 
     return true;
 };
 
-bool second_pass(ast* parsed, vector_of_tokens& code, symbol_table& st){
+bool second_pass(ast* parsed, vector_of_tokens& code, symbol_table& st, symbol_table& gst){
     using namespace dictionary;
     unsigned short int args = 0;
     int pos = 0;
@@ -292,8 +343,33 @@ bool astcheck   (ast& code, vector_of_strings& orig){
 // WIP
 bool parse (std::vector<vector_of_tokens> sources, std::vector<ast>* outputs){
     (*outputs) = std::vector<ast>();
-    // First Pass: Global ST, Global UT
+    // First Pass: Global ST, Local STs, Global UT
+
+    symbol_table               gst; // Global Symbol Table
+    std::vector<symbol_table*> lst; // Local Symbol Tables
+    
+
+
+    for (auto s : sources){
+        lst.push_back(new symbol_table());
+        first_pass(&s, lst.back(), &gst);
+    }
+
+    #define DEBUG_PARSER_GLOBAL_SYMBOL_TABLE 
+    #ifdef DEBUG_PARSER_GLOBAL_SYMBOL_TABLE
+        print_symbol_table(gst);
+    #endif // DEBUG_PARSER_GLOBAL_SYMBOL_TABLE
+
+
+    // Check for cross-dependencies
+
 
     // Second Pass: Coisate the bagulhettes    
+    for (unsigned int i = 0; i < sources.size(); i++){
+        ast parsed;
+        second_pass(&parsed, sources[i], *lst[i], gst);
+        outputs->push_back(parsed);
+    }
+    
     return true;
 }

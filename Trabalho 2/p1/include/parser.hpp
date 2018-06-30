@@ -53,11 +53,33 @@ typedef std::map<std::string, int> symbol_table;
 bool parse (std::vector<vector_of_tokens>, std::vector<ast>*);
 
 // 1st pass
-bool first_pass(vector_of_tokens*, symbol_table*);
-bool first_pass(vector_of_tokens*, symbol_table*);
+bool first_pass(vector_of_tokens*, symbol_table*, symbol_table*);
 
 // 2nd pass
-bool second_pass(ast*, vector_of_tokens&, symbol_table&);
+bool second_pass(ast*, vector_of_tokens&, symbol_table&, symbol_table&);
+
+// Using Usage Tables
+// typedef std::map<std::string, int>              symbol_table;
+// typedef std::vector<std::pair<std::string, int>> usage_table;
+
+// bool parse (std::vector<vector_of_tokens>, std::vector<ast>*);
+
+// // 1st pass
+// bool first_pass(vector_of_tokens*,
+//     symbol_table*,        usage_table*,         // Local, for use in 2nd pass
+//     symbol_table* = NULL, usage_table* = NULL); // Global, optional
+
+// // 2nd pass
+// bool second_pass(ast*, vector_of_tokens&,
+//     symbol_table*,        usage_table*,         // Local, mandatory
+//     symbol_table* = NULL, usage_table* = NULL); // Global, optional
+    
+
+
+
+
+
+
 bool astcheck   (ast&, vector_of_strings&);
 
 // ast_node   parseline (std::string, symbol_table*, unsigned int*);

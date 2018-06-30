@@ -107,6 +107,13 @@ const static std::string symbols = ":;,";
 bool alphabetic (char c){
     return (c >= 'A' && c <= 'Z') || (c == '_'); // Special case for the underscore symbol
 }
+bool alphabetic (std::string s){
+    for (auto c : s)
+        if (!alphabetic(c))
+            return false;
+    return true;
+}
+
 bool symbolic   (char c){
     return (c == ':') || (c == ';') || (c == ',');
     // return (symbols.find(c) != symbol.end());

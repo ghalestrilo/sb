@@ -21,7 +21,7 @@ bool alphabetic (char);
 bool numeric    (char);
 bool symbolic   (char);
 
-// bool alphabetic (std::string);
+bool alphabetic (std::string);
 bool numeric    (std::string);
 
 void trim(std::string*); // Removes Spaces

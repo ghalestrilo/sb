@@ -19,19 +19,31 @@ LFLAGS = -Wall $(GLOBALFLAGS)
 
 OP     = o
 
-
-IF = bin
+# Call make run mod=yes to compile a modularized file, and link it
+IF1   = fat_mod_A
+IF2   = fat_mod_B
 IDIR = ./res
 
-OF = bin_res
+OF   = bin_res
 ODIR = ./res
 
-PROG_INPUT  = $(IDIR)/$(IF)
+
+ifeq ($(mod), yes)
+PROG_INPUT = $(IDIR)/$(IF1) $(IDIR)/$(IF2)
+else
+PROG_INPUT = $(IDIR)/$(IF1)
+endif
+
+
 PROG_OUTPUT = $(ODIR)/$(OF)
 
 PROG_ARGS   = -$(OP) $(PROG_INPUT) $(PROG_OUTPUT)
 
+ifeq ($(clean), no)
+all: build run	
+else
 all: clean build run
+endif
 
 run:
 	$(EXEC) $(PROG_ARGS)
@@ -48,8 +60,10 @@ obj/%.o:
 
 ifeq ($(OS), Windows_NT)
 clean:
-	rd /s /q "obj"
-	mkdir "obj"
+	rm -f obj/*.o
+# clean:
+# 	rd /s /q "obj"
+# 	mkdir "obj"
 
 clearscreen:
 	cls
