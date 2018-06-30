@@ -23,7 +23,7 @@ int main(int argc, char *argv[]){
     vector_of_strings files;
 
 
-    for(unsigned int i = 1; i < argc; i++) // skip program name
+    for(int i = 1; i < argc; i++) // skip program name
         args.push_back(argv[i]);
 
 

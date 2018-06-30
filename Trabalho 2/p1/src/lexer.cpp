@@ -25,7 +25,7 @@ bool readline(std::string line, std::vector<Token>* tokens, unsigned int lineind
         std::cout << "[lexer]: ";
         for (auto t : (*tokens))
             std::cout << t.text << " ";
-        std::cout << std::endl;n
+        std::cout << std::endl;
     #endif
 
     return true;
@@ -46,6 +46,9 @@ Token grab_token(std::string* line){
     bool word   = alphabetic (firstchar);
     bool number = numeric    (firstchar);
     bool symbol = symbolic   (firstchar);
+
+    // How the fuck do I do this now
+    bool hex    = (firstchar == 0);
 
     unsigned short int length = 0;
     for (auto c : (*line)){

@@ -18,7 +18,7 @@ int run(std::string flag, vector_of_strings files, std::string output){
     if (flag.length() < 2) exit(-3);
     if (files.size()  < 1) exit(-4);
 
-    bool singlefile = (files.size() == 1);
+    // bool singlefile = (files.size() == 1);
     char mode       = flag[1];
 
     vector_of_tokens tokens;
@@ -29,21 +29,28 @@ int run(std::string flag, vector_of_strings files, std::string output){
     // vector_of_strings module_names;
     // std::copy(files.begin(), files.end(), &module_names);
 
-
+    #define DEBUG_PROGRAM_INPUT_FILENAMES
+    #ifdef DEBUG_PROGRAM_INPUT_FILENAMES
+        std::cout << "[program] input files:" << std::endl;
+        for (auto f : module_names)
+            std::cout << "\t- "
+                      << f
+                      << std::endl;
+    #endif // DEBUG_PROGRAM_INPUT_FILENAMES
 
 
 // -------------------------------------------------------------------- Preprocess Files
     std::vector<vector_of_strings> prepped_modules;
-    std::vector<vector_of_tokens>  tokenized_modules; 
+    std::vector<vector_of_tokens*> tokenized_modules; 
 
     vector_of_strings temp;
     vector_of_strings processed;
 
-    vector_of_tokens  temptokens;
+    vector_of_tokens* temptokens = new vector_of_tokens();
     for (auto f : files){
         if (from_file(f, &temp)){
             processed.clear();
-            preprocess(temp, &processed, mode!='p', &temptokens);
+            preprocess(temp, &processed, mode!='p', temptokens);
         
         }
         else{
@@ -55,7 +62,7 @@ int run(std::string flag, vector_of_strings files, std::string output){
         }
         
         prepped_modules.push_back(processed);
-        tokenized_modules.push_back(temptokens);
+        tokenized_modules.emplace_back(temptokens);
     }
 
 
@@ -72,11 +79,6 @@ int run(std::string flag, vector_of_strings files, std::string output){
         return 0;
     }
     
-
-
-
-// -------------------------------------------------------------------- Build GST, GUT
-    // Problema do Parser, nao meu
 
 // -------------------------------------------------------------------- Parse Modules
     std::vector<ast>    parsed_modules;
@@ -108,6 +110,9 @@ int run(std::string flag, vector_of_strings files, std::string output){
 
         write_err &= to_file(assembled_modules.back(), output, ".o");
     }
+
+    // for(unsigned int i = 0; i < parsed_modules.size(); i++)
+    //     write_err &= to_file(assemble(parsed_modules[i], module_names[i]), output, ".o");
 
     if (write_err) exit(-10);
  
