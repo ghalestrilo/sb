@@ -18,103 +18,78 @@ int run(std::string flag, vector_of_strings files, std::string output){
     if (flag.length() < 2) exit(-3);
     if (files.size()  < 1) exit(-4);
 
-    // bool singlefile = (files.size() == 1);
-    char mode       = flag[1];
-
-    vector_of_tokens tokens;
-    tokens.clear();
-
-    // FIXME module_names should be calculated by the preprocessor
-    vector_of_strings module_names = files;
-    // vector_of_strings module_names;
-    // std::copy(files.begin(), files.end(), &module_names);
+    bool modular = (files.size() > 1);
+    char mode    = flag[1];
 
     #define DEBUG_PROGRAM_INPUT_FILENAMES
     #ifdef DEBUG_PROGRAM_INPUT_FILENAMES
         std::cout << "[program] input files:" << std::endl;
-        for (auto f : module_names)
+        for (auto f : files)
             std::cout << "\t- "
                       << f
                       << std::endl;
     #endif // DEBUG_PROGRAM_INPUT_FILENAMES
+    
+    // Gigantic loop
+    for (auto file : files){
 
 
 // -------------------------------------------------------------------- Preprocess Files
-    std::vector<vector_of_strings> prepped_modules;
-    std::vector<vector_of_tokens*> tokenized_modules; 
+        vector_of_strings prepped;
+        vector_of_strings temp;
+        vector_of_tokens* tokenized = new vector_of_tokens; 
 
-    vector_of_strings temp;
-    vector_of_strings processed;
-
-    vector_of_tokens* temptokens = new vector_of_tokens();
-    for (auto f : files){
-        if (from_file(f, &temp)){
-            processed.clear();
-            preprocess(temp, &processed, mode!='p', temptokens);
+        
+        if (from_file(file, &temp)){
+            prepped.clear();
+            preprocess(temp, &prepped, mode!='p', tokenized);
         
         }
+
         else{
             std::cout << "Problem reading file: "
-                      << f
+                      << file
                       << ". Aborting Execution"
                       << std::endl;
             exit(-5);
         }
-        
-        prepped_modules.push_back(processed);
-        tokenized_modules.emplace_back(temptokens);
-    }
 
+        // Flag-controlled Outputs
+        // 1. If, Equ Expanded
+        if (mode == 'p') {
+            to_file(prepped, output, ".pre");
+            return 0;
+        }
 
-    // Flag-controlled Outputs
-    // 1. If, Equ Expanded
-    if (mode == 'p') {
-        for (auto p : prepped_modules) to_file(p, output, ".pre");
-        return 0;
-    }
+        // 2. Macros Expanded 
+        if (mode == 'm') {
+            to_file(prepped, output, ".mcr");
+            return 0;
+        }
 
-    // 2. Macros Expanded 
-    if (mode == 'm') {
-        for (auto p : prepped_modules) to_file(p, output, ".mcr");
-        return 0;
-    }
-    
 
 // -------------------------------------------------------------------- Parse Modules
-    std::vector<ast>    parsed_modules;
-    std::vector<Header> headers;
-    bool parse_err =    false;
+        program parsed;
+        bool parse_err = false;
 
-    /** FIXME: 
-     * parser must receive vectors now
-     * parser must mark relative tokens for the assembler
-     * parser must build GST, GUT (that's why it needs the vectors)
-    */
+        /** FIXME: 
+         * parser must receive vectors now
+         * parser must mark relative tokens for the assembler
+         * parser must build GST, GUT (that's why it needs the vectors)
+        */
 
-    if (!parse(tokenized_modules, &parsed_modules)) exit(-6);
+        if (!parse(tokenized, &parsed, modular)) exit(-6);
 
-    for(unsigned int i = 0; i < prepped_modules.size(); i++){
-        parse_err &= astcheck(parsed_modules[i], prepped_modules[i]);
-    }
+        for(unsigned int i = 0; i < prepped.size(); i++){
+            parse_err &= astcheck(*parsed.code, prepped);
+        }
 
-    if (parse_err) exit(-5);    
+        if (parse_err) exit(-5);    
 
 
 // -------------------------------------------------------------------- Assemble Modules
-    vector_of_strings assembled_modules;
-    bool write_err = false;
-
-    // FIXME: Assembler must receive module labels, and construct headers
-    for(unsigned int i = 0; i < parsed_modules.size(); i++){
-        assembled_modules.push_back(assemble(parsed_modules[i], module_names[i]));
-
-        write_err &= to_file(assembled_modules.back(), output, ".o");
+        if (to_file(assemble(parsed), output, ".o")) exit(-10);
     }
-
-    // for(unsigned int i = 0; i < parsed_modules.size(); i++)
-    //     write_err &= to_file(assemble(parsed_modules[i], module_names[i]), output, ".o");
-
-    if (write_err) exit(-10);
  
     return 0;
 }

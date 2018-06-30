@@ -2,7 +2,9 @@
 #include "parser.hpp"
 #include "debug.h"
 
-std::string assemble(ast, std::string);
+#include "model.hpp"
+
+std::string assemble(program);
 
 // TRAB2
 // I think we need a "getname" here
