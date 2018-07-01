@@ -4,12 +4,12 @@
     Prints input and output file
      during read/write process
  */
-#define DEBUG_FILE_PRINTDATA
+// #define DEBUG_FILE_PRINTDATA
 
 /* DEBUG_PROGRAM_INPUT_FILENAMES
     Prints received parameter files
 */
-#define DEBUG_PROGRAM_INPUT_FILENAMES
+// #define DEBUG_PROGRAM_INPUT_FILENAMES
 
 // ------------------------------------------------------ PRE-PROCESSOR
 
@@ -62,29 +62,29 @@
 /* DEBUG_PARSER_SYMBOL_TABLE
     Prints constructed symbol table during parsing
  */
-#define DEBUG_PARSER_SYMBOL_TABLE
+// #define DEBUG_PARSER_SYMBOL_TABLE
 
 /* DEBUG_PARSER_GLOBAL_SYMBOL_TABLE
     Prints global symbol table during parsing
  */
-#define DEBUG_PARSER_GLOBAL_SYMBOL_TABLE
+// #define DEBUG_PARSER_GLOBAL_SYMBOL_TABLE
 
 
 /* DEBUG_PARSER_FIRST_PASS
     Shows tokens passed to first pass
  */
-#define DEBUG_PARSER_FIRST_PASS
+// #define DEBUG_PARSER_FIRST_PASS
 
 /* DEBUG_PARSER_READ_LINE
     Prints each line during parsing
  */
-#define DEBUG_PARSER_READ_LINE
+// #define DEBUG_PARSER_READ_LINE
 
 
 /* DEBUG_PARSER_AST
     Prints constructed symbol table during parsing
  */
-#define DEBUG_PARSER_AST
+// #define DEBUG_PARSER_AST
 
 
 // ------------------------------------------------------ LEXER

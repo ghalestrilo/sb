@@ -25,61 +25,7 @@ int run(std::string flag, vector_of_strings files, std::string output){
     #endif // DEBUG_PROGRAM_INPUT_FILENAMES
     
     // Gigantic loop
-    for (auto file : files){
-
-
-// -------------------------------------------------------------------- Preprocess Files
-        vector_of_strings prepped;
-        vector_of_strings temp;
-        vector_of_tokens* tokenized = new vector_of_tokens; 
-
-        
-        if (from_file(file, &temp)){
-            prepped.clear();
-            preprocess(temp, &prepped, mode!='p', tokenized);
-        
-        }
-
-        else{
-            std::cout << "Problem reading file: "
-                      << file
-                      << ". Aborting Execution"
-                      << std::endl;
-            exit(-5);
-        }
-
-        // Flag-controlled Outputs
-        // 1. If, Equ Expanded
-        if (mode == 'p') {
-            to_file(prepped, output, ".pre");
-            return 0;
-        }
-
-        // 2. Macros Expanded 
-        if (mode == 'm') {
-            to_file(prepped, output, ".mcr");
-            return 0;
-        }
-
-
-// -------------------------------------------------------------------- Parse Modules
-        program* parsed = new program();
-
-        if (!parse(tokenized, parsed, modular)) exit(-6);
-        if (!astcheck(parsed->code, prepped))  exit(-5);    
-
-// -------------------------------------------------------------------- Assemble Modules
-        std::string as = assemble(*parsed);
-        std::cout << as <<std::endl;
-        if (!to_file(as, file, ".o")) exit(-10);
-
-        // Cleanup
-        prepped.clear();
-        temp.clear();
-        delete tokenized;
-        delete parsed;
-    }
- 
+    for (auto file : files) process(file, mode, modular);
     return 0;
 }
 
@@ -132,8 +78,8 @@ bool process(std::string filename, char mode, bool modular){
     if (!astcheck(parsed->code, prepped))  exit(-5);    
 
 // -------------------------------------------------------------------- Assemble Modules
-    std::string as = assemble(*parsed);
-    std::cout << as <<std::endl;
+    std::string as = assemble(*parsed, modular);
+    // std::cout << as <<std::endl;
     if (!to_file(as, output, ".o")) exit(-10);
 
     // Cleanup

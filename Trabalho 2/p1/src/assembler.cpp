@@ -46,41 +46,44 @@ void printheader(program prog){
 }
 #endif // DEBUG_ASSEMBLER_PRINT_HEADERS
 
-std::string assemble(program prog) {
+std::string assemble(program prog, bool modular) {
     
     std::string output;
 
-    // Header: Name
-    output += prog.name;
-    output += '\n';
+    // Modular: Structure modules and tables and stuff
+    if (modular){
+        // Header: Name
+        output += prog.name;
+        output += '\n';
 
-    // Header: Size
-    output += std::to_string(prog.size);
-    output += '\n';
+        // Header: Size
+        output += std::to_string(prog.size);
+        output += '\n';
 
-    // Header: Relative Bitmask
-    for (auto relative : prog.relative) output += (relative ? '1' : '0');
-    output += '\n';
+        // Header: Relative Bitmask
+        for (auto relative : prog.relative) output += (relative ? '1' : '0');
+        output += '\n';
 
-    // Header: Definition Table
-    for (auto def : prog.dt){
-        output += def.first;
-        output += ' ';
-        output += std::to_string(def.second);
-        output += ' ';
+        // Header: Definition Table
+        for (auto def : prog.dt){
+            output += def.first;
+            output += ' ';
+            output += std::to_string(def.second);
+            output += ' ';
+        }
+        output += '\n';
+
+        // Header: Use Table
+        for (auto use : prog.ut){
+            output += use.first;
+            output += ' ';
+            output += std::to_string(use.second);
+            output += ' ';
+        }
+        output += '\n';
     }
-    output += '\n';
 
-    // Header: Use Table
-    for (auto use : prog.ut){
-        output += use.first;
-        output += ' ';
-        output += std::to_string(use.second);
-        output += ' ';
-    }
-    output += '\n';
-
-    // Code
+    // Code (this stuff is important)
     for(auto& cmd : prog.code.statements) {
         output += std::to_string(cmd.exp.value);
         output += ' ';
@@ -90,6 +93,7 @@ std::string assemble(program prog) {
             output += ' ';
         }
     }
+    
 
     
 
@@ -106,12 +110,11 @@ std::string assemble(program prog) {
             }    
         }
 
-        std::cout << "[assembler] Generated output for module "
-                  << prog.name
+        std::cout << "\n[assembler] Generated output for "
+                  << (modular ? "module " + prog.name : "program")
                   << ":\n"
                   << output
-                  << std::endl
-                  << "[assembler] Commands: "
+                  << "\n[assembler] Commands are: \n"
                   << text
                   << std::endl
                   << std::endl;
