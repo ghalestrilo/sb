@@ -423,8 +423,6 @@ void preprocess(vector_of_strings& file, vector_of_strings* output, bool macros,
     std::cout << '\n';
     #endif
 
-    printing_errors(Tokens);
-
     treating_if(Tokens);//treating IF EQU clauses
 
     #ifdef DEBUG_PREP_OUTPUT
@@ -488,11 +486,6 @@ void preprocess(vector_of_strings& file, vector_of_strings* output, bool macros,
     }
     std::cout << '\n';
     #endif
-
-    /* @ghalestrilo
-        Tomas, depois arruma isso aqui pra pode receber um output* = NULL sem dar pau
-        Vai ser util pra simplificar o codigo do programa
-    */
 
     linha = Tokens->begin()->line;
     for (vector_of_tokens::iterator it = Tokens->begin() ; it != Tokens->end(); ++it){

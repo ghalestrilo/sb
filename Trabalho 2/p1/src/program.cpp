@@ -37,6 +37,8 @@ int run(std::string flag, vector_of_strings files){
 bool process(std::string filename, char mode, bool modular){
     
 // -------------------------------------------------------------------- Preprocess Files
+    bool BEGIN = false;
+    bool END = false;
     vector_of_strings prepped;
     vector_of_strings temp;
     vector_of_tokens* tokenized = new vector_of_tokens; 
@@ -58,7 +60,6 @@ bool process(std::string filename, char mode, bool modular){
                 << std::endl;
         exit(-5);
     }
-
     // Flag-controlled Outputs
     // 1. If, Equ Expanded
     if (mode == 'p') {
@@ -72,6 +73,24 @@ bool process(std::string filename, char mode, bool modular){
         return 0;
     }
 
+    for (vector_of_tokens::iterator it = tokenized->begin() ; it != tokenized->end(); ++it){
+        if (it->text.compare("BEGIN") == 0){
+            BEGIN = true;
+        }else if (it->text.compare("END") == 0){
+            END = true;
+        }
+    }
+    if(modular == false){
+        if(BEGIN == true || END == true){
+            std::cout<<"\033[04;91m"<<"\nPresença de BEGIN ou END sendo um arquivo só.\n"<<"\033[00m";
+            exit(-5);
+        }
+    }else{
+        if(BEGIN == false || END == false){
+            std::cout<<"\033[04;91m"<<"\nAusencia de BEGIN ou END em um dos dois arquivos.\n"<<"\033[00m";
+            exit(-5);
+        }
+    }
 
 // -------------------------------------------------------------------- Parse Modules
     program* parsed = new program();

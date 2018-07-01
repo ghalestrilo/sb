@@ -35,16 +35,7 @@ typedef std::map<std::string  , vector_of_strings> MDT;
  */
 bool read_source_line(std::string, vector_of_tokens*,int*);
 
-/* @ghalestrilo:
-    Sera que essa funcao pode tomar conta dos erros tipo
-    'begin-end' em programas de um modulo so, ou falta de 'begin-end'
-    em programas modularizados?
 
-    se quiser fazer isso, pode receber um bool (singlefile), que
-    program::run ja calcula isso de qualquer forma, e pode passar
-    como parametro adicional.
-
-*/
 void preprocess(vector_of_strings&, vector_of_strings*, bool,vector_of_tokens*);
 
 /* Expand Macro
