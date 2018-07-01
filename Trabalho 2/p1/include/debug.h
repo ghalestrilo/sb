@@ -4,7 +4,12 @@
     Prints input and output file
      during read/write process
  */
-// #define DEBUG_FILE_PRINTDATA
+#define DEBUG_FILE_PRINTDATA
+
+/* DEBUG_PROGRAM_INPUT_FILENAMES
+    Prints received parameter files
+*/
+#define DEBUG_PROGRAM_INPUT_FILENAMES
 
 // ------------------------------------------------------ PRE-PROCESSOR
 
@@ -87,7 +92,7 @@
 /* DEBUG_LEXER_PRINT_TOKENS
     Prints Tokens during lexing
  */
-#define DEBUG_LEXER_PRINT_TOKENS
+// #define DEBUG_LEXER_PRINT_TOKENS
 
 // ------------------------------------------------------ ASSEMBLER
 

@@ -55,7 +55,7 @@ std::string assemble(program prog) {
     output += '\n';
 
     // Header: Size
-    output += prog.size;
+    output += std::to_string(prog.size);
     output += '\n';
 
     // Header: Relative Bitmask
@@ -66,7 +66,7 @@ std::string assemble(program prog) {
     for (auto def : prog.dt){
         output += def.first;
         output += ' ';
-        output += def.second;
+        output += std::to_string(def.second);
         output += ' ';
     }
     output += '\n';
@@ -75,7 +75,7 @@ std::string assemble(program prog) {
     for (auto use : prog.ut){
         output += use.first;
         output += ' ';
-        output += use.second;
+        output += std::to_string(use.second);
         output += ' ';
     }
     output += '\n';
@@ -106,13 +106,14 @@ std::string assemble(program prog) {
             }    
         }
 
-        std::cout << "[assembler] "
+        std::cout << "[assembler] Generated output for module "
                   << prog.name
                   << ":\n"
                   << output
                   << std::endl
                   << "[assembler] Commands: "
                   << text
+                  << std::endl
                   << std::endl;
     #endif // DEBUG_ASSEMBLER_PRINT_OUTPUT
 

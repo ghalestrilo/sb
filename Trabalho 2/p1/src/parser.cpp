@@ -67,12 +67,15 @@ bool first_pass(program* prog, vector_of_tokens* source, bool modular){
 
         // Section Found : TODO: Make Checks
         if (it->text == "SECTION"){
+            // rem+=2;
             rem++;
-            if (next != source->end()) { /* error */ } // EOF
+            if (next == source->end()) { /* error */ } // EOF
             else if (next->text == "TEXT") { rem++; }
             else if (next->text == "DATA") { rem++; }
             else {
                 // ERROR: UNKNOWN SECTION TYPE
+                std::cout << "FUICK: " << next->text << std::endl;
+                exit(0);
             }
             continue;
         }
@@ -83,7 +86,16 @@ bool first_pass(program* prog, vector_of_tokens* source, bool modular){
         //     if (next->text != ":")   { rem++; continue; /* error */ }
         // }
 
+        if (it->text == "END"){
+            if (next != source->end()) {
+                // ERROR: Code beyond END tag has been ignored
+            }
+            source->erase(it, source->end());
+            break;
+        }
+
         if (it->text == "BEGIN"){
+            // It never gets here
             // ERROR: Either not modular, or misplaced BEGIN tag
             rem++;
             continue;
@@ -104,15 +116,16 @@ bool first_pass(program* prog, vector_of_tokens* source, bool modular){
             rem++;
             if (next == source->end()) break; // EOF
             
-            for(auto d : *exported)
-                if (d == next->text){
-                    it->flag(LABEL_MULTIEXPORT);
-                    break;
-                }
+            // for(auto d : *exported)
+            //     if (d == next->text){
+            //         it->flag(LABEL_MULTIEXPORT);
+            //         break;
+            //     }
 
             exported->push_back(next->text);
-            
             rem++;
+            
+            // it += 2;
             continue;
         }
 
@@ -122,15 +135,19 @@ bool first_pass(program* prog, vector_of_tokens* source, bool modular){
             rem++;
             
             next = source->erase(next, next + 1);
-            // next = it + 1;
+            
+            /*  @DELETE
+            // Testprint: It's working!
             std::cout << "label: "
                       << it->text
                       << " - "
                       << next->text
                       << std::endl;
+            */
+
             // Check for errors
             if (declared(it->text, prog->st)) it->flag(LABEL_REDECLARED);
-            else if (reserved(it->text))         it->flag(LABEL_RESERVED);
+            else if (reserved(it->text))      it->flag(LABEL_RESERVED);
             else {
 
                 if(next == source->end()) /* error */
@@ -144,6 +161,7 @@ bool first_pass(program* prog, vector_of_tokens* source, bool modular){
                     if (!modular) { /* ERROR */ }
                     prog->st.push_back(symbol(it->text, 0, true));
                     rem++;
+                    continue;
                 }
                 
                 // BEGIN
@@ -152,7 +170,9 @@ bool first_pass(program* prog, vector_of_tokens* source, bool modular){
                     if (pc != 0)  { /* ERROR */ }
                     prog->name = it->text;
                     prog->st.push_back(symbol(it->text, 0));
+                    exported->push_back(it->text);
                     rem++;
+                    continue;
                 }
                 
                 // Regular Label
@@ -180,9 +200,8 @@ bool first_pass(program* prog, vector_of_tokens* source, bool modular){
         print_sym_table(prog->st);
     #endif // DEBUG_PARSER_SYMBOL_TABLE
 
-
     for (auto entry : *exported)
-        if (prog->dt.find(entry) != prog->dt.end()) // Symbol not previously defined
+        if (prog->dt.find(entry) == prog->dt.end()) // Symbol not previously defined
             if (declared(entry, prog->st)) // Symbol not locally undefined
                 prog->dt[entry] = retrieve(entry, prog->st);
             else {
@@ -255,6 +274,25 @@ bool second_pass(program* prog, vector_of_tokens& source, bool modular){
             continue;
         }
 
+        // else if (e.token == "PUBLIC"){
+        //     ++it;
+
+        //     for (auto s : prog->st){
+        //         if (s.text == it->text){
+        //             if (s.ext) {}                                   // ERR: Cannot export externally defined symbol
+        //             if (prog->dt.find(s.text) != prog->dt.end()) {} // ERR: Multiexport
+
+        //             prog->dt[s.text] = s.value;
+        //             ++it;
+        //             continue;
+        //         }
+        //     }
+
+        //     // Error: Exported Undefined Symbol
+        //     ++it;
+        //     continue;
+        // }
+
         // -------------------------------------------- </Treating Directives>
 
         ast_node statement(e);
@@ -281,18 +319,26 @@ bool second_pass(program* prog, vector_of_tokens& source, bool modular){
         prog->code << statement;
     }
 
+    // FIXME: why are keywords being pushed into usage table, but not their variables
+
     // Update Header
     for (auto s : prog->code.statements){
-        prog->size++;
-        prog->relative.push_back(s.exp.relative);
+        if (declared(s.exp.token.text, prog->st))   // Usage Table
+            prog->ut.push_back({s.exp.token.text, prog->size});
+        prog->size++;                               // Size
+        prog->relative.push_back(s.exp.relative);   // Relative
 
         for (auto p : s.params){
-            prog->size++;
-            prog->relative.push_back(p.exp.relative);
+            if (declared(p.exp.token.text, prog->st))   // Usage Table
+                prog->ut.push_back({p.exp.token.text, prog->size});
+            prog->size++;                               // Size
+            prog->relative.push_back(p.exp.relative);   // Relative
         }
     }
 
-    return new usage_table();
+
+
+    return true;
 }
 
 
@@ -315,11 +361,10 @@ expression parseexp(Token tok, symbol_table& st) {
     expression e(tok);
     e.token.line = tok.line;
 
-    // bool found = false;
-
     // Variable
     for (auto s : st) if (s.text == tok.text){
-        e.value = s.value;
+        e.value    = s.value;
+        e.relative = true;
         return e;
     }
     
@@ -369,12 +414,13 @@ bool astcheck   (ast& code, vector_of_strings& orig){
     }
 
     // @DELETE
-    std::cout << "[parser] Detected "
-              << errcount 
-              << " errors in "
-              << code.statements.size()
-              << " lines."
-              << std::endl;
+    if (errcount > 0)
+        std::cout << "[parser] Detected "
+                  << errcount 
+                  << " errors in "
+                  << code.statements.size()
+                  << " lines."
+                  << std::endl;
 
     return (errcount == 0);
 }

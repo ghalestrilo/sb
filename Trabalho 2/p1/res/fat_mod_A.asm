@@ -3,14 +3,14 @@ SECTION TEXT
 	MOD_B: EXTERN
 	PUBLIC FAT
 	PUBLIC N
-	INPUT N
-	LOAD N
-	FAT: SUB ONE
-	JMPZ FIM
-	JMP MOD_B
-	FIM: OUTPUT N
-	STOP
-SECTION DATA
-	N: SPACE
-	ONE: CONST 1
+	INPUT N         ; 0, 1
+	LOAD N          ; 2, 3
+	FAT: SUB ONE    ; 4, 5		
+	JMPZ FIM        ; 6, 7	
+	JMP MOD_B       ; 8, 9	
+	FIM: OUTPUT N   ; 10, 11		
+	STOP            ; 12
+SECTION DATA		
+	N: SPACE        ; 13	
+	ONE: CONST 1    ; 14, 15			
 END
