@@ -69,26 +69,20 @@ int run(std::string flag, vector_of_strings files, std::string output){
 
 
 // -------------------------------------------------------------------- Parse Modules
-        program parsed;
-        bool parse_err = false;
+        program* parsed = new program();
 
-        /** FIXME: 
-         * parser must receive vectors now
-         * parser must mark relative tokens for the assembler
-         * parser must build GST, GUT (that's why it needs the vectors)
-        */
-
-        if (!parse(tokenized, &parsed, modular)) exit(-6);
-
-        for(unsigned int i = 0; i < prepped.size(); i++){
-            parse_err &= astcheck(*parsed.code, prepped);
-        }
-
-        if (parse_err) exit(-5);    
-
+        if (!parse(tokenized, parsed, modular)) exit(-6);
+        if (!astcheck(parsed->code, prepped))  exit(-5);    
 
 // -------------------------------------------------------------------- Assemble Modules
-        if (to_file(assemble(parsed), output, ".o")) exit(-10);
+        // if (to_file(assemble(*parsed), output, ".o")) exit(-10);
+        if (to_file(assemble(*parsed), output, ".o")) {};
+
+        // Cleanup
+        prepped.clear();
+        temp.clear();
+        delete tokenized;
+        delete parsed;
     }
  
     return 0;

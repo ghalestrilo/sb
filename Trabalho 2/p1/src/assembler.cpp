@@ -1,60 +1,124 @@
 #include "../include/assembler.hpp"
-//#include <cstdlib>
 
-void printheader(program p){
-    std::cout << "Module: "
+#ifdef DEBUG_ASSEMBLER_PRINT_HEADERS        
+void printheader(program prog){
+    std::string mask;
+    std::string code;
+    std::string text;
+
+    for (auto relative : prog.relative) mask += (relative ? '1' : '0');
+
+    for (auto cmd : prog.code.statements){
+        text += cmd.exp.token.text;
+        text += ' ';
+
+        for (auto p : cmd.params){
+            text += p.exp.token.text;
+            text += ' ';
+        }    
+    }
+
+    for (auto cmd : prog.code.statements){
+        code += std::to_string(cmd.exp.value);
+        code += ' ';
+
+        for (auto p : cmd.params){
+            code += std::to_string(p.exp.value);
+            code += ' ';
+        }    
+    }
+    
+
+    std::cout << "\n[assembler] Module: "
               << p.name
-              << "\nHeader: "
+              << "\n[assembler] Header: "
+              << "\n - Size: "
+              << p.size
+              << "\n - Mask: "
+              << mask
+              << "\n - Text: "
+              << text
+              << "\n - Code: "
+              << code
+              << "\n - Usage Table: "
+              << "\n - Definition Table: "
               << std::endl;
-
-    // TODO print rest    
 }
+#endif // DEBUG_ASSEMBLER_PRINT_HEADERS
 
 std::string assemble(program prog) {
-    std::vector<int>    instructions;
-    std::string         formatted;
+    
+    std::string output;
 
-    for(auto& cmd : prog.code->statements) {
-        instructions.push_back(cmd.exp.value);
+    // Header: Name
+    output += prog.name;
+    output += '\n';
 
-        for(auto& p : cmd.params)
-            instructions.push_back(p.exp.value);
+    // Header: Size
+    output += prog.size;
+    output += '\n';
 
-        #ifdef DEBUG_ASSEMBLER_PRINT_OUTPUT
-            std::cout << "[assembler] "
-                      << cmd.exp.position
-                      << "\t: "
-                      << cmd.exp.value;
+    // Header: Relative Bitmask
+    for (auto relative : prog.relative) output += (relative ? '1' : '0');
+    output += '\n';
 
-            for(auto& p : cmd.params)
-                std::cout << ' ' << p.exp.value;
-            
-            std::cout << std::endl;
-        #endif // DEBUG_ASSEMBLER_PRINT_OUTPUT
+    // Header: Definition Table
+    for (auto def : prog.dt){
+        output += def.first;
+        output += ' ';
+        output += def.second;
+        output += ' ';
+    }
+    output += '\n';
+
+    // Header: Use Table
+    for (auto use : prog.ut){
+        output += use.first;
+        output += ' ';
+        output += use.second;
+        output += ' ';
+    }
+    output += '\n';
+
+    // Code
+    for(auto& cmd : prog.code.statements) {
+        output += std::to_string(cmd.exp.value);
+        output += ' ';
+
+        for(auto& p : cmd.params){
+            output += std::to_string(p.exp.value);
+            output += ' ';
+        }
     }
 
-    for(auto i : instructions){
-        formatted += " ";
-        formatted += i;
-    }
+    
 
+    #ifdef DEBUG_ASSEMBLER_PRINT_OUTPUT
+        std::string text;
 
-    // FIXME: BUILD HEADER!! (from name and ast (for length and bitmask))
+        for (auto cmd : prog.code.statements){
+            text += cmd.exp.token.text;
+            text += ' ';
+
+            for (auto p : cmd.params){
+                text += p.exp.token.text;
+                text += ' ';
+            }    
+        }
+
+        std::cout << "[assembler] "
+                  << prog.name
+                  << ":\n"
+                  << output
+                  << std::endl
+                  << "[assembler] Commands: "
+                  << text
+                  << std::endl;
+    #endif // DEBUG_ASSEMBLER_PRINT_OUTPUT
 
     #ifdef DEBUG_ASSEMBLER_PRINT_HEADERS
         printheader(prog);
     #endif // DEBUG_ASSEMBLER_PRINT_HEADERS
 
-    return formatted;
-}
-
-Header makeheader(ast prog){
-    // for(auto t : prog.statements)
-    //     t.exp.token.label;
-
-    return Header({
-        "test",
-        123,
-        "110"
-    });
+    return output;
 }

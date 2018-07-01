@@ -33,7 +33,7 @@ bool parse (vector_of_tokens*, program*, bool = false);
  * returns:
  *  Definition Table (exported variables)
  */
-bool first_pass(program*, vector_of_tokens*);
+bool first_pass(program*, vector_of_tokens*, bool = false);
 
 /** 2st pass
  * input:
@@ -45,7 +45,7 @@ bool first_pass(program*, vector_of_tokens*);
  * returns:
  *  Usage Table (imported and local symbols)
  */
-bool second_pass(program*, vector_of_tokens&);
+bool second_pass(program*, vector_of_tokens&, bool = false);
 
 bool astcheck   (ast&, vector_of_strings&);
 

@@ -21,10 +21,10 @@ bool parse (vector_of_tokens* source, program* output, bool modular){
 
 
     // First-Pass Modules
-    if (!first_pass(output, code)) return false;
+    if (!first_pass  (output, code,  modular)) return false;
 
     // Second Pass Modules
-    if (!second_pass(output, *code)) return false;
+    if (!second_pass (output, *code, modular)) return false;
 
     //delete some stuff
         
@@ -33,23 +33,14 @@ bool parse (vector_of_tokens* source, program* output, bool modular){
 
 
 // TODO: Change to unsigned int, returning size of code read.
-bool first_pass(program* prog, vector_of_tokens* source){
+bool first_pass(program* prog, vector_of_tokens* source, bool modular){
     using namespace dictionary;
     
-    // Startup Checks
-    // bool modular = (source->size() == 1);
-    // FIXME !!!
-    bool modular = true;
-    if (prog->st == nullptr) prog->st = new symbol_table;
-    if (prog->dt == nullptr) prog->dt = new def_table;
-
-    
-    std::vector<std::string> exported;
-    std::vector<std::string> external;
 
     // Loop Setup
     int  pc = 0; // Parse-Relevant
     auto it = source->begin();
+    auto exported = new vector_of_strings;
 
 
     /** FIXME: Error detection here is useless, because we delete the tokens
@@ -113,13 +104,13 @@ bool first_pass(program* prog, vector_of_tokens* source){
             rem++;
             if (next == source->end()) break; // EOF
             
-            for(auto d : exported)
+            for(auto d : *exported)
                 if (d == next->text){
                     it->flag(LABEL_MULTIEXPORT);
                     break;
                 }
 
-            exported.push_back(next->text);
+            exported->push_back(next->text);
             
             rem++;
             continue;
@@ -129,27 +120,29 @@ bool first_pass(program* prog, vector_of_tokens* source){
         // LABEL Processing
         if (next != source->end() && next->text == ":"){
             rem++;
-            if (source->erase(next) != it + 1) exit(-1234);
-            // next = source->erase(next);
-            next = it + 1;
+            
+            next = source->erase(next, next + 1);
+            // next = it + 1;
             std::cout << "label: "
                       << it->text
                       << " - "
                       << next->text
                       << std::endl;
             // Check for errors
-            if (declared(it->text, *(prog->st))) it->flag(LABEL_REDECLARED);
+            if (declared(it->text, prog->st)) it->flag(LABEL_REDECLARED);
             else if (reserved(it->text))         it->flag(LABEL_RESERVED);
             else {
 
                 if(next == source->end()) /* error */
                     break;
                 
+                // USE THIS!!
+                // it->label = true;
                 
                 // EXTERN: inform usage of external symbol (to usage_table)
                 if (next->text == "EXTERN"){
                     if (!modular) { /* ERROR */ }
-                    prog->st->push_back(symbol(it->text, 0, true));
+                    prog->st.push_back(symbol(it->text, 0, true));
                     rem++;
                 }
                 
@@ -157,12 +150,13 @@ bool first_pass(program* prog, vector_of_tokens* source){
                 if (next->text == "BEGIN"){
                     if (!modular) { /* ERROR */ }
                     if (pc != 0)  { /* ERROR */ }
-                    prog->st->push_back(symbol(it->text, 0));
+                    prog->name = it->text;
+                    prog->st.push_back(symbol(it->text, 0));
                     rem++;
                 }
                 
                 // Regular Label
-                prog->st->push_back(symbol(it->text, pc));
+                prog->st.push_back(symbol(it->text, pc));
             }
 
             continue;
@@ -183,26 +177,27 @@ bool first_pass(program* prog, vector_of_tokens* source){
 
 
     #ifdef DEBUG_PARSER_SYMBOL_TABLE
-        print_sym_table(*(prog->st));
+        print_sym_table(prog->st);
     #endif // DEBUG_PARSER_SYMBOL_TABLE
 
 
-    for (auto entry : exported)
-        if (prog->dt->find(entry) != prog->dt->end()) // Symbol not previously defined
-            if (declared(entry, *(prog->st))) // Symbol not locally undefined
-                (*(prog->dt))[entry] = retrieve(entry, *(prog->st));
+    for (auto entry : *exported)
+        if (prog->dt.find(entry) != prog->dt.end()) // Symbol not previously defined
+            if (declared(entry, prog->st)) // Symbol not locally undefined
+                prog->dt[entry] = retrieve(entry, prog->st);
             else {
                 // ERR: Cannot set unknown symbol to public
             }
         else{
             // ERR: Multiple Exports of same symbol
         }
-        
+    
+    delete exported;
 
     return true;
 };
 
-bool second_pass(program* prog, vector_of_tokens& source){
+bool second_pass(program* prog, vector_of_tokens& source, bool modular){
     using namespace dictionary;
     if (prog == nullptr) return false;
     if (source.empty())  return false;
@@ -210,13 +205,9 @@ bool second_pass(program* prog, vector_of_tokens& source){
     unsigned short int args = 0;
     int pos = 0;
 
-
-    if (prog->ut   == nullptr) prog->ut   = new usage_table;
-    if (prog->code == nullptr) prog->code = new ast;
-
     auto it = source.begin();
     while(it != source.end()){
-        expression e = parseexp(*it, *(prog->st));
+        expression e = parseexp(*it, prog->st);
         e.position   = pos;
 
         // -------------------------------------------- <Treating Directives>
@@ -229,20 +220,20 @@ bool second_pass(program* prog, vector_of_tokens& source){
 
             if (it == source.end()) { // ERROR: UNEXPECTED EOF
                 e.flag(UNEXPECTED_EOF);
-                *(prog->code) << ast_node(e);
+                prog->code << ast_node(e);
                 continue;
             }
 
             if (!numeric(it->text)){
                 // ERROR!
                 e.flag(ILLEGAL_PARAM);
-                *(prog->code) << ast_node(e);
+                prog->code << ast_node(e);
                 continue;
             }
 
 
             e.value = neg ? (- std::stoi(it->text)) : std::stoi(it->text);
-            *(prog->code) << ast_node(e);
+            prog->code << ast_node(e);
 
             ++it;
             continue;
@@ -257,7 +248,7 @@ bool second_pass(program* prog, vector_of_tokens& source){
                 args = std::stoi(it->text);
             
             while (args --> 0){
-                *(prog->code) << ast_node(expression(e));
+                prog->code << ast_node(expression(e));
                 ++pos;
             }
 
@@ -276,7 +267,7 @@ bool second_pass(program* prog, vector_of_tokens& source){
         while (args > 0){
             if (it == source.end()) break; // ERR unexpected EOF
 
-            expression param = parseexp(*it, *(prog->st));
+            expression param = parseexp(*it, prog->st);
             if (reserved(param.token.text))
                 e.flag(ILLEGAL_PARAM);
             statement.params.push_back(param);
@@ -287,7 +278,18 @@ bool second_pass(program* prog, vector_of_tokens& source){
         };
         
 
-        *(prog->code) << statement;
+        prog->code << statement;
+    }
+
+    // Update Header
+    for (auto s : prog->code.statements){
+        prog->size++;
+        prog->relative.push_back(s.exp.relative);
+
+        for (auto p : s.params){
+            prog->size++;
+            prog->relative.push_back(p.exp.relative);
+        }
     }
 
     return new usage_table();
@@ -424,19 +426,19 @@ void print_sym_table(symbol_table table, std::string modname){
     }
 }
 
-bool add_entries(def_table table, def_table* gdt){
-    bool err = 0;
-    if (gdt == nullptr) gdt = new def_table;
+// bool add_entries(def_table table, def_table* gdt){
+//     bool err = 0;
+//     if (gdt == nullptr) gdt = new def_table;
 
-    for (auto entry : table){
-        err |= (gdt->find(entry.first) == gdt->end());
+//     for (auto entry : table){
+//         err |= (gdt->find(entry.first) == gdt->end());
 
-        if (err) break;
-        else (*gdt)[entry.first] = entry.second;
-    }
+//         if (err) break;
+//         else (*gdt)[entry.first] = entry.second;
+//     }
 
-    return !err;
-}
+//     return !err;
+// }
 
 
 bool declared(std::string text, symbol_table st){

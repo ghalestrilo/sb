@@ -27,6 +27,10 @@ struct expression {
 
     bool    haserror() { return this->token.haserror; }
     ERRCODE errcode()  { return this->token.errcode;  }
+
+    ~expression(){
+        token.text.clear();
+    }
 };
 
 
@@ -34,6 +38,13 @@ struct ast_node {
     ast_node(expression exp = expression()) : exp(exp){};
     expression            exp;
     std::vector<ast_node> params;
+
+    void clear(){
+        for(auto p : params) p.clear();
+        params.clear();
+    }
+
+    ~ast_node(){ clear(); }
 };
 
 struct ast { 
@@ -42,9 +53,9 @@ struct ast {
     void     operator<< (ast_node s) { statements.push_back(s); };
     ast_node operator[] (int      i) { return statements[i];    }; // Bug?
 
-    ~ast(){
-        // ~statements;
-    }
+    void clear(){ statements.clear(); }
+
+    ~ast(){ clear(); }
 };
 
 struct symbol {
@@ -70,22 +81,24 @@ typedef std::vector <std::pair<std::string, int>> usage_table;
 struct program {
 
     // Basic Header
-    std::string       name;
-    int               size;
+    std::string       name     = "";
+    int               size     = 0;
     std::vector<bool> relative;
 
     // Additional Metadata
-    symbol_table *st;
-    def_table    *dt;
-    usage_table  *ut;
+    symbol_table st = symbol_table();
+    def_table    dt = def_table();
+    usage_table  ut = usage_table();
 
     // Text
-    ast *code;
+    ast code = ast();
 
     ~program(){
-        delete st;
-        delete dt;
-        delete ut;
-        delete code;
+        
+        st.clear();
+        dt.clear();
+        ut.clear();
+        code.clear();
+        relative.clear();
     }
 };

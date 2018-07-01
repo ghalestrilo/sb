@@ -36,5 +36,8 @@ int main(int argc, char *argv[]){
     for (unsigned int i = 1; i < args.size() - 1; i++) // ignore output filename
         files.push_back(std::string(args[i]));
 
+    args.clear();
+    
+
     return run(mode, files, output);
 }
