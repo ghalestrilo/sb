@@ -37,7 +37,7 @@ endif
 
 PROG_OUTPUT = $(ODIR)/$(OF)
 
-PROG_ARGS   = -$(OP) $(PROG_INPUT) $(PROG_OUTPUT)
+PROG_ARGS   = -$(OP) $(PROG_INPUT)
 
 ifeq ($(clean), no)
 all: build run	

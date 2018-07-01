@@ -7,7 +7,7 @@
 #include "../include/assembler.hpp"
 #include "../include/file.hpp"
 
-int run(std::string flag, vector_of_strings files, std::string output){
+int run(std::string flag, vector_of_strings files){
     // Read Flags
     if (flag.length() < 2) exit(-3);
     if (files.size()  < 1) exit(-4);
@@ -25,7 +25,9 @@ int run(std::string flag, vector_of_strings files, std::string output){
     #endif // DEBUG_PROGRAM_INPUT_FILENAMES
     
     // Gigantic loop
-    for (auto file : files) process(file, mode, modular);
+    for (auto file : files)
+        process(file, mode, modular);
+        
     return 0;
 }
 

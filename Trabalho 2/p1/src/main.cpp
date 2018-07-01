@@ -26,18 +26,15 @@ int main(int argc, char *argv[]){
     for(int i = 1; i < argc; i++) // skip program name
         args.push_back(argv[i]);
 
-
-    if (args.size() < 3) exit(-1);
+    // if (args.size() < 2) exit(-1);
 
     std::string mode   = args.front();
-    std::string output = args.back();
 
     // Prettier ways to acheive this
-    for (unsigned int i = 1; i < args.size() - 1; i++) // ignore output filename
+    for (unsigned int i = 1; i < args.size(); i++) // ignore output filename
         files.push_back(std::string(args[i]));
 
     args.clear();
-    
 
-    return run(mode, files, output);
+    return run(mode, files);
 }
