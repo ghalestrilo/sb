@@ -16,6 +16,7 @@
 bool readfile  (std::string, vector_of_strings*);
 bool writefile (std::string, vector_of_strings);
 bool link(vector_of_strings, vector_of_strings, vector_of_strings*);
+bool onemod(vector_of_strings, vector_of_strings*);
 
 struct instruction {
     int  word;
@@ -25,7 +26,7 @@ struct instruction {
 // ------------------------------------------------ MAIN
 int main(int argc, char const *argv[]){
     using namespace std;
-
+    bool singlemod;
     // Reading Args
     vector_of_strings args;
     
@@ -37,7 +38,6 @@ int main(int argc, char const *argv[]){
 
     for (int i = 0; i < argc; i++)
         args.push_back(argv[i]);
-
     switch(args.size() - 1){
         case 0:
             std::cout << "No input files. Aborting execution." << std::endl;            
@@ -45,12 +45,12 @@ int main(int argc, char const *argv[]){
 
         // Cascades into case 1
         case 2:
+            
             if (!readfile(args[2], &data2)){
                 std::cout << "Error reading file: " << args[2] << std::endl;
                 exit(-2);
             }
         case 1:
-        
             if (!readfile(args[1], &data1)){
                 std::cout << "Error reading file: " << args[2] << std::endl;
                 exit(-2);
@@ -68,8 +68,10 @@ int main(int argc, char const *argv[]){
 
     // for(auto d : data1) std::cout << d << ' '; std::cout << std::endl;
     // for(auto d : data2) std::cout << d << ' '; std::cout << std::endl;
-
-    if (!link(data1, data2, &output)) exit(-3);
+    singlemod = data2.empty();
+    if (singlemod == true){
+        onemod(data1,&output);
+    }else if (!link(data1, data2, &output)) exit(-3);
 
 
     writefile("linked.o", output);
@@ -82,9 +84,6 @@ int main(int argc, char const *argv[]){
 bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out){
     if (mod1.empty()) return false;
     // std::cout << "size: " << mod1.size() << std::endl;
-
-    // Useful
-    bool singlemod = mod2.size() < 3 || mod2[3].empty();
     
     // Destructuring Module 1
     std::string name1 = mod1[0];
@@ -166,6 +165,12 @@ bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out
     return true;
 }
 
+bool onemod(vector_of_strings data, vector_of_strings* out){
+    int i = 0;
+    for(auto i : data){
+        out->push_back(i);
+    }
+}
 
 bool writefile (std::string name, vector_of_strings data){
     std::ofstream output;
