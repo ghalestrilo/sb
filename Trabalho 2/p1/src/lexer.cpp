@@ -21,7 +21,6 @@ bool readline(std::string line, std::vector<Token>* tokens, unsigned int lineind
 
 
     #ifdef DEBUG_LEXER_PRINT_TOKENS
-        std::stringstream debug(line);
         std::cout << "[lexer]: ";
         for (auto t : (*tokens))
             std::cout << t.text << " ";
@@ -43,24 +42,31 @@ Token grab_token(std::string* line){
         return result;
     }
 
+    bool hex    = (line->size() > 2) && (hexa(line->substr(0, 2)));
+    bool number = numeric    (firstchar) && !hex;
     bool word   = alphabetic (firstchar);
-    bool number = numeric    (firstchar);
     bool symbol = symbolic   (firstchar);
 
-    // How the fuck do I do this now
-    bool hex    = (firstchar == 0);
-
     unsigned short int length = 0;
+    
+    // if (hex) std::cout << "HUASIHF" << std::endl;
+    if (hex){
+        result = "";
+        result += line->substr(0, 2);
+        line->erase(0, 2);
+    }
+
     for (auto c : (*line)){
 
-        if (word   and not (alphabetic(c) or numeric(c))) break;
-        if (number and not numeric    (c)) break;
+        if (hex    and !hexa(c))                       break;
+        if (word   and !alphabetic(c) and !numeric(c)) break;
+        if (number and !numeric(c))                    break;
 
         length++;
         if (symbol) break; // Symbols are only 1 char long
     }
 
-    result = line->substr(0, length);
+    result += line->substr(0, length);
     line->erase(0, length);
     return result;
 }
@@ -69,7 +75,7 @@ void trim(std::string* str){
     if (str->empty()) return;
 
     unsigned int count = 0;
-    for (auto c : (*str)) if (c == ' ') count++;
+    for (auto c : (*str)) if (c == ' ' || c == '\t') count++;
 
     str->erase(0, count);
 }
@@ -133,6 +139,31 @@ bool numeric    (std::string s){
             return false;
     return true;
 }
+
+bool hexa(char c){
+    return numeric(c) || (c >= 'A' && c <= 'F');
+}
+
+bool hexa(std::string s){
+    auto c = s.begin();
+
+    // std::cout << "[hexa] String: "   << s  << std::endl;
+
+    if (*c != '0') return false;
+    // std::cout << "[hexa] 1nd char: " << *c << std::endl;
+    ++c;
+
+    if (*c != 'X') return false;
+    // std::cout << "[hexa] 2st char: " << *c << std::endl;
+    ++c;
+
+    while (c != s.end())
+        if (hexa(*c)) c++;
+        else return false;
+
+    return true;
+}
+
 
 
 
