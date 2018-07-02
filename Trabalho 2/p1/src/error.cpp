@@ -10,23 +10,21 @@ void error::error(ERRCODE code, int line, std::string errinfo){
 }
 
 void error::print(ERRCODE code, int line, std::string errinfo){
-    std::string msg;
+    std::string msg = "[";
+
+    if (line >= 0) msg += "line " + std::to_string(line) + " : ";
+
     // Lexical
     if (error::lex.find(code) != error::lex.end())
-        msg = "(lexical error) " + lex[code] + errinfo;
+        msg += "lexical error] " + lex[code] + errinfo;
 
     //Section
     if (error::sema.find(code) != error::sema.end())
-        msg = "(semantic error) " + sema[code] + errinfo;  
+        msg += "semantic error] " + sema[code] + errinfo;  
 
     // Syntax
     if (error::syn.find(code) != error::syn.end())
-        msg = "(syntax error) "  + syn[code] + errinfo; 
-
-    if (line >= 0){
-        std::cout << line;
-        // msg = "line " + std::string(line) + ": " + msg;  
-    }
+        msg += "syntax error] "  + syn[code] + errinfo; 
 
     std::cout << msg << std::endl;
 }

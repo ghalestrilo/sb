@@ -243,11 +243,25 @@ bool second_pass(program* prog, vector_of_tokens& source, bool modular){
                 continue;
             }
 
+            /*
+                
+            // Checking for
+            int num = std::stoi(it->text);
+            if (num == 0)
+                if ((++it) != source.end())
+                if (it->text[0] == 'x')
+                if ()
+
+
+
+            e.value = neg ? (- num) : num;
+            */
 
             e.value = neg ? (- std::stoi(it->text)) : std::stoi(it->text);
             prog->code << ast_node(e);
 
             ++it;
+            ++pos;
             continue;
         }
 
@@ -255,12 +269,15 @@ bool second_pass(program* prog, vector_of_tokens& source, bool modular){
         else if (e.token == "SPACE"){
             ++it;
             
-            args = 1;
-            if (it != source.end() && numeric(it->text))
+            args = 1; 
+            if (it != source.end() && numeric(it->text)){
                 args = std::stoi(it->text);
+                ++it;
+            }
             
             while (args --> 0){
                 prog->code << ast_node(expression(e));
+                prog->relative.push_back(false);
                 ++pos;
             }
 
@@ -268,21 +285,6 @@ bool second_pass(program* prog, vector_of_tokens& source, bool modular){
         }
 
         // -------------------------------------------- </Treating Directives>
-
-        // Case: Expression is Label (Sould not happen, ever)
-        /*
-        if (declared(e.token.text, prog->st)){
-            if (declared(e.token.text, prog->dt))
-                prog->ut.push_back({e.token.text, prog->size}); // Globally Defined => Usage Table
-            else
-                e.value = retrieve(e.token.text, prog->st); // Locally Defined => Substitute!
-        }
-        */
-        
-        // prog->size++;                               // Size
-        
-
-
 
         // Regular Statement Parsing
         ast_node statement(e);
@@ -403,25 +405,34 @@ expression parseexp(Token tok, symbol_table& st) {
 bool astcheck   (ast& code, vector_of_strings& orig){
     unsigned short int errcount = 0;
 
+    bool lineerr = false;
+
     for (auto s : code.statements) {
-        if (s.exp.haserror() == true) {
+        if ((lineerr |= s.exp.haserror()) == true) {
             errcount++;
             error::print(s.exp.errcode(), s.exp.token.line);
-            std::cout << "\t - " 
-                      << orig[s.exp.token.line] 
-                      << std::endl 
-                      << std::endl;
         }
 
         for (auto p : s.params)
-            if (p.exp.haserror() == true) {
+            if ((lineerr |= p.exp.haserror()) == true) {
                 errcount++;
                 error::print(p.exp.errcode(), p.exp.token.line);
-                std::cout << "\t - " 
-                          << orig[p.exp.token.line] 
-                          << std::endl 
-                          << std::endl;
             }
+
+        if (lineerr) {
+            std::cout << "\t (" 
+                      << s.exp.token.line
+                      << ") "
+                      << orig[s.exp.token.line];
+                      
+            for (auto p : s.params)
+                std::cout << orig[p.exp.token.line] << " ";
+
+            std::cout << std::endl  << std::endl;
+        }
+
+
+        lineerr = false;
     }
 
     // @DELETE
