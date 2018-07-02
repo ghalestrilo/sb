@@ -11,8 +11,8 @@
 
 
 // Helpers
-bool declared(std::string, symbol_table);
-int  retrieve(std::string, symbol_table);
+bool   declared(std::string, symbol_table);
+symbol retrieve(std::string, symbol_table);
 
 bool declared(std::string, def_table);
 int  retrieve(std::string, def_table);

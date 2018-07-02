@@ -109,7 +109,7 @@ bool first_pass(program* prog, vector_of_tokens* source, bool modular){
             continue;
         }
 
-        // PUBLIC: insert into global symbol table
+        // PUBLIC: insert into definition table
         if (it->text == "PUBLIC"){
             if (!modular) { /* ERROR */ }
 
@@ -135,15 +135,6 @@ bool first_pass(program* prog, vector_of_tokens* source, bool modular){
             rem++;
             
             next = source->erase(next, next + 1);
-            
-            /*  @DELETE
-            // Testprint: It's working!
-            std::cout << "label: "
-                      << it->text
-                      << " - "
-                      << next->text
-                      << std::endl;
-            */
 
             // Check for errors
             if (declared(it->text, prog->st)) it->flag(LABEL_REDECLARED);
@@ -203,7 +194,7 @@ bool first_pass(program* prog, vector_of_tokens* source, bool modular){
     for (auto entry : *exported)
         if (prog->dt.find(entry) == prog->dt.end()) // Symbol not previously defined
             if (declared(entry, prog->st)) // Symbol not locally undefined
-                prog->dt[entry] = retrieve(entry, prog->st);
+                prog->dt[entry] = retrieve(entry, prog->st).value;
             else {
                 // ERR: Cannot set unknown symbol to public
             }
@@ -228,6 +219,8 @@ bool second_pass(program* prog, vector_of_tokens& source, bool modular){
     while(it != source.end()){
         expression e = parseexp(*it, prog->st);
         e.position   = pos;
+        prog->relative.push_back(e.relative);   // Relative
+
 
         // -------------------------------------------- <Treating Directives>
         if (e.token == "CONST"){
@@ -274,69 +267,87 @@ bool second_pass(program* prog, vector_of_tokens& source, bool modular){
             continue;
         }
 
-        // else if (e.token == "PUBLIC"){
-        //     ++it;
-
-        //     for (auto s : prog->st){
-        //         if (s.text == it->text){
-        //             if (s.ext) {}                                   // ERR: Cannot export externally defined symbol
-        //             if (prog->dt.find(s.text) != prog->dt.end()) {} // ERR: Multiexport
-
-        //             prog->dt[s.text] = s.value;
-        //             ++it;
-        //             continue;
-        //         }
-        //     }
-
-        //     // Error: Exported Undefined Symbol
-        //     ++it;
-        //     continue;
-        // }
-
         // -------------------------------------------- </Treating Directives>
 
+        // Case: Expression is Label (Sould not happen, ever)
+        /*
+        if (declared(e.token.text, prog->st)){
+            if (declared(e.token.text, prog->dt))
+                prog->ut.push_back({e.token.text, prog->size}); // Globally Defined => Usage Table
+            else
+                e.value = retrieve(e.token.text, prog->st); // Locally Defined => Substitute!
+        }
+        */
+        
+        // prog->size++;                               // Size
+        
+
+
+
+        // Regular Statement Parsing
         ast_node statement(e);
 
         if (it == source.end()) break;
         ++it;
         ++pos;
 
+        // Statemente Arguments
         args = e.param_count;
         while (args > 0){
             if (it == source.end()) break; // ERR unexpected EOF
 
             expression param = parseexp(*it, prog->st);
+            
+            prog->relative.push_back(param.relative);
+            
+            // Error: Parameter is reserved word
             if (reserved(param.token.text))
-                e.flag(ILLEGAL_PARAM);
+                statement.exp.flag(ILLEGAL_PARAM);
+
+
+            
+            // Solving Reference
+            if (declared(param.token.text, prog->st)){
+                auto s    = retrieve(param.token.text, prog->st);
+                auto next = it + 1;
+
+                // Externally Defined => Usage Table
+                if (s.ext) prog->ut.push_back({param.token.text, pos});
+                // Locally Defined => Substitute!
+                else param.value = s.value;
+
+                // if (s.ext || declared(param.token.text, prog->dt)); 
+
+                // Treating Vector Offset Access
+                if (next != source.end())
+                    if (next->text == "+")
+                    if ((++next) != source.end())
+                    if (numeric(next->text)){
+                        param.token.text += "+";
+                        param.token.text += next->text;
+                        param.value += std::stoi (next->text);
+                        it += 2;
+                    }
+
+            }
+            else {
+                param.flag(UNRESOLVED_SYM);
+            }
+
+
+
+            // Emplacing parameter, loop
             statement.params.push_back(param);
             
             ++it;
             ++pos;
             --args;
         };
-        
 
         prog->code << statement;
     }
 
-    // FIXME: why are keywords being pushed into usage table, but not their variables
-
-    // Update Header
-    for (auto s : prog->code.statements){
-        if (declared(s.exp.token.text, prog->st))   // Usage Table
-            prog->ut.push_back({s.exp.token.text, prog->size});
-        prog->size++;                               // Size
-        prog->relative.push_back(s.exp.relative);   // Relative
-
-        for (auto p : s.params){
-            if (declared(p.exp.token.text, prog->st))   // Usage Table
-                prog->ut.push_back({p.exp.token.text, prog->size});
-            prog->size++;                               // Size
-            prog->relative.push_back(p.exp.relative);   // Relative
-        }
-    }
-
-
+    prog->size = pos;
 
     return true;
 }
@@ -499,11 +510,11 @@ bool declared(std::string text, def_table dt){
     return false;
 }
 
-int retrieve(std::string text, symbol_table st){
+symbol retrieve(std::string text, symbol_table st){
     for (auto s : st)
         if (s.text == text)
-            return s.value;
-    return -1;
+            return s;
+    return symbol("err", -1, false);
 }
 
 int retrieve(std::string text, def_table dt){
