@@ -105,7 +105,7 @@ bool lex_error(std::string t){ // , std::string prev = "")
 
 
 // lang.h
-const static std::string symbols = ":;,";
+const static std::string symbols = ":;,+";
 
 bool alphabetic (char c){
     return (c >= 'A' && c <= 'Z') || (c == '_'); // Special case for the underscore symbol
@@ -121,10 +121,12 @@ bool symbolic   (char c){
     return (c == ':') || (c == ';') || (c == ',');
     // return (symbols.find(c) != symbol.end());
 }
-
+// Modify this to include the '-' character for negative numbers
 bool numeric    (char c){
     return (c >= '0' && c <= '9');
 }
+
+// Modify this account for hexadecimals
 bool numeric    (std::string s){
     for (auto c : s)
         if (!numeric(c))
