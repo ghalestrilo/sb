@@ -94,6 +94,7 @@ bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out
     // Split Text
     const char* temp = (char*) (mod1[3].c_str());
     int i = 0;
+    int j = 0;
     do {
         const char *begin = temp;
 
@@ -119,48 +120,47 @@ bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out
 
     
     std::vector<instruction> text2;
-    if(!mod2[2].empty()){
-        if (mod2[3].empty()){
-        std::cout << "warning: "
-                  << mod2[0]
-                  << " contains no valuable information, and has been ignored by the linker."
-                  << std::endl;
-        }
-        else{
-            std::string name2 = mod2[0];
-            std::string size2 = mod2[1];
-            std::string mask2 = mod2[2];
-            temp = (char*) (mod1[3].c_str());
-
-            i = 0;
-            do{ const char *begin = temp;
-
-                while(*temp != ' ' && *temp) temp++;
-
-                text2.emplace_back(
-                    instruction({
-                        std::stoi(std::string(begin, temp)),
-                        (mask2[i] == '1')}));
-                        i++;
-            } while (0 != *temp++);
-            
-            for(auto i : text2)
-                std::cout << '\t'
-                        << i.word
-                        << " | "
-                        << (i.relative ? "relative" : "absolute")
-                        << " | "
-                        << (i.relative ? i.word + text1.size(): i.word)
-                        << std::endl;
-        }
+    if (mod2[3].empty()){
+    std::cout << "warning: "
+              << mod2[0]
+              << " contains no valuable information, and has been ignored by the linker."
+              << std::endl;
     }
+    else{
+        std::string name2 = mod2[0];
+        std::string size2 = mod2[1];
+        std::string mask2 = mod2[2];
+        temp = (char*) (mod2[3].c_str());
+
+        i = 0;
+        do{ const char *begin = temp;
+
+            while(*temp != ' ' && *temp) temp++;
+
+            text2.emplace_back(
+                instruction({
+                    std::stoi(std::string(begin, temp)),
+                    (mask2[i] == '1')}));
+                    i++;
+        } while (0 != *temp++);
+        
+        for(auto i : text2)
+            std::cout << '\t'
+                    << i.word
+                    << " | "
+                    << (i.relative ? "relative" : "absolute")
+                    << " | "
+                    << (i.relative ? i.word + text1.size(): i.word)
+                    << std::endl;
+    }
+
 
     if (out == nullptr) exit(-4);
 
     for(auto i : text1)
         out->push_back(std::to_string(i.word) + " ");
-    for(auto i : text2)
-        out->push_back(std::to_string(i.relative ? i.word + text1.size(): i.word) + " ");
+    for(auto j : text2)
+        out->push_back(std::to_string(j.relative ? j.word + text1.size() - 1: j.word) + " ");
 
     return true;
 }
