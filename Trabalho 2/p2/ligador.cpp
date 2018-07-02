@@ -5,7 +5,7 @@
 #include "string.h"
 #include <cstdlib>
 #include <string>
-// #include <sstream>
+#include <sstream>
 #include <fstream>
 
 // ------------------------------------------------ MACROS
@@ -22,6 +22,17 @@ struct instruction {
     int  word;
     bool relative;
 };
+
+struct t_uso{
+    string nome;
+    int num;
+}
+
+struct t_def{
+    string nome;
+    int num;
+}
+
 
 // ------------------------------------------------ MAIN
 int main(int argc, char const *argv[]){
@@ -84,28 +95,33 @@ int main(int argc, char const *argv[]){
 bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out){
     if (mod1.empty()) return false;
     // std::cout << "size: " << mod1.size() << std::endl;
-    
+    int i = 0;
+    int j = 0;
     // Destructuring Module 1
     std::string name1 = mod1[0];
     std::string size1 = mod1[1];
     std::string mask1 = mod1[2];
+    std::string def1 = mod1[3];
+    std::string use1 = mod1[4];
+    std::string code1 = mod1[5];
+    std::cout<<def1<<std::endl;
+    std::cout<<use1<<std::endl;
+    std::cout<<code1<<std::endl;
     std::vector<instruction> text1;
+    std::vector<t_uso> tab_uso;
+    std::vector<t_def> tab_def;
+    std::string buf;            // Have a buffer std::string
+    std::stringstream ss(code1); // Insert the std::string into a stream
+    std::stringstream ssdef1(def1);
+    std::stringstream ssuse1(use1);
 
-    // Split Text
-    const char* temp = (char*) (mod1[3].c_str());
-    int i = 0;
-    int j = 0;
-    do {
-        const char *begin = temp;
-
-        while(*temp != ' ' && *temp) temp++;
-
+    while (ss  >> buf){
         text1.emplace_back(
             instruction({
-                std::stoi(std::string(begin, temp)),
+                std::stoi(buf),
                 (mask1[i] == '1')}));
                 i++;
-    } while (0 != *temp++);
+    }
 
 
     for(auto i : text1)
@@ -117,50 +133,48 @@ bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out
                   << i.word
                   << std::endl;
 
-
-    
     std::vector<instruction> text2;
-    if (mod2[3].empty()){
-    std::cout << "warning: "
-              << mod2[0]
-              << " contains no valuable information, and has been ignored by the linker."
-              << std::endl;
+    std::vector<instruction> text3;
+    std::string name2 = mod2[0];
+    std::string size2 = mod2[1];
+    std::string mask2 = mod2[2];
+    std::string def2 = mod2[3];
+    std::string use2 = mod2[4];
+    std::string code2 = mod2[5];
+    std::cout<<def2<<std::endl;
+    std::cout<<use2<<std::endl;
+    std::cout<<code2<<std::endl;
+    std::stringstream ss2(code2); // Insert the std::string into a stream
+    std::stringstream ssdef2(def2);
+    std::stringstream ssuse2(use2);
+    i = 0;
+    while (ss2  >> buf){
+        text2.emplace_back(
+            instruction({
+                std::stoi(buf),
+                (mask2[i] == '1')}));
+                i++;
     }
-    else{
-        std::string name2 = mod2[0];
-        std::string size2 = mod2[1];
-        std::string mask2 = mod2[2];
-        temp = (char*) (mod2[3].c_str());
+    for(auto i : text2)
+        std::cout << '\t'
+                << i.word
+                << " | "
+                << (i.relative ? "relative" : "absolute")
+                << " | "
+                << (i.relative ? i.word + text1.size(): i.word)
+                << std::endl;
 
-        i = 0;
-        do{ const char *begin = temp;
-
-            while(*temp != ' ' && *temp) temp++;
-
-            text2.emplace_back(
-                instruction({
-                    std::stoi(std::string(begin, temp)),
-                    (mask2[i] == '1')}));
-                    i++;
-        } while (0 != *temp++);
-        
-        for(auto i : text2)
-            std::cout << '\t'
-                    << i.word
-                    << " | "
-                    << (i.relative ? "relative" : "absolute")
-                    << " | "
-                    << (i.relative ? i.word + text1.size(): i.word)
-                    << std::endl;
-    }
-
-
+    text3 = text1;
+    for(auto i : text2)
+        text3.push_back(i);
     if (out == nullptr) exit(-4);
 
     for(auto i : text1)
         out->push_back(std::to_string(i.word) + " ");
     for(auto j : text2)
-        out->push_back(std::to_string(j.relative ? j.word + text1.size() - 1: j.word) + " ");
+        out->push_back(std::to_string(j.relative ? j.word + text1.size(): j.word) + " ");
+    for(auto j : text3)
+        std::cout<<j.word<<"  ";
 
     return true;
 }
