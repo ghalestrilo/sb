@@ -28,10 +28,11 @@ OF   = bin_res
 ODIR = ./res
 
 
-ifeq ($(mod), yes)
-PROG_INPUT = $(IDIR)/$(IF1) $(IDIR)/$(IF2)
+ifeq ($(mod), no)
+PROG_INPUT = $(IDIR)/$(IF1)
 else
 PROG_INPUT = $(IDIR)/$(IF1)
+PROG_INPUT = $(IDIR)/$(IF1) $(IDIR)/$(IF2) 
 endif
 
 
