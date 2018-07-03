@@ -1,33 +1,37 @@
-## Parte 1:
+# Software Básico (UnB)
 
-@ghalestrilo (28/06/2018):
-Em reuniao com o professor Bruno, os seguintes erros foram apontados para o Trabalho I:
+Repositório para concentrar os trabalhos semestrais da disciplina.
+- Semestre: 01/2018
+- Professor: Bruno Macchiavello
 
-**Relevantes** - Erros que vao afetar o trabalho II, e devem ser corrigidos
-- Montador:
- - Incapacidade de processar vetores
-  - Declaracao: VEC: SPACE X
-  - Acesso: ADD VEC, VEC+1
- - Valores Numericos Hexadecimais, e valores negativos (CONST da muito erro com isso, nao deixa haverem contantes negativas)
-  - 0xdeadbeef
-  - 0x01234567
-  - -0xf000baaa
-  - -12
-- Pre-processador:
- - Macros: Parametros nao substituidos (substituidos pelo proprio nome, nao pelo valor), tipo &A -> A
- -
+Consiste das seguintes pastas
 
-**Passados** - Erros cuja solucao nao afetaria o trabalho II, e devem ser ignorados
-- Deteccao de Erros:
- - Modificacao de valores CONST
- - Label nao declarado em SECTION DATA
- - Desvio de secao (Jumps de TEXT para DATA)
- - Desvio para rotulos nao declarados
- - Space com mais de um argumento
- - Space negativo
- - Instrucoes em DATA
- - Diretivas de Dados em TEXT
- - Divisao por 0
- - Macro sem Endmacro (*preprocessador*)
- - Hexadecimal Mal-formatado (sem 0x, ou com digitos maiores que 'f')
- - INPUT sem argumentos
+## Trabalho 1:
+
+## Trabalho 2:
+Dividido em três partes, cada uma com sua ../p1/respectiva pasta.
+
+- **p1:** Compilador, adaptado para acomodar a compilação de múltiplos módulos. Comandos para compilação e execução:
+  - make
+  - ./bin/compilador.exe -o <modulo1> <modulo2>
+
+  O programa automaticamente infere que um arquivo de um módulo apenas é um executável standalone. Módulos e programas são compilados para arquivos homônimos, no mesmo diretório, com a extensão '.o'. Alguns arquivos fonte são disponibilizados na pasta 'res', tornando-se conveniente, então, o comando:
+  **Não incluir extensão dos arquivos fonte no nome dos modulos - '.asm' é automaticamente inferido**
+
+  - ./bin/compilador.exe -o res/<modulo1> res/<modulo2>
+  
+- **p2:** Ligador, capaz de ligar módulos montados a partir de p1
+  - make
+  - ./ligador.exe -o <modulo1> <modulo2>
+
+  O programa automaticamente infere que um arquivo de um módulo apenas é um executável standalone. Módulos e programas são compilados para arquivos homônimos, no mesmo diretório, com a extensão '.o'.
+  **Não incluir extensão dos arquivos fonte no nome dos modulos - '.o' é automaticamente inferido**
+
+  Arquivos compilados pela parte 1 encontram-se em '../p1/res', podendo ser chamados como
+
+  - ./ligador.exe "../p1/res/<modulo1>" "../p1/res/<modulo2>"
+
+    
+
+- **p3:** Exercício de Linguagem Assembly x86.
+  - O comando 'make' automaticamente compila e roda o executável em sistemas ubuntu.
