@@ -15,8 +15,8 @@ zero db '0'
 
 section .bss
 nome resb 16
-arg1 resb 20
-arg2 resb 20
+arg1 resb 12
+arg2 resb 12
 esc resb 2
 ent resb 1
 
