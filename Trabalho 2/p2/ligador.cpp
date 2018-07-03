@@ -7,7 +7,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
-
+#include <vector>
 // ------------------------------------------------ MACROS
 #define vector_of_strings std::vector<std::string>
 
@@ -24,14 +24,14 @@ struct instruction {
 };
 
 struct t_uso{
-    string nome;
+    std::string nome;
     int num;
-}
+};
 
 struct t_def{
-    string nome;
+    std::string nome;
     int num;
-}
+};
 
 
 // ------------------------------------------------ MAIN
@@ -97,6 +97,7 @@ bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out
     // std::cout << "size: " << mod1.size() << std::endl;
     int i = 0;
     int j = 0;
+    int tempo;
     // Destructuring Module 1
     std::string name1 = mod1[0];
     std::string size1 = mod1[1];
@@ -104,13 +105,11 @@ bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out
     std::string def1 = mod1[3];
     std::string use1 = mod1[4];
     std::string code1 = mod1[5];
-    std::cout<<def1<<std::endl;
-    std::cout<<use1<<std::endl;
-    std::cout<<code1<<std::endl;
     std::vector<instruction> text1;
     std::vector<t_uso> tab_uso;
     std::vector<t_def> tab_def;
     std::string buf;            // Have a buffer std::string
+    std::string buf2;            // Have a buffer std::string
     std::stringstream ss(code1); // Insert the std::string into a stream
     std::stringstream ssdef1(def1);
     std::stringstream ssuse1(use1);
@@ -123,15 +122,19 @@ bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out
                 i++;
     }
 
+    while (ssuse1  >> buf && ssuse1 >> buf2){
+        tab_uso.emplace_back(
+            t_uso({
+                buf,
+                std::stoi(buf2)}));
+    }
 
-    for(auto i : text1)
-        std::cout << '\t'
-                  << i.word
-                  << " | "
-                  << (i.relative ? "relative" : "absolute")
-                  << " | "
-                  << i.word
-                  << std::endl;
+    while (ssdef1  >> buf && ssdef1 >> buf2){
+        tab_def.emplace_back(
+            t_def({
+                buf,
+                std::stoi(buf2)}));
+    }
 
     std::vector<instruction> text2;
     std::vector<instruction> text3;
@@ -141,9 +144,6 @@ bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out
     std::string def2 = mod2[3];
     std::string use2 = mod2[4];
     std::string code2 = mod2[5];
-    std::cout<<def2<<std::endl;
-    std::cout<<use2<<std::endl;
-    std::cout<<code2<<std::endl;
     std::stringstream ss2(code2); // Insert the std::string into a stream
     std::stringstream ssdef2(def2);
     std::stringstream ssuse2(use2);
@@ -155,26 +155,54 @@ bool link(vector_of_strings mod1, vector_of_strings mod2, vector_of_strings* out
                 (mask2[i] == '1')}));
                 i++;
     }
-    for(auto i : text2)
-        std::cout << '\t'
-                << i.word
-                << " | "
-                << (i.relative ? "relative" : "absolute")
-                << " | "
-                << (i.relative ? i.word + text1.size(): i.word)
-                << std::endl;
+
+    while (ssuse2  >> buf && ssuse2 >> buf2){
+        tab_uso.emplace_back(
+            t_uso({
+                buf,
+                std::stoi(buf2)+std::stoi(size1)}));
+    }
+
+    while (ssdef2  >> buf && ssdef2 >> buf2){
+        tab_def.emplace_back(
+            t_def({
+                buf,
+                std::stoi(buf2)+std::stoi(size1)}));
+    }
 
     text3 = text1;
+    for (std::vector<instruction>::iterator it = text2.begin(); it<text2.end(); it++){
+        if(it->relative){
+            tempo = it->word + text1.size();
+            it->word = tempo;
+        }
+    }
+
+
     for(auto i : text2)
         text3.push_back(i);
-    if (out == nullptr) exit(-4);
 
-    for(auto i : text1)
-        out->push_back(std::to_string(i.word) + " ");
-    for(auto j : text2)
-        out->push_back(std::to_string(j.relative ? j.word + text1.size(): j.word) + " ");
-    for(auto j : text3)
-        std::cout<<j.word<<"  ";
+    for(auto i : tab_uso){
+        std::cout<<i.nome<<"|"<<i.num<<std::endl;
+    }
+    std::cout<<"\n\n";
+    for(auto i : tab_def){
+        std::cout<<i.nome<<"|"<<i.num<<std::endl;
+    }
+
+    for(auto definit : tab_def){
+        for(auto utili : tab_uso){
+            if(definit.nome == utili.nome){
+                text3.at(utili.num).word = definit.num;
+            }
+        }
+    }
+
+    if (out == nullptr) exit(-4);
+    for(auto j : text3){
+        out->push_back(std::to_string(j.word) + " ");
+    }
+
 
     return true;
 }
@@ -224,13 +252,6 @@ bool readfile(std::string name, vector_of_strings* data){
         data->push_back(std::string(temp.c_str()));
     }
 
-    
-    /**
-     * 
-     * module_name = headers[0]
-     * 
-     * bitmask     = headers[3]
-    */
 
     // Begin Text Processing
     std::vector<bool> bitmask;

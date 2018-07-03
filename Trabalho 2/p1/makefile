@@ -76,3 +76,7 @@ clearscreen:
 endif
 run:
 
+slide:
+	./bin/compiler.exe -o ./res/slide1 ./res/slide2
+	
+

@@ -4,4 +4,4 @@ build:
 	g++ ligador.cpp -std=c++11 -o ligador
 
 run:
-	./ligador data/mod1.o data/mod2.o
+	./ligador data/slide1.o data/slide2.o
